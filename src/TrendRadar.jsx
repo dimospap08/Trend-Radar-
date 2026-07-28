@@ -64,6 +64,11 @@ function generateTrends() {
 }
 const ALL_TRENDS = generateTrends();
 
+// Your live backend API (Railway). If it returns real trends, we use them.
+// If the database is still empty, we fall back to the local mock data above
+// so the page never looks broken while you're still setting things up.
+const API_BASE = "https://trend-radar-backend-production.up.railway.app";
+
 /* =========================================================
    VISUAL PRIMITIVES
    ========================================================= */
@@ -152,6 +157,25 @@ export default function TrendRadar() {
   const [persona, setPersona] = useState("creator");
   const [watchlist, setWatchlist] = useState(new Set());
   const [tier, setTier] = useState("pro");
+  const [liveTrends, setLiveTrends] = useState(null); // null = not loaded yet / use mock
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`${API_BASE}/api/trends?persona=${persona}&tier=${tier}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (cancelled) return;
+        if (data?.trends?.length > 0) {
+          setLiveTrends(data.trends);
+        } else {
+          setLiveTrends(null); // DB empty (or not seeded yet) -> use mock data
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setLiveTrends(null); // backend unreachable -> use mock data
+      });
+    return () => { cancelled = true; };
+  }, [persona, tier]);
 
   useEffect(() => {
     try {
@@ -173,9 +197,24 @@ export default function TrendRadar() {
   };
 
   const categories = CATEGORY_BY_PERSONA[persona];
-  const visibleTrends = ALL_TRENDS.filter((t) => categories.includes(t.category));
+  const visibleTrends = liveTrends ?? ALL_TRENDS.filter((t) => categories.includes(t.category));
   const freeLimit = 3;
   const activePersona = PERSONAS.find((p) => p.id === persona);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await fetch(`${API_BASE}/api/trends/refresh`, { method: "POST" });
+      const r = await fetch(`${API_BASE}/api/trends?persona=${persona}&tier=${tier}`);
+      const data = await r.json();
+      if (data?.trends?.length > 0) setLiveTrends(data.trends);
+    } catch (e) {
+      // backend unreachable or Gemini key missing — silently keep current view
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#04120c] text-[#d8f5e4]">
@@ -199,9 +238,19 @@ export default function TrendRadar() {
             <a href="#how" className="hover:text-[#39ff8f] transition">How it works</a>
             <a href="#pricing" className="hover:text-[#39ff8f] transition">Pricing</a>
           </nav>
-          <div className="mono text-[11px] text-[#5fae82] flex items-center gap-2">
-            <Activity className="w-3.5 h-3.5 animate-pulse" />
-            {ALL_TRENDS.length} SIGNALS LIVE
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleRefresh}
+              disabled={refreshing}
+              className="flex items-center gap-1.5 mono text-[11px] text-[#9fc9b2] border border-[#123423] hover:border-[#39ff8f] hover:text-[#39ff8f] px-3 py-1.5 rounded-full transition disabled:opacity-50"
+            >
+              <Activity className={`w-3.5 h-3.5 ${refreshing ? "animate-spin" : ""}`} />
+              {refreshing ? "Scanning..." : "Refresh"}
+            </button>
+            <div className="mono text-[11px] text-[#5fae82] flex items-center gap-2">
+              <Activity className="w-3.5 h-3.5 animate-pulse" />
+              {ALL_TRENDS.length} SIGNALS LIVE
+            </div>
           </div>
         </div>
       </header>
