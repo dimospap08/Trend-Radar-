@@ -395,7 +395,12 @@ export default function TrendRadar() {
       </section>
 
       <footer className="border-t border-[#2a1f42] py-8 text-center">
-        <p className="mono text-[10px] text-[#6b5589]">DEMO PROTOTYPE — simulated data, not a live feed</p>
+        <div className="flex items-center justify-center gap-4 mono text-[11px] text-[#9a7ec4]">
+          <a href="/privacy.html" className="hover:text-[#b276ff] transition">Privacy Policy</a>
+          <span className="text-[#3f2d5e]">·</span>
+          <a href="/terms.html" className="hover:text-[#b276ff] transition">Terms of Service</a>
+        </div>
+        <p className="mono text-[10px] text-[#6b5589] mt-3">© {new Date().getFullYear()} Trend Radar. All rights reserved.</p>
       </footer>
     </div>
   );
