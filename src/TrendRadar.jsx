@@ -72,7 +72,7 @@ const API_BASE = "https://trend-radar-backend-production.up.railway.app";
 /* =========================================================
    VISUAL PRIMITIVES
    ========================================================= */
-function Sparkline({ data, color = "#39ff8f" }) {
+function Sparkline({ data, color = "#b276ff" }) {
   const max = Math.max(...data);
   const points = data.map((v, i) => `${(i / (data.length - 1)) * 100},${28 - (v / max) * 26}`).join(" ");
   return (
@@ -107,20 +107,20 @@ function RadarSweep() {
       <svg viewBox="0 0 200 200" className="w-full h-full">
         <defs>
           <radialGradient id="radarBg" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#0d2b1f" />
-            <stop offset="100%" stopColor="#04140d" />
+            <stop offset="0%" stopColor="#231638" />
+            <stop offset="100%" stopColor="#0b0716" />
           </radialGradient>
           <linearGradient id="sweepGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#39ff8f" stopOpacity="0" />
-            <stop offset="100%" stopColor="#39ff8f" stopOpacity="0.55" />
+            <stop offset="0%" stopColor="#b276ff" stopOpacity="0" />
+            <stop offset="100%" stopColor="#b276ff" stopOpacity="0.55" />
           </linearGradient>
         </defs>
-        <circle cx="100" cy="100" r="98" fill="url(#radarBg)" stroke="#1c4b34" strokeWidth="1" />
+        <circle cx="100" cy="100" r="98" fill="url(#radarBg)" stroke="#3f2d5e" strokeWidth="1" />
         {[80, 60, 40, 20].map((r) => (
-          <circle key={r} cx="100" cy="100" r={r} fill="none" stroke="#1c4b34" strokeWidth="0.6" />
+          <circle key={r} cx="100" cy="100" r={r} fill="none" stroke="#3f2d5e" strokeWidth="0.6" />
         ))}
-        <line x1="2" y1="100" x2="198" y2="100" stroke="#1c4b34" strokeWidth="0.5" />
-        <line x1="100" y1="2" x2="100" y2="198" stroke="#1c4b34" strokeWidth="0.5" />
+        <line x1="2" y1="100" x2="198" y2="100" stroke="#3f2d5e" strokeWidth="0.5" />
+        <line x1="100" y1="2" x2="100" y2="198" stroke="#3f2d5e" strokeWidth="0.5" />
         <g style={{ transformOrigin: "100px 100px", transform: `rotate(${angle}deg)` }}>
           <path d="M100,100 L100,2 A98,98 0 0,1 149,15 Z" fill="url(#sweepGrad)" />
         </g>
@@ -129,9 +129,9 @@ function RadarSweep() {
           const x = 100 + b.r * Math.cos(rad);
           const y = 100 + b.r * Math.sin(rad);
           const lit = ((angle - b.theta + 360) % 360) < 40;
-          return <circle key={b.id} cx={x} cy={y} r={b.size / 2} fill={lit ? "#a8ffcf" : "#39ff8f"} opacity={lit ? 1 : 0.55} />;
+          return <circle key={b.id} cx={x} cy={y} r={b.size / 2} fill={lit ? "#e2c6ff" : "#b276ff"} opacity={lit ? 1 : 0.55} />;
         })}
-        <circle cx="100" cy="100" r="2" fill="#39ff8f" />
+        <circle cx="100" cy="100" r="2" fill="#b276ff" />
       </svg>
     </div>
   );
@@ -141,8 +141,8 @@ function SignalTicker() {
   const items = useMemo(() => ALL_TRENDS.slice(0, 14), []);
   const line = items.map((t) => `${t.name} +${t.velocity}%`).join("   ///   ");
   return (
-    <div className="border-y border-[#123423] bg-[#081b12] overflow-hidden py-2.5">
-      <div className="whitespace-nowrap mono text-xs text-[#5fae82] animate-[ticker_38s_linear_infinite]">
+    <div className="border-y border-[#2a1f42] bg-[#150e22] overflow-hidden py-2.5">
+      <div className="whitespace-nowrap mono text-xs text-[#9a7ec4] animate-[ticker_38s_linear_infinite]">
         {line} /// {line}
       </div>
       <style>{`@keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }`}</style>
@@ -217,37 +217,37 @@ export default function TrendRadar() {
   };
 
   return (
-    <div className="min-h-screen bg-[#04120c] text-[#d8f5e4]">
+    <div className="min-h-screen bg-[#0a0714] text-[#f1e9fb]">
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap');
         .display { font-family: 'Space Grotesk', sans-serif; }
         .body-f { font-family: 'Inter', sans-serif; }
         .mono { font-family: 'JetBrains Mono', monospace; }
-        * { scrollbar-color: #1c4b34 #04120c; }
+        * { scrollbar-color: #3f2d5e #0a0714; }
       `}</style>
 
       {/* NAV */}
-      <header className="border-b border-[#123423] sticky top-0 bg-[#04120c]/90 backdrop-blur z-30">
+      <header className="border-b border-[#2a1f42] sticky top-0 bg-[#0a0714]/90 backdrop-blur z-30">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Radar className="w-5 h-5 text-[#39ff8f]" />
+            <Radar className="w-5 h-5 text-[#b276ff]" />
             <span className="display font-bold tracking-tight text-lg">TREND / RADAR</span>
           </div>
-          <nav className="hidden md:flex items-center gap-7 mono text-xs text-[#9fc9b2]">
-            <a href="#feed" className="hover:text-[#39ff8f] transition">Live Feed</a>
-            <a href="#how" className="hover:text-[#39ff8f] transition">How it works</a>
-            <a href="#pricing" className="hover:text-[#39ff8f] transition">Pricing</a>
+          <nav className="hidden md:flex items-center gap-7 mono text-xs text-[#bda8dc]">
+            <a href="#feed" className="hover:text-[#b276ff] transition">Live Feed</a>
+            <a href="#how" className="hover:text-[#b276ff] transition">How it works</a>
+            <a href="#pricing" className="hover:text-[#b276ff] transition">Pricing</a>
           </nav>
           <div className="flex items-center gap-3">
             <button
               onClick={handleRefresh}
               disabled={refreshing}
-              className="flex items-center gap-1.5 mono text-[11px] text-[#9fc9b2] border border-[#123423] hover:border-[#39ff8f] hover:text-[#39ff8f] px-3 py-1.5 rounded-full transition disabled:opacity-50"
+              className="flex items-center gap-1.5 mono text-[11px] text-[#bda8dc] border border-[#2a1f42] hover:border-[#b276ff] hover:text-[#b276ff] px-3 py-1.5 rounded-full transition disabled:opacity-50"
             >
               <Activity className={`w-3.5 h-3.5 ${refreshing ? "animate-spin" : ""}`} />
               {refreshing ? "Scanning..." : "Refresh"}
             </button>
-            <div className="mono text-[11px] text-[#5fae82] flex items-center gap-2">
+            <div className="mono text-[11px] text-[#9a7ec4] flex items-center gap-2">
               <Activity className="w-3.5 h-3.5 animate-pulse" />
               {ALL_TRENDS.length} SIGNALS LIVE
             </div>
@@ -258,11 +258,11 @@ export default function TrendRadar() {
       {/* HERO */}
       <section className="max-w-6xl mx-auto px-6 pt-16 pb-14 grid md:grid-cols-2 gap-10 items-center">
         <div>
-          <p className="mono text-xs text-[#39ff8f] tracking-widest mb-4">EARLY-SIGNAL DETECTION</p>
+          <p className="mono text-xs text-[#b276ff] tracking-widest mb-4">EARLY-SIGNAL DETECTION</p>
           <h1 className="display text-4xl md:text-5xl font-bold leading-[1.05] mb-5">
             See the trend<br />before it's a trend.
           </h1>
-          <p className="body-f text-[#9fc9b2] text-base leading-relaxed mb-8 max-w-md">
+          <p className="body-f text-[#bda8dc] text-base leading-relaxed mb-8 max-w-md">
             We track sounds, hashtags, products and meme coins the moment their growth curve starts
             bending upward — hours or days before they hit the mainstream feed.
           </p>
@@ -275,7 +275,7 @@ export default function TrendRadar() {
                   key={p.id}
                   onClick={() => setPersona(p.id)}
                   className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-sm mono transition ${
-                    active ? "bg-[#39ff8f] text-[#04120c] font-medium" : "bg-[#0c2318] text-[#9fc9b2] hover:bg-[#123423]"
+                    active ? "bg-[#b276ff] text-[#0a0714] font-medium" : "bg-[#1e1530] text-[#bda8dc] hover:bg-[#2a1f42]"
                   }`}
                 >
                   <Icon className="w-3.5 h-3.5" /> {p.label}
@@ -283,8 +283,8 @@ export default function TrendRadar() {
               );
             })}
           </div>
-          <p className="mono text-[11px] text-[#3d6b52] mb-8">{activePersona.tag}</p>
-          <a href="#pricing" className="inline-flex items-center gap-2 bg-[#39ff8f] text-[#04120c] px-5 py-3 rounded-lg font-semibold text-sm hover:bg-[#a8ffcf] transition">
+          <p className="mono text-[11px] text-[#6b5589] mb-8">{activePersona.tag}</p>
+          <a href="#pricing" className="inline-flex items-center gap-2 bg-[#b276ff] text-[#0a0714] px-5 py-3 rounded-lg font-semibold text-sm hover:bg-[#e2c6ff] transition">
             Start free <ArrowRight className="w-4 h-4" />
           </a>
         </div>
@@ -304,10 +304,10 @@ export default function TrendRadar() {
           ].map((f) => {
             const Icon = f.icon;
             return (
-              <div key={f.title} className="rounded-xl border border-[#123423] bg-[#081b12] p-5">
-                <Icon className="w-5 h-5 text-[#39ff8f] mb-3" />
+              <div key={f.title} className="rounded-xl border border-[#2a1f42] bg-[#150e22] p-5">
+                <Icon className="w-5 h-5 text-[#b276ff] mb-3" />
                 <p className="display font-semibold mb-1.5">{f.title}</p>
-                <p className="body-f text-sm text-[#9fc9b2] leading-relaxed">{f.body}</p>
+                <p className="body-f text-sm text-[#bda8dc] leading-relaxed">{f.body}</p>
               </div>
             );
           })}
@@ -318,37 +318,37 @@ export default function TrendRadar() {
       <section id="feed" className="max-w-6xl mx-auto px-6 pb-16">
         <div className="flex items-baseline justify-between mb-4">
           <h2 className="display text-xl font-bold">Live feed — {activePersona.label}</h2>
-          <span className="mono text-xs text-[#5fae82]">sorted by trend score</span>
+          <span className="mono text-xs text-[#9a7ec4]">sorted by trend score</span>
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
           {visibleTrends.map((t, idx) => {
             const locked = tier === "free" && idx >= freeLimit;
             const watched = watchlist.has(t.id);
             return (
-              <div key={t.id} className="relative rounded-xl border border-[#123423] bg-[#081b12] p-4 overflow-hidden">
+              <div key={t.id} className="relative rounded-xl border border-[#2a1f42] bg-[#150e22] p-4 overflow-hidden">
                 {locked && (
-                  <div className="absolute inset-0 bg-[#04120c]/90 backdrop-blur-sm flex flex-col items-center justify-center gap-2 z-10">
-                    <Lock className="w-4 h-4 text-[#39ff8f]" />
-                    <span className="mono text-xs text-[#9fc9b2]">Pro signal</span>
+                  <div className="absolute inset-0 bg-[#0a0714]/90 backdrop-blur-sm flex flex-col items-center justify-center gap-2 z-10">
+                    <Lock className="w-4 h-4 text-[#b276ff]" />
+                    <span className="mono text-xs text-[#bda8dc]">Pro signal</span>
                   </div>
                 )}
                 <div className="flex items-start justify-between mb-2">
                   <div>
-                    <p className="mono text-[10px] text-[#5fae82] uppercase tracking-wide">{t.category} · {t.platform}</p>
+                    <p className="mono text-[10px] text-[#9a7ec4] uppercase tracking-wide">{t.category} · {t.platform}</p>
                     <p className="display font-semibold text-sm mt-1">{t.name}</p>
                   </div>
                   <button onClick={() => toggleWatch(t.id)} className="shrink-0">
-                    <Star className={`w-4 h-4 ${watched ? "fill-[#39ff8f] text-[#39ff8f]" : "text-[#3d6b52]"}`} />
+                    <Star className={`w-4 h-4 ${watched ? "fill-[#b276ff] text-[#b276ff]" : "text-[#6b5589]"}`} />
                   </button>
                 </div>
                 <Sparkline data={t.spark} />
                 <div className="flex items-center justify-between mt-2">
-                  <span className="flex items-center gap-1 text-[#39ff8f] mono text-xs">
+                  <span className="flex items-center gap-1 text-[#b276ff] mono text-xs">
                     <TrendingUp className="w-3.5 h-3.5" /> +{t.velocity}% / 48h
                   </span>
-                  <span className="mono text-[10px] text-[#5fae82]">score {t.score}</span>
+                  <span className="mono text-[10px] text-[#9a7ec4]">score {t.score}</span>
                 </div>
-                <p className="mono text-[10px] text-[#3d6b52] mt-1">first seen {t.firstSeen}h ago</p>
+                <p className="mono text-[10px] text-[#6b5589] mt-1">first seen {t.firstSeen}h ago</p>
               </div>
             );
           })}
@@ -358,7 +358,7 @@ export default function TrendRadar() {
       {/* PRICING */}
       <section id="pricing" className="max-w-6xl mx-auto px-6 pb-20">
         <h2 className="display text-2xl font-bold mb-2">Plans</h2>
-        <p className="body-f text-[#9fc9b2] mb-8 text-sm">Unlock every signal and get alerted the moment it moves.</p>
+        <p className="body-f text-[#bda8dc] mb-8 text-sm">Unlock every signal and get alerted the moment it moves.</p>
         <div className="grid md:grid-cols-3 gap-4">
           {[
             { id: "free", name: "Free", price: "$0", period: "", features: ["3 trends per persona", "24h delayed data", "No alerts"] },
@@ -369,23 +369,23 @@ export default function TrendRadar() {
               key={plan.id}
               onClick={() => setTier(plan.id)}
               className={`cursor-pointer rounded-xl border p-6 transition relative ${
-                tier === plan.id ? "border-[#39ff8f] bg-[#0c2318]" : "border-[#123423] bg-[#081b12] hover:border-[#1c4b34]"
+                tier === plan.id ? "border-[#b276ff] bg-[#1e1530]" : "border-[#2a1f42] bg-[#150e22] hover:border-[#3f2d5e]"
               }`}
             >
               {plan.highlight && (
-                <span className="absolute -top-2.5 left-6 bg-[#39ff8f] text-[#04120c] text-[10px] font-bold px-2 py-0.5 rounded-full mono">MOST POPULAR</span>
+                <span className="absolute -top-2.5 left-6 bg-[#b276ff] text-[#0a0714] text-[10px] font-bold px-2 py-0.5 rounded-full mono">MOST POPULAR</span>
               )}
               <p className="display font-bold text-lg">{plan.name}</p>
-              <p className="mono text-2xl font-bold text-[#39ff8f] my-2">{plan.price}<span className="text-sm text-[#5fae82]">{plan.period}</span></p>
+              <p className="mono text-2xl font-bold text-[#b276ff] my-2">{plan.price}<span className="text-sm text-[#9a7ec4]">{plan.period}</span></p>
               <ul className="space-y-1.5 mt-4">
                 {plan.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2 text-sm body-f text-[#9fc9b2]">
-                    <Check className="w-3.5 h-3.5 text-[#39ff8f] mt-0.5 shrink-0" /> {f}
+                  <li key={f} className="flex items-start gap-2 text-sm body-f text-[#bda8dc]">
+                    <Check className="w-3.5 h-3.5 text-[#b276ff] mt-0.5 shrink-0" /> {f}
                   </li>
                 ))}
               </ul>
               <button className={`mt-5 w-full py-2.5 rounded-lg text-sm font-semibold transition ${
-                tier === plan.id ? "bg-[#39ff8f] text-[#04120c]" : "bg-[#123423] text-[#d8f5e4] hover:bg-[#1c4b34]"
+                tier === plan.id ? "bg-[#b276ff] text-[#0a0714]" : "bg-[#2a1f42] text-[#f1e9fb] hover:bg-[#3f2d5e]"
               }`}>
                 {tier === plan.id ? "Selected (demo)" : "Choose plan"}
               </button>
@@ -394,8 +394,8 @@ export default function TrendRadar() {
         </div>
       </section>
 
-      <footer className="border-t border-[#123423] py-8 text-center">
-        <p className="mono text-[10px] text-[#3d6b52]">DEMO PROTOTYPE — simulated data, not a live feed</p>
+      <footer className="border-t border-[#2a1f42] py-8 text-center">
+        <p className="mono text-[10px] text-[#6b5589]">DEMO PROTOTYPE — simulated data, not a live feed</p>
       </footer>
     </div>
   );
