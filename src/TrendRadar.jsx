@@ -190,32 +190,6 @@ function FloatingIcons() {
   );
 }
 
-function OfferCountdown() {
-  // Set this to a REAL end date/time for your offer — the countdown is
-  // calculated from this, so it's always accurate (never fake or resets).
-  const OFFER_END = new Date("2026-08-15T23:59:59");
-  const [timeLeft, setTimeLeft] = useState(OFFER_END - new Date());
-
-  useEffect(() => {
-    const id = setInterval(() => setTimeLeft(OFFER_END - new Date()), 1000);
-    return () => clearInterval(id);
-  }, []);
-
-  if (timeLeft <= 0) return null;
-
-  const d = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-  const h = Math.floor((timeLeft / (1000 * 60 * 60)) % 24);
-  const m = Math.floor((timeLeft / (1000 * 60)) % 60);
-  const s = Math.floor((timeLeft / 1000) % 60);
-
-  return (
-    <div className="flex items-center gap-2 mono text-xs text-[#e2c6ff] bg-[#1e1530] border border-[#3f2d5e] rounded-full px-4 py-2 w-fit mx-auto mb-6">
-      <Zap className="w-3.5 h-3.5 text-[#b276ff]" />
-      Launch offer — 30% off Pro — ends in {d}d {h}h {m}m {s}s
-    </div>
-  );
-}
-
 /* =========================================================
    MAIN
    ========================================================= */
@@ -422,43 +396,14 @@ export default function TrendRadar() {
         </div>
       </section>
 
-      {/* TESTIMONIALS (illustrative placeholders — swap for real user feedback) */}
-      <section className="max-w-6xl mx-auto px-6 pb-16">
-        <div className="flex items-center justify-between mb-1">
-          <h2 className="display text-2xl font-bold">What early users are saying</h2>
-          <span className="flex items-center gap-1 mono text-xs text-[#9a7ec4]">
-            <Star className="w-3.5 h-3.5 fill-[#b276ff] text-[#b276ff]" /> 4.8 / 5
-          </span>
-        </div>
-        <p className="mono text-[10px] text-[#6b5589] mb-6">Illustrative example quotes — replace with real testimonials once you have them.</p>
-        <div className="grid md:grid-cols-3 gap-4">
-          {[
-            { name: "Creator, 240K followers", quote: "Caught a sound two days before it blew up. My video hit 4x my usual views riding it early." },
-            { name: "DTC store owner", quote: "Spotted a product aesthetic trending before our competitors did. Sourced it in time for the wave." },
-            { name: "Independent trader", quote: "The narrative tracking on meme coins is genuinely useful for spotting where attention is shifting." },
-          ].map((t) => (
-            <div key={t.name} className="rounded-xl border border-[#2a1f42] bg-[#150e22] p-5">
-              <div className="flex gap-0.5 mb-3">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} className="w-3.5 h-3.5 fill-[#b276ff] text-[#b276ff]" />
-                ))}
-              </div>
-              <p className="body-f text-sm text-[#f1e9fb] leading-relaxed mb-3">"{t.quote}"</p>
-              <p className="mono text-[10px] text-[#9a7ec4]">{t.name}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
       {/* PRICING */}
       <section id="pricing" className="max-w-6xl mx-auto px-6 pb-20">
-        <OfferCountdown />
         <h2 className="display text-2xl font-bold mb-2">Plans</h2>
         <p className="body-f text-[#bda8dc] mb-8 text-sm">Unlock every signal and get alerted the moment it moves.</p>
         <div className="grid md:grid-cols-3 gap-4">
           {[
             { id: "free", name: "Free", price: "$0", period: "", features: ["3 trends free per persona, forever", "24h delayed data", "No alerts"] },
-            { id: "pro", name: "Pro", price: "$20", originalPrice: "$29", period: "/mo", features: ["All trends, live", "Push alerts on new signals", "Watchlist & history", "Every category unlocked"], highlight: true },
+            { id: "pro", name: "Pro", price: "$29", period: "/mo", features: ["All trends, live", "Push alerts on new signals", "Watchlist & history", "Every category unlocked"], highlight: true },
             { id: "investor", name: "Signal+", price: "$99", period: "/mo", features: ["Everything in Pro", "On-chain meme-coin scanner", "API access", "Priority on new signal types"] },
           ].map((plan) => (
             <div
