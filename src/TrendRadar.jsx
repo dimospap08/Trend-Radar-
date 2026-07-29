@@ -190,6 +190,32 @@ function FloatingIcons() {
   );
 }
 
+function OfferCountdown() {
+  // Set this to a REAL end date/time for your offer — the countdown is
+  // calculated from this, so it's always accurate (never fake or resets).
+  const OFFER_END = new Date("2026-08-15T23:59:59");
+  const [timeLeft, setTimeLeft] = useState(OFFER_END - new Date());
+
+  useEffect(() => {
+    const id = setInterval(() => setTimeLeft(OFFER_END - new Date()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  if (timeLeft <= 0) return null;
+
+  const d = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+  const h = Math.floor((timeLeft / (1000 * 60 * 60)) % 24);
+  const m = Math.floor((timeLeft / (1000 * 60)) % 60);
+  const s = Math.floor((timeLeft / 1000) % 60);
+
+  return (
+    <div className="flex items-center gap-2 mono text-xs text-[#e2c6ff] bg-[#1e1530] border border-[#3f2d5e] rounded-full px-4 py-2 w-fit mx-auto mb-6">
+      <Zap className="w-3.5 h-3.5 text-[#b276ff]" />
+      Launch offer — 30% off Pro — ends in {d}d {h}h {m}m {s}s
+    </div>
+  );
+}
+
 /* =========================================================
    MAIN
    ========================================================= */
@@ -426,12 +452,13 @@ export default function TrendRadar() {
 
       {/* PRICING */}
       <section id="pricing" className="max-w-6xl mx-auto px-6 pb-20">
+        <OfferCountdown />
         <h2 className="display text-2xl font-bold mb-2">Plans</h2>
         <p className="body-f text-[#bda8dc] mb-8 text-sm">Unlock every signal and get alerted the moment it moves.</p>
         <div className="grid md:grid-cols-3 gap-4">
           {[
-            { id: "free", name: "Free", price: "$0", period: "", features: ["3 trends per persona", "24h delayed data", "No alerts"] },
-            { id: "pro", name: "Pro", price: "$29", period: "/mo", features: ["All trends, live", "Push alerts on new signals", "Watchlist & history", "Every category unlocked"], highlight: true },
+            { id: "free", name: "Free", price: "$0", period: "", features: ["3 trends free per persona, forever", "24h delayed data", "No alerts"] },
+            { id: "pro", name: "Pro", price: "$20", originalPrice: "$29", period: "/mo", features: ["All trends, live", "Push alerts on new signals", "Watchlist & history", "Every category unlocked"], highlight: true },
             { id: "investor", name: "Signal+", price: "$99", period: "/mo", features: ["Everything in Pro", "On-chain meme-coin scanner", "API access", "Priority on new signal types"] },
           ].map((plan) => (
             <div
@@ -445,7 +472,10 @@ export default function TrendRadar() {
                 <span className="absolute -top-2.5 left-6 bg-[#b276ff] text-[#0a0714] text-[10px] font-bold px-2 py-0.5 rounded-full mono">MOST POPULAR</span>
               )}
               <p className="display font-bold text-lg">{plan.name}</p>
-              <p className="mono text-2xl font-bold text-[#b276ff] my-2">{plan.price}<span className="text-sm text-[#9a7ec4]">{plan.period}</span></p>
+              <p className="mono text-2xl font-bold text-[#b276ff] my-2">
+                {plan.price}<span className="text-sm text-[#9a7ec4]">{plan.period}</span>
+                {plan.originalPrice && <span className="text-sm text-[#6b5589] line-through ml-2">{plan.originalPrice}{plan.period}</span>}
+              </p>
               <ul className="space-y-1.5 mt-4">
                 {plan.features.map((f) => (
                   <li key={f} className="flex items-start gap-2 text-sm body-f text-[#bda8dc]">
