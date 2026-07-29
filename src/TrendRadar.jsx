@@ -152,20 +152,29 @@ function SignalTicker() {
 
 function FloatingIcons() {
   const items = [
-    { emoji: "🐊", top: "8%", left: "4%", size: 28, delay: "0s", dur: "7s" },
-    { emoji: "💀", top: "18%", left: "88%", size: 24, delay: "1.2s", dur: "6s" },
-    { emoji: "🎵", top: "62%", left: "2%", size: 22, delay: "0.6s", dur: "8s" },
-    { emoji: "🚀", top: "78%", left: "90%", size: 26, delay: "2s", dur: "6.5s" },
-    { emoji: "🪙", top: "40%", left: "94%", size: 22, delay: "0.3s", dur: "7.5s" },
-    { emoji: "🦈", top: "88%", left: "10%", size: 24, delay: "1.5s", dur: "7s" },
-    { emoji: "🐸", top: "6%", left: "50%", size: 20, delay: "2.4s", dur: "6.8s" },
+    { emoji: "🐊", top: "6%", left: "4%", size: 26, delay: "0s", dur: "7s" },
+    { emoji: "💀", top: "14%", left: "88%", size: 22, delay: "1.2s", dur: "6s" },
+    { emoji: "🎵", top: "24%", left: "12%", size: 20, delay: "0.6s", dur: "8s" },
+    { emoji: "🚀", top: "10%", left: "60%", size: 24, delay: "2s", dur: "6.5s" },
+    { emoji: "🪙", top: "34%", left: "92%", size: 20, delay: "0.3s", dur: "7.5s" },
+    { emoji: "🦈", top: "46%", left: "6%", size: 22, delay: "1.5s", dur: "7s" },
+    { emoji: "🐸", top: "4%", left: "35%", size: 18, delay: "2.4s", dur: "6.8s" },
+    { emoji: "💵", top: "56%", left: "88%", size: 22, delay: "0.8s", dur: "7.2s" },
+    { emoji: "💶", top: "68%", left: "8%", size: 20, delay: "1.8s", dur: "6.4s" },
+    { emoji: "₿", top: "40%", left: "48%", size: 24, delay: "0.4s", dur: "8s" },
+    { emoji: "💰", top: "78%", left: "92%", size: 22, delay: "2.6s", dur: "7s" },
+    { emoji: "📈", top: "86%", left: "20%", size: 20, delay: "1s", dur: "6.6s" },
+    { emoji: "🔥", top: "60%", left: "40%", size: 18, delay: "1.4s", dur: "7.4s" },
+    { emoji: "🪙", top: "92%", left: "60%", size: 18, delay: "0.2s", dur: "7s" },
+    { emoji: "👛", top: "30%", left: "22%", size: 18, delay: "2.2s", dur: "6.9s" },
+    { emoji: "🎉", top: "72%", left: "50%", size: 18, delay: "1.6s", dur: "7.1s" },
   ];
   return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+    <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
       {items.map((it, i) => (
         <span
           key={i}
-          className="absolute opacity-20 select-none"
+          className="absolute opacity-15 select-none"
           style={{
             top: it.top,
             left: it.left,
@@ -249,6 +258,7 @@ export default function TrendRadar() {
 
   return (
     <div className="min-h-screen bg-[#0a0714] text-[#f1e9fb]">
+      <FloatingIcons />
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap');
         .display { font-family: 'Space Grotesk', sans-serif; }
@@ -288,7 +298,6 @@ export default function TrendRadar() {
 
       {/* HERO */}
       <section className="relative max-w-6xl mx-auto px-6 pt-16 pb-14 grid md:grid-cols-2 gap-10 items-center overflow-hidden">
-        <FloatingIcons />
         <div>
           <p className="mono text-xs text-[#b276ff] tracking-widest mb-4">EARLY-SIGNAL DETECTION</p>
           <h1 className="display text-4xl md:text-5xl font-bold leading-[1.05] mb-5">
