@@ -22,13 +22,13 @@ const CATEGORY_BY_PERSONA = {
 };
 
 const NAME_POOL = {
-  Sound: ["\"Corridor\" slowed remix", "8-bit villain riff", "rainy lo-fi loop v2", "static-hum transition cue"],
-  Hashtag: ["#quietluxury2", "#deskbombing", "#feralgirlsummer3", "#cozycore.exe", "#glitchcore.tools"],
-  Format: ["POV: silent vlog", "3-second hook stitch", "\"rate my setup\" duet", "split-screen reaction"],
+  Sound: ["\"Corridor\" slowed remix", "8-bit villain riff", "rainy lo-fi loop v2", "static-hum transition cue", "brainrot sound mashup #7"],
+  Hashtag: ["#quietluxury2", "#deskbombing", "#feralgirlsummer3", "#cozycore.exe", "#glitchcore.tools", "#italianbrainrot"],
+  Format: ["POV: silent vlog", "3-second hook stitch", "\"rate my setup\" duet", "split-screen reaction", "AI-narrated brainrot skit"],
   Product: ["mini heatless curler v2", "glass-skin serum stick", "LED desk fog lamp", "wearable neck-fan clip"],
   Aesthetic: ["mob wife 2.0", "dopamine minimalism", "goblincore office", "liminal beige"],
-  Coin: ["$FROGWIF", "$STATIC", "$NANOCAT", "$GHOSTPEPE"],
-  Narrative: ["AI-agent memes", "retro-internet nostalgia", "sleep-deprived dev humor", "anti-hustle culture"],
+  Coin: ["$FROGWIF", "$STATIC", "$NANOCAT", "$GHOSTPEPE", "$BRAINROT"],
+  Narrative: ["AI-agent memes", "retro-internet nostalgia", "sleep-deprived dev humor", "anti-hustle culture", "Italian brainrot animal lore (Tralalero Tralala, Bombardiro Crocodilo)", "surreal AI-generated meme creatures"],
 };
 const PLATFORMS = ["TikTok", "Instagram Reels", "X", "YouTube Shorts", "Telegram"];
 
@@ -352,6 +352,34 @@ export default function TrendRadar() {
               </div>
             );
           })}
+        </div>
+      </section>
+
+      {/* TESTIMONIALS (illustrative placeholders — swap for real user feedback) */}
+      <section className="max-w-6xl mx-auto px-6 pb-16">
+        <div className="flex items-center justify-between mb-1">
+          <h2 className="display text-2xl font-bold">What early users are saying</h2>
+          <span className="flex items-center gap-1 mono text-xs text-[#9a7ec4]">
+            <Star className="w-3.5 h-3.5 fill-[#b276ff] text-[#b276ff]" /> 4.8 / 5
+          </span>
+        </div>
+        <p className="mono text-[10px] text-[#6b5589] mb-6">Illustrative example quotes — replace with real testimonials once you have them.</p>
+        <div className="grid md:grid-cols-3 gap-4">
+          {[
+            { name: "Creator, 240K followers", quote: "Caught a sound two days before it blew up. My video hit 4x my usual views riding it early." },
+            { name: "DTC store owner", quote: "Spotted a product aesthetic trending before our competitors did. Sourced it in time for the wave." },
+            { name: "Independent trader", quote: "The narrative tracking on meme coins is genuinely useful for spotting where attention is shifting." },
+          ].map((t) => (
+            <div key={t.name} className="rounded-xl border border-[#2a1f42] bg-[#150e22] p-5">
+              <div className="flex gap-0.5 mb-3">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Star key={i} className="w-3.5 h-3.5 fill-[#b276ff] text-[#b276ff]" />
+                ))}
+              </div>
+              <p className="body-f text-sm text-[#f1e9fb] leading-relaxed mb-3">"{t.quote}"</p>
+              <p className="mono text-[10px] text-[#9a7ec4]">{t.name}</p>
+            </div>
+          ))}
         </div>
       </section>
 
