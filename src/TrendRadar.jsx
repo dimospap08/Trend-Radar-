@@ -150,6 +150,37 @@ function SignalTicker() {
   );
 }
 
+function FloatingIcons() {
+  const items = [
+    { emoji: "🐊", top: "8%", left: "4%", size: 28, delay: "0s", dur: "7s" },
+    { emoji: "💀", top: "18%", left: "88%", size: 24, delay: "1.2s", dur: "6s" },
+    { emoji: "🎵", top: "62%", left: "2%", size: 22, delay: "0.6s", dur: "8s" },
+    { emoji: "🚀", top: "78%", left: "90%", size: 26, delay: "2s", dur: "6.5s" },
+    { emoji: "🪙", top: "40%", left: "94%", size: 22, delay: "0.3s", dur: "7.5s" },
+    { emoji: "🦈", top: "88%", left: "10%", size: 24, delay: "1.5s", dur: "7s" },
+    { emoji: "🐸", top: "6%", left: "50%", size: 20, delay: "2.4s", dur: "6.8s" },
+  ];
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      {items.map((it, i) => (
+        <span
+          key={i}
+          className="absolute opacity-20 select-none"
+          style={{
+            top: it.top,
+            left: it.left,
+            fontSize: it.size,
+            animation: `floaty ${it.dur} ease-in-out ${it.delay} infinite`,
+          }}
+        >
+          {it.emoji}
+        </span>
+      ))}
+      <style>{`@keyframes floaty { 0%,100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-14px) rotate(6deg); } }`}</style>
+    </div>
+  );
+}
+
 /* =========================================================
    MAIN
    ========================================================= */
@@ -256,7 +287,8 @@ export default function TrendRadar() {
       </header>
 
       {/* HERO */}
-      <section className="max-w-6xl mx-auto px-6 pt-16 pb-14 grid md:grid-cols-2 gap-10 items-center">
+      <section className="relative max-w-6xl mx-auto px-6 pt-16 pb-14 grid md:grid-cols-2 gap-10 items-center overflow-hidden">
+        <FloatingIcons />
         <div>
           <p className="mono text-xs text-[#b276ff] tracking-widest mb-4">EARLY-SIGNAL DETECTION</p>
           <h1 className="display text-4xl md:text-5xl font-bold leading-[1.05] mb-5">
