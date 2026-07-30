@@ -198,6 +198,7 @@ export default function TrendRadar() {
   const [watchlist, setWatchlist] = useState(new Set());
   const [tier, setTier] = useState("pro");
   const [liveTrends, setLiveTrends] = useState(null); // null = not loaded yet / use mock
+  const [checkingLive, setCheckingLive] = useState(true); // true only during the very first check
 
   useEffect(() => {
     let cancelled = false;
@@ -213,7 +214,8 @@ export default function TrendRadar() {
       })
       .catch(() => {
         if (!cancelled) setLiveTrends(null); // backend unreachable -> use mock data
-      });
+      })
+      .finally(() => { if (!cancelled) setCheckingLive(false); });
     return () => { cancelled = true; };
   }, [persona, tier]);
 
@@ -358,9 +360,38 @@ export default function TrendRadar() {
       {/* FEED */}
       <section id="feed" className="max-w-6xl mx-auto px-6 pb-16">
         <div className="flex items-baseline justify-between mb-4">
-          <h2 className="display text-xl font-bold">Live feed — {activePersona.label}</h2>
+          <div className="flex items-center gap-2">
+            <h2 className="display text-xl font-bold">Live feed — {activePersona.label}</h2>
+            {!checkingLive && (
+              liveTrends ? (
+                <span className="flex items-center gap-1 mono text-[10px] text-[#b276ff] bg-[#1e1530] border border-[#3f2d5e] rounded-full px-2 py-0.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#b276ff] animate-pulse" /> LIVE
+                </span>
+              ) : (
+                <span className="mono text-[10px] text-[#6b5589] bg-[#150e22] border border-[#2a1f42] rounded-full px-2 py-0.5">
+                  SAMPLE PREVIEW
+                </span>
+              )
+            )}
+          </div>
           <span className="mono text-xs text-[#9a7ec4]">sorted by trend score</span>
         </div>
+        {checkingLive ? (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="rounded-xl border border-[#2a1f42] bg-[#150e22] p-4 h-[148px] animate-pulse">
+                <div className="h-2.5 w-20 bg-[#2a1f42] rounded mb-3" />
+                <div className="h-3.5 w-32 bg-[#2a1f42] rounded mb-6" />
+                <div className="h-8 w-full bg-[#1e1530] rounded mb-3" />
+                <div className="h-2.5 w-24 bg-[#2a1f42] rounded" />
+              </div>
+            ))}
+          </div>
+        ) : visibleTrends.length === 0 ? (
+          <div className="rounded-xl border border-[#2a1f42] bg-[#150e22] p-10 text-center">
+            <p className="body-f text-sm text-[#bda8dc]">No signals for this persona yet — try Refresh, or check back soon.</p>
+          </div>
+        ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
           {visibleTrends.map((t, idx) => {
             const locked = tier === "free" && idx >= freeLimit;
@@ -389,11 +420,12 @@ export default function TrendRadar() {
                   </span>
                   <span className="mono text-[10px] text-[#9a7ec4]">score {t.score}</span>
                 </div>
-                <p className="mono text-[10px] text-[#6b5589] mt-1">first seen {t.firstSeen}h ago</p>
+                <p className="mono text-[10px] text-[#6b5589] mt-1">first seen {t.firstSeen ?? "recently"}h ago</p>
               </div>
             );
           })}
         </div>
+        )}
       </section>
 
       {/* PRICING */}
@@ -428,10 +460,29 @@ export default function TrendRadar() {
                   </li>
                 ))}
               </ul>
-              <button className={`mt-5 w-full py-2.5 rounded-lg text-sm font-semibold transition ${
+              <button
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  if (plan.id === "free") { setTier("free"); return; }
+                  const email = window.prompt("Enter your email to continue to checkout:");
+                  if (!email) return;
+                  try {
+                    const res = await fetch(`${API_BASE}/api/billing/checkout`, {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ user_id: email, email, tier: plan.id }),
+                    });
+                    const data = await res.json();
+                    if (data.url) window.location.href = data.url;
+                    else alert("Checkout failed to start. Please try again.");
+                  } catch (err) {
+                    alert("Could not reach checkout. Please try again.");
+                  }
+                }}
+                className={`mt-5 w-full py-2.5 rounded-lg text-sm font-semibold transition ${
                 tier === plan.id ? "bg-[#b276ff] text-[#0a0714]" : "bg-[#2a1f42] text-[#f1e9fb] hover:bg-[#3f2d5e]"
               }`}>
-                {tier === plan.id ? "Selected (demo)" : "Choose plan"}
+                {plan.id === "free" ? "Get started" : "Choose plan"}
               </button>
             </div>
           ))}
