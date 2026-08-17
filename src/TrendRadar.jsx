@@ -1,11 +1,12 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import {
-  Radar, TrendingUp, Star, Zap, Users, ShoppingBag, Coins, Video,
+  Radar, TrendingUp, Star, Users, ShoppingBag, Coins, Video,
   Check, Activity, Bell, ArrowRight, Gauge, Sparkles, Lock,
+  ShieldCheck, Zap, Clock, Music2, Hash, Layers, Palette, MessageSquare,
 } from "lucide-react";
 
 /* =========================================================
-   MOCK SIGNAL ENGINE
+   MOCK SIGNAL ENGINE (fallback preview data before live data loads)
    ========================================================= */
 const PERSONAS = [
   { id: "creator", label: "Creator", icon: Video, tag: "TikTok / Shorts / Reels" },
@@ -28,7 +29,7 @@ const NAME_POOL = {
   Product: ["mini heatless curler v2", "glass-skin serum stick", "LED desk fog lamp", "wearable neck-fan clip"],
   Aesthetic: ["mob wife 2.0", "dopamine minimalism", "goblincore office", "liminal beige"],
   Coin: ["$FROGWIF", "$STATIC", "$NANOCAT", "$GHOSTPEPE", "$BRAINROT"],
-  Narrative: ["AI-agent memes", "retro-internet nostalgia", "sleep-deprived dev humor", "anti-hustle culture", "Italian brainrot animal lore (Tralalero Tralala, Bombardiro Crocodilo)", "surreal AI-generated meme creatures"],
+  Narrative: ["AI-agent memes", "retro-internet nostalgia", "sleep-deprived dev humor", "anti-hustle culture", "Italian brainrot animal lore", "surreal AI-generated meme creatures"],
 };
 const PLATFORMS = ["TikTok", "Instagram Reels", "X", "YouTube Shorts", "Telegram"];
 
@@ -64,15 +65,8 @@ function generateTrends() {
 }
 const ALL_TRENDS = generateTrends();
 
-// Your live backend API (Railway). If it returns real trends, we use them.
-// If the database is still empty, we fall back to the local mock data above
-// so the page never looks broken while you're still setting things up.
 const API_BASE = "https://trend-radar-backend-production.up.railway.app";
 
-// The backend returns fields named differently (and as strings) compared to
-// the local mock data above (e.g. spark_data instead of spark, velocity_pct
-// as a string instead of velocity as a number). This converts a raw backend
-// trend row into the exact shape the rest of this component expects.
 function normalizeTrend(t) {
   const hoursAgo = t.first_seen_at
     ? Math.max(1, Math.round((Date.now() - new Date(t.first_seen_at).getTime()) / 3600000))
@@ -97,123 +91,238 @@ function normalizeTrend(t) {
 /* =========================================================
    VISUAL PRIMITIVES
    ========================================================= */
-function Sparkline({ data, color = "#b276ff" }) {
+function Sparkline({ data, color = "#7c5cff" }) {
   const safeData = Array.isArray(data) && data.length > 0 ? data : [1, 1];
   const max = Math.max(...safeData) || 1;
   const points = safeData
     .map((v, i) => `${(i / (safeData.length - 1 || 1)) * 100},${28 - (v / max) * 26}`)
     .join(" ");
+  const areaPoints = `0,30 ${points} 100,30`;
   return (
-    <svg viewBox="0 0 100 30" className="w-full h-8" preserveAspectRatio="none">
-      <polyline points={points} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <svg viewBox="0 0 100 30" className="w-full h-9" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id={`sg-${color.replace("#", "")}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity="0.35" />
+          <stop offset="100%" stopColor={color} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <polygon points={areaPoints} fill={`url(#sg-${color.replace("#", "")})`} />
+      <polyline points={points} fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
 
-function RadarSweep() {
+/* ---------- 3D Radar Core (signature hero element) ---------- */
+function RadarCore() {
+  const wrapRef = useRef(null);
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const [angle, setAngle] = useState(0);
+
   useEffect(() => {
     let raf, last = performance.now();
     const tick = (now) => {
       const dt = now - last; last = now;
-      setAngle((a) => (a + dt * 0.045) % 360);
+      setAngle((a) => (a + dt * 0.02) % 360);
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
   }, []);
 
+  const handleMove = (e) => {
+    const el = wrapRef.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const px = (e.clientX - r.left) / r.width - 0.5;
+    const py = (e.clientY - r.top) / r.height - 0.5;
+    setTilt({ x: py * -14, y: px * 18 });
+  };
+  const handleLeave = () => setTilt({ x: 0, y: 0 });
+
   const blips = useMemo(
-    () => ALL_TRENDS.slice(0, 11).map((t, i) => ({
-      id: t.id, r: 16 + ((i * 34) % 80), theta: (i * 53) % 360, size: 3 + (t.score % 5),
+    () => ALL_TRENDS.slice(0, 9).map((t, i) => ({
+      id: t.id,
+      r: 34 + ((i * 19) % 58),
+      theta: (i * 71) % 360,
+      z: (i % 3) * 22 - 22,
+      size: 3.5 + (t.score % 4),
+      label: t.name,
+      velocity: t.velocity,
     })),
     []
   );
 
   return (
-    <div className="relative w-full aspect-square max-w-md mx-auto">
-      <svg viewBox="0 0 200 200" className="w-full h-full">
-        <defs>
-          <radialGradient id="radarBg" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#231638" />
-            <stop offset="100%" stopColor="#0b0716" />
-          </radialGradient>
-          <linearGradient id="sweepGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#b276ff" stopOpacity="0" />
-            <stop offset="100%" stopColor="#b276ff" stopOpacity="0.55" />
-          </linearGradient>
-        </defs>
-        <circle cx="100" cy="100" r="98" fill="url(#radarBg)" stroke="#3f2d5e" strokeWidth="1" />
-        {[80, 60, 40, 20].map((r) => (
-          <circle key={r} cx="100" cy="100" r={r} fill="none" stroke="#3f2d5e" strokeWidth="0.6" />
-        ))}
-        <line x1="2" y1="100" x2="198" y2="100" stroke="#3f2d5e" strokeWidth="0.5" />
-        <line x1="100" y1="2" x2="100" y2="198" stroke="#3f2d5e" strokeWidth="0.5" />
-        <g style={{ transformOrigin: "100px 100px", transform: `rotate(${angle}deg)` }}>
-          <path d="M100,100 L100,2 A98,98 0 0,1 149,15 Z" fill="url(#sweepGrad)" />
-        </g>
-        {blips.map((b) => {
-          const rad = (b.theta * Math.PI) / 180;
-          const x = 100 + b.r * Math.cos(rad);
-          const y = 100 + b.r * Math.sin(rad);
-          const lit = ((angle - b.theta + 360) % 360) < 40;
-          return <circle key={b.id} cx={x} cy={y} r={b.size / 2} fill={lit ? "#e2c6ff" : "#b276ff"} opacity={lit ? 1 : 0.55} />;
-        })}
-        <circle cx="100" cy="100" r="2" fill="#b276ff" />
-      </svg>
+    <div className="relative">
+      <div
+        ref={wrapRef}
+        onMouseMove={handleMove}
+        onMouseLeave={handleLeave}
+        className="relative w-full aspect-square max-w-md mx-auto select-none"
+        style={{ perspective: "1100px" }}
+      >
+        <div
+          className="absolute inset-0 rounded-full blur-3xl opacity-40"
+          style={{ background: "radial-gradient(circle, #7c5cff 0%, transparent 70%)" }}
+        />
+        <div
+          className="relative w-full h-full transition-transform duration-200 ease-out"
+          style={{
+            transformStyle: "preserve-3d",
+            transform: `rotateX(${58 + tilt.x}deg) rotateZ(${tilt.y}deg)`,
+          }}
+        >
+          {[0, 1, 2, 3].map((ring) => (
+            <div
+              key={ring}
+              className="absolute rounded-full border"
+              style={{
+                inset: `${ring * 12}%`,
+                borderColor: ring === 0 ? "rgba(124,92,255,0.55)" : "rgba(124,92,255,0.18)",
+                borderWidth: ring === 0 ? 1.5 : 1,
+                transform: `translateZ(${ring * 6}px)`,
+                boxShadow: ring === 0 ? "0 0 40px rgba(124,92,255,0.25) inset" : "none",
+              }}
+            />
+          ))}
+          <div
+            className="absolute rounded-full"
+            style={{
+              inset: "48%",
+              background: "radial-gradient(circle, #e6dcff 0%, #7c5cff 60%, transparent 100%)",
+              boxShadow: "0 0 30px 6px rgba(124,92,255,0.7)",
+              transform: "translateZ(30px)",
+            }}
+          />
+          <div
+            className="absolute inset-0 rounded-full overflow-hidden"
+            style={{ transform: `translateZ(2px) rotate(${angle}deg)`, transformOrigin: "50% 50%" }}
+          >
+            <div
+              className="absolute top-1/2 left-1/2 w-1/2 h-1/2 origin-top-left"
+              style={{
+                background: "conic-gradient(from 0deg, rgba(124,92,255,0.5), transparent 55%)",
+              }}
+            />
+          </div>
+          {blips.map((b) => {
+            const rad = (b.theta * Math.PI) / 180;
+            const x = 50 + (b.r / 2) * Math.cos(rad);
+            const y = 50 + (b.r / 2) * Math.sin(rad);
+            const lit = ((angle - b.theta + 360) % 360) < 50;
+            return (
+              <div
+                key={b.id}
+                className="absolute group"
+                style={{
+                  left: `${x}%`,
+                  top: `${y}%`,
+                  transform: `translate(-50%,-50%) translateZ(${b.z + 14}px)`,
+                }}
+              >
+                <div
+                  className="rounded-full transition-all duration-300"
+                  style={{
+                    width: b.size * 2,
+                    height: b.size * 2,
+                    background: lit ? "#f0e9ff" : "#7c5cff",
+                    boxShadow: lit ? "0 0 14px 4px rgba(124,92,255,0.9)" : "0 0 6px rgba(124,92,255,0.5)",
+                    opacity: lit ? 1 : 0.65,
+                  }}
+                />
+                <div
+                  className="absolute left-1/2 top-full mt-1 -translate-x-1/2 whitespace-nowrap pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity mono text-[9px] px-1.5 py-0.5 rounded bg-[#0f0d1f] border border-[#241c40] text-[#c9bfff]"
+                  style={{ transform: "translateZ(60px) translateX(-50%)" }}
+                >
+                  {b.label} · +{b.velocity}%
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        <div
+          className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-3/4 h-8 rounded-full blur-2xl"
+          style={{ background: "rgba(124,92,255,0.35)" }}
+        />
+      </div>
+
+      {/* Floating marketing mockup card — illustrated, not a photo */}
+      <div className="hidden md:block absolute -left-6 top-6 w-40 glass rounded-xl p-3 shadow-2xl rotate-[-8deg] hover:rotate-0 transition-transform duration-300">
+        <div className="flex items-center gap-1.5 mb-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#f5b83d]" />
+          <p className="mono text-[8px] text-[#a99fd4] uppercase tracking-wide">Breaking now</p>
+        </div>
+        <p className="display text-[11px] font-semibold leading-snug mb-1.5">#glitchcore.tools</p>
+        <div className="flex items-center gap-1 text-[#a98bff] mono text-[10px] font-medium">
+          <TrendingUp className="w-3 h-3" /> +340%
+        </div>
+      </div>
+      <div className="hidden md:block absolute -right-4 bottom-10 w-36 glass rounded-xl p-3 shadow-2xl rotate-[7deg] hover:rotate-0 transition-transform duration-300">
+        <div className="flex items-center gap-1.5 mb-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#7c5cff] animate-pulse" />
+          <p className="mono text-[8px] text-[#a99fd4] uppercase tracking-wide">Live scan</p>
+        </div>
+        <p className="display text-[11px] font-semibold leading-snug mb-1.5">$NANOCAT</p>
+        <div className="flex items-center gap-1 text-[#f5b83d] mono text-[10px] font-medium">
+          <TrendingUp className="w-3 h-3" /> +812%
+        </div>
+      </div>
     </div>
   );
 }
 
 function SignalTicker() {
   const items = useMemo(() => ALL_TRENDS.slice(0, 14), []);
-  const line = items.map((t) => `${t.name} +${t.velocity}%`).join("   ///   ");
+  const line = items.map((t) => `${t.name} +${t.velocity}%`).join("   //   ");
   return (
-    <div className="border-y border-[#2a1f42] bg-[#150e22] overflow-hidden py-2.5">
-      <div className="whitespace-nowrap mono text-xs text-[#9a7ec4] animate-[ticker_38s_linear_infinite]">
-        {line} /// {line}
+    <div className="border-y border-[#1c1633] bg-[#0b0918]/80 overflow-hidden py-2.5">
+      <div className="whitespace-nowrap mono text-[11px] tracking-wide text-[#8a7fc0] animate-[ticker_40s_linear_infinite]">
+        {line} // {line}
       </div>
       <style>{`@keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }`}</style>
     </div>
   );
 }
 
-function FloatingIcons() {
-  const items = [
-    { emoji: "🐊", top: "6%", left: "4%", size: 26, delay: "0s", dur: "7s" },
-    { emoji: "💀", top: "14%", left: "88%", size: 22, delay: "1.2s", dur: "6s" },
-    { emoji: "🎵", top: "24%", left: "12%", size: 20, delay: "0.6s", dur: "8s" },
-    { emoji: "🚀", top: "10%", left: "60%", size: 24, delay: "2s", dur: "6.5s" },
-    { emoji: "🪙", top: "34%", left: "92%", size: 20, delay: "0.3s", dur: "7.5s" },
-    { emoji: "🦈", top: "46%", left: "6%", size: 22, delay: "1.5s", dur: "7s" },
-    { emoji: "🐸", top: "4%", left: "35%", size: 18, delay: "2.4s", dur: "6.8s" },
-    { emoji: "💵", top: "56%", left: "88%", size: 22, delay: "0.8s", dur: "7.2s" },
-    { emoji: "💶", top: "68%", left: "8%", size: 20, delay: "1.8s", dur: "6.4s" },
-    { emoji: "₿", top: "40%", left: "48%", size: 24, delay: "0.4s", dur: "8s" },
-    { emoji: "💰", top: "78%", left: "92%", size: 22, delay: "2.6s", dur: "7s" },
-    { emoji: "📈", top: "86%", left: "20%", size: 20, delay: "1s", dur: "6.6s" },
-    { emoji: "🔥", top: "60%", left: "40%", size: 18, delay: "1.4s", dur: "7.4s" },
-    { emoji: "🪙", top: "92%", left: "60%", size: 18, delay: "0.2s", dur: "7s" },
-    { emoji: "👛", top: "30%", left: "22%", size: 18, delay: "2.2s", dur: "6.9s" },
-    { emoji: "🎉", top: "72%", left: "50%", size: 18, delay: "1.6s", dur: "7.1s" },
-  ];
+function GrainOverlay() {
   return (
-    <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-      {items.map((it, i) => (
-        <span
-          key={i}
-          className="absolute opacity-15 select-none"
-          style={{
-            top: it.top,
-            left: it.left,
-            fontSize: it.size,
-            animation: `floaty ${it.dur} ease-in-out ${it.delay} infinite`,
-          }}
-        >
-          {it.emoji}
-        </span>
-      ))}
-      <style>{`@keyframes floaty { 0%,100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-14px) rotate(6deg); } }`}</style>
+    <svg className="fixed inset-0 w-full h-full pointer-events-none z-[1] opacity-[0.05] mix-blend-overlay">
+      <filter id="grain">
+        <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch" />
+      </filter>
+      <rect width="100%" height="100%" filter="url(#grain)" />
+    </svg>
+  );
+}
+
+/* ---------- Illustrated category showcase (marketing visuals, no stock photos) ---------- */
+const CATEGORY_VISUALS = [
+  { key: "Sound", icon: Music2, color: "#7c5cff", desc: "Audio & remix trends before they're everywhere" },
+  { key: "Hashtag", icon: Hash, color: "#f5b83d", desc: "Tags accelerating across every platform" },
+  { key: "Format", icon: Layers, color: "#4fd1c5", desc: "Video formats creators are about to copy" },
+  { key: "Product", icon: ShoppingBag, color: "#ff6b9d", desc: "Physical products about to spike in demand" },
+  { key: "Aesthetic", icon: Palette, color: "#8b6bff", desc: "Visual styles taking over feeds" },
+  { key: "Coin", icon: Coins, color: "#ffd166", desc: "On-chain narratives gaining early velocity" },
+  { key: "Narrative", icon: MessageSquare, color: "#7cc8ff", desc: "Cultural moments forming in real time" },
+];
+
+function CategoryOrb({ icon: Icon, color, label, desc }) {
+  return (
+    <div className="glass rounded-2xl p-5 flex flex-col items-start gap-3 hover:-translate-y-1 hover:border-[#7c5cff]/40 transition-all duration-300 group">
+      <div
+        className="w-12 h-12 rounded-xl flex items-center justify-center relative"
+        style={{ background: `linear-gradient(135deg, ${color}33, ${color}0d)`, border: `1px solid ${color}55` }}
+      >
+        <div
+          className="absolute inset-0 rounded-xl blur-lg opacity-0 group-hover:opacity-60 transition-opacity"
+          style={{ background: color }}
+        />
+        <Icon className="w-5 h-5 relative" style={{ color }} />
+      </div>
+      <div>
+        <p className="display font-semibold text-sm mb-1">{label}</p>
+        <p className="body-f text-xs text-[#a99fd4] leading-relaxed">{desc}</p>
+      </div>
     </div>
   );
 }
@@ -225,8 +334,9 @@ export default function TrendRadar() {
   const [persona, setPersona] = useState("creator");
   const [watchlist, setWatchlist] = useState(new Set());
   const [tier, setTier] = useState("pro");
-  const [liveTrends, setLiveTrends] = useState(null); // null = not loaded yet / use mock
-  const [checkingLive, setCheckingLive] = useState(true); // true only during the very first check
+  const [liveTrends, setLiveTrends] = useState(null);
+  const [checkingLive, setCheckingLive] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -234,15 +344,10 @@ export default function TrendRadar() {
       .then((r) => r.json())
       .then((data) => {
         if (cancelled) return;
-        if (data?.trends?.length > 0) {
-          setLiveTrends(data.trends.map(normalizeTrend));
-        } else {
-          setLiveTrends(null); // DB empty (or not seeded yet) -> use mock data
-        }
+        if (data?.trends?.length > 0) setLiveTrends(data.trends.map(normalizeTrend));
+        else setLiveTrends(null);
       })
-      .catch(() => {
-        if (!cancelled) setLiveTrends(null); // backend unreachable -> use mock data
-      })
+      .catch(() => { if (!cancelled) setLiveTrends(null); })
       .finally(() => { if (!cancelled) setCheckingLive(false); });
     return () => { cancelled = true; };
   }, [persona, tier]);
@@ -252,8 +357,6 @@ export default function TrendRadar() {
       const saved = localStorage.getItem("watchlist");
       if (saved) setWatchlist(new Set(JSON.parse(saved)));
     } catch (e) { /* nothing saved yet */ }
-    // TODO: once the backend is live, replace this with a fetch to
-    // GET /api/trends?persona=...&tier=... and load the user's real watchlist.
   }, []);
 
   const toggleWatch = (id) => {
@@ -261,7 +364,6 @@ export default function TrendRadar() {
       const next = new Set(prev);
       next.has(id) ? next.delete(id) : next.add(id);
       localStorage.setItem("watchlist", JSON.stringify(Array.from(next)));
-      // TODO: also POST /api/trends/:id/watch { user_id } once backend is connected.
       return next;
     });
   };
@@ -270,7 +372,6 @@ export default function TrendRadar() {
   const visibleTrends = liveTrends ?? ALL_TRENDS.filter((t) => categories.includes(t.category));
   const freeLimit = 3;
   const activePersona = PERSONAS.find((p) => p.id === persona);
-  const [refreshing, setRefreshing] = useState(false);
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -279,63 +380,70 @@ export default function TrendRadar() {
       const r = await fetch(`${API_BASE}/api/trends?persona=${persona}&tier=${tier}`);
       const data = await r.json();
       if (data?.trends?.length > 0) setLiveTrends(data.trends.map(normalizeTrend));
-    } catch (e) {
-      // backend unreachable or Gemini key missing — silently keep current view
-    } finally {
-      setRefreshing(false);
-    }
+    } catch (e) { /* backend unreachable — keep current view */ }
+    finally { setRefreshing(false); }
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0714] text-[#f1e9fb]">
-      <FloatingIcons />
+    <div className="min-h-screen bg-[#060512] text-[#f2eefa] relative">
+      <GrainOverlay />
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap');
-        .display { font-family: 'Space Grotesk', sans-serif; }
+        @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+        .display { font-family: 'Unbounded', sans-serif; }
         .body-f { font-family: 'Inter', sans-serif; }
         .mono { font-family: 'JetBrains Mono', monospace; }
-        * { scrollbar-color: #3f2d5e #0a0714; }
+        * { scrollbar-color: #2a2150 #060512; }
+        .glass {
+          background: linear-gradient(180deg, rgba(23,18,45,0.7), rgba(15,12,31,0.7));
+          backdrop-filter: blur(14px);
+          border: 1px solid rgba(124,92,255,0.14);
+        }
       `}</style>
 
       {/* NAV */}
-      <header className="border-b border-[#2a1f42] sticky top-0 bg-[#0a0714]/90 backdrop-blur z-30">
+      <header className="border-b border-[#1c1633] sticky top-0 bg-[#060512]/85 backdrop-blur-md z-30">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Radar className="w-5 h-5 text-[#b276ff]" />
-            <span className="display font-bold tracking-tight text-lg">TREND / RADAR</span>
+          <div className="flex items-center gap-2.5">
+            <div className="relative w-7 h-7 flex items-center justify-center rounded-lg bg-gradient-to-br from-[#7c5cff] to-[#4a2fb8]">
+              <Radar className="w-4 h-4 text-white" />
+            </div>
+            <span className="display font-bold tracking-tight text-[15px]">TREND/RADAR</span>
           </div>
-          <nav className="hidden md:flex items-center gap-7 mono text-xs text-[#bda8dc]">
-            <a href="#feed" className="hover:text-[#b276ff] transition">Live Feed</a>
-            <a href="#how" className="hover:text-[#b276ff] transition">How it works</a>
-            <a href="#pricing" className="hover:text-[#b276ff] transition">Pricing</a>
+          <nav className="hidden md:flex items-center gap-8 mono text-[11px] tracking-wide text-[#a99fd4]">
+            <a href="#categories" className="hover:text-[#c9bfff] transition">CATEGORIES</a>
+            <a href="#feed" className="hover:text-[#c9bfff] transition">LIVE FEED</a>
+            <a href="#how" className="hover:text-[#c9bfff] transition">HOW IT WORKS</a>
+            <a href="#pricing" className="hover:text-[#c9bfff] transition">PRICING</a>
           </nav>
           <div className="flex items-center gap-3">
             <button
               onClick={handleRefresh}
               disabled={refreshing}
-              className="flex items-center gap-1.5 mono text-[11px] text-[#bda8dc] border border-[#2a1f42] hover:border-[#b276ff] hover:text-[#b276ff] px-3 py-1.5 rounded-full transition disabled:opacity-50"
+              className="flex items-center gap-1.5 mono text-[11px] text-[#a99fd4] border border-[#2a2150] hover:border-[#7c5cff] hover:text-[#c9bfff] px-3 py-1.5 rounded-full transition disabled:opacity-50"
             >
               <Activity className={`w-3.5 h-3.5 ${refreshing ? "animate-spin" : ""}`} />
               {refreshing ? "Scanning..." : "Refresh"}
             </button>
-            <div className="mono text-[11px] text-[#9a7ec4] flex items-center gap-2">
-              <Activity className="w-3.5 h-3.5 animate-pulse" />
-              {ALL_TRENDS.length} SIGNALS LIVE
-            </div>
           </div>
         </div>
       </header>
 
       {/* HERO */}
-      <section className="relative max-w-6xl mx-auto px-6 pt-16 pb-14 grid md:grid-cols-2 gap-10 items-center overflow-hidden">
+      <section className="relative max-w-6xl mx-auto px-6 pt-16 md:pt-20 pb-20 grid md:grid-cols-2 gap-14 items-center overflow-hidden">
         <div>
-          <p className="mono text-xs text-[#b276ff] tracking-widest mb-4">EARLY-SIGNAL DETECTION</p>
-          <h1 className="display text-4xl md:text-5xl font-bold leading-[1.05] mb-5">
-            See the trend<br />before it's a trend.
+          <div className="inline-flex items-center gap-1.5 mono text-[10px] tracking-widest text-[#c9bfff] bg-[#160f2e] border border-[#2a2150] rounded-full px-3 py-1 mb-6">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#7c5cff] animate-pulse" />
+            LIVE GOOGLE SEARCH SIGNAL ENGINE
+          </div>
+          <h1 className="display text-[2.6rem] leading-[1.06] md:text-6xl font-bold mb-6 tracking-tight">
+            See the trend<br />
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#e6dcff] via-[#b9a3ff] to-[#7c5cff]">
+              before it's a trend.
+            </span>
           </h1>
-          <p className="body-f text-[#bda8dc] text-base leading-relaxed mb-8 max-w-md">
-            We track sounds, hashtags, products and meme coins the moment their growth curve starts
-            bending upward — hours or days before they hit the mainstream feed.
+          <p className="body-f text-[#b3a9d9] text-[15px] leading-relaxed mb-8 max-w-md">
+            Our engine scans live signals across TikTok, Reels, product marketplaces and on-chain
+            narratives every hour — surfacing what's about to break out, hours before it's obvious.
           </p>
           <div className="flex flex-wrap gap-2 mb-4">
             {PERSONAS.map((p) => {
@@ -345,8 +453,10 @@ export default function TrendRadar() {
                 <button
                   key={p.id}
                   onClick={() => setPersona(p.id)}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-sm mono transition ${
-                    active ? "bg-[#b276ff] text-[#0a0714] font-medium" : "bg-[#1e1530] text-[#bda8dc] hover:bg-[#2a1f42]"
+                  className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full text-sm mono transition ${
+                    active
+                      ? "bg-gradient-to-r from-[#8b6bff] to-[#6941e8] text-white font-medium shadow-[0_0_20px_rgba(124,92,255,0.35)]"
+                      : "bg-[#130f26] text-[#a99fd4] hover:bg-[#1c1633] border border-[#231b45]"
                   }`}
                 >
                   <Icon className="w-3.5 h-3.5" /> {p.label}
@@ -354,31 +464,76 @@ export default function TrendRadar() {
               );
             })}
           </div>
-          <p className="mono text-[11px] text-[#6b5589] mb-8">{activePersona.tag}</p>
-          <a href="#pricing" className="inline-flex items-center gap-2 bg-[#b276ff] text-[#0a0714] px-5 py-3 rounded-lg font-semibold text-sm hover:bg-[#e2c6ff] transition">
+          <p className="mono text-[11px] text-[#655a92] mb-8">{activePersona.tag}</p>
+          <a
+            href="#pricing"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-[#8b6bff] to-[#6941e8] text-white px-6 py-3.5 rounded-xl font-semibold text-sm hover:shadow-[0_0_30px_rgba(124,92,255,0.45)] transition shadow-lg"
+          >
             Start free <ArrowRight className="w-4 h-4" />
           </a>
         </div>
-        <RadarSweep />
+        <RadarCore />
+      </section>
+
+      {/* TRUST BAR */}
+      <section className="border-y border-[#1c1633] bg-[#0a0817]/60">
+        <div className="max-w-6xl mx-auto px-6 py-6 grid grid-cols-2 md:grid-cols-4 gap-6">
+          {[
+            { icon: Activity, value: "Hourly", label: "Signal refresh cycle" },
+            { icon: ShieldCheck, value: "Encrypted", label: "Data in transit & at rest" },
+            { icon: Zap, value: "Google Search", label: "Live-grounded AI signals" },
+            { icon: Clock, value: "< 60s", label: "Manual scan turnaround" },
+          ].map((s) => {
+            const Icon = s.icon;
+            return (
+              <div key={s.label} className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg bg-[#160f2e] border border-[#2a2150] flex items-center justify-center shrink-0">
+                  <Icon className="w-4 h-4 text-[#a98bff]" />
+                </div>
+                <div>
+                  <p className="display text-sm font-semibold leading-tight">{s.value}</p>
+                  <p className="mono text-[10px] text-[#7c729f] leading-tight mt-0.5">{s.label}</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </section>
 
       <SignalTicker />
 
+      {/* CATEGORIES — illustrated marketing showcase */}
+      <section id="categories" className="max-w-6xl mx-auto px-6 py-20">
+        <p className="mono text-[11px] tracking-widest text-[#7c5cff] mb-3">COVERAGE</p>
+        <h2 className="display text-2xl md:text-3xl font-bold mb-10">Seven signal types, scanned continuously.</h2>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {CATEGORY_VISUALS.map((c) => (
+            <CategoryOrb key={c.key} icon={c.icon} color={c.color} label={c.key} desc={c.desc} />
+          ))}
+        </div>
+      </section>
+
       {/* HOW IT WORKS */}
-      <section id="how" className="max-w-6xl mx-auto px-6 py-16">
-        <h2 className="display text-2xl font-bold mb-8">How the radar works</h2>
+      <section id="how" className="max-w-6xl mx-auto px-6 py-20">
+        <p className="mono text-[11px] tracking-widest text-[#7c5cff] mb-3">THE PIPELINE</p>
+        <h2 className="display text-2xl md:text-3xl font-bold mb-10">Three stages, one hour, zero noise.</h2>
         <div className="grid md:grid-cols-3 gap-4">
           {[
-            { icon: Gauge, title: "Velocity scan", body: "We measure how fast a sound, tag or coin is accelerating right now — not how big it already is." },
-            { icon: Sparkles, title: "Noise filter", body: "One-off spikes get discarded. Only sustained, compounding growth gets promoted to a signal." },
-            { icon: Bell, title: "Instant alert", body: "The moment something crosses your threshold, it lands in your feed and inbox — first." },
+            { n: "01", icon: Gauge, title: "Velocity scan", body: "Every hour, our engine sweeps live search signals to measure how fast a sound, tag, product or coin is accelerating — not how big it already is." },
+            { n: "02", icon: Sparkles, title: "Noise filter", body: "One-off spikes get discarded automatically. Only sustained, compounding growth gets promoted into a tracked signal." },
+            { n: "03", icon: Bell, title: "Instant surfacing", body: "The moment something crosses your persona's threshold, it lands at the top of your live feed — ranked and ready to act on." },
           ].map((f) => {
             const Icon = f.icon;
             return (
-              <div key={f.title} className="rounded-xl border border-[#2a1f42] bg-[#150e22] p-5">
-                <Icon className="w-5 h-5 text-[#b276ff] mb-3" />
-                <p className="display font-semibold mb-1.5">{f.title}</p>
-                <p className="body-f text-sm text-[#bda8dc] leading-relaxed">{f.body}</p>
+              <div key={f.title} className="glass rounded-2xl p-6 hover:border-[#7c5cff]/40 transition">
+                <div className="flex items-center justify-between mb-5">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#8b6bff]/20 to-[#6941e8]/20 border border-[#7c5cff]/30 flex items-center justify-center">
+                    <Icon className="w-4.5 h-4.5 text-[#a98bff]" />
+                  </div>
+                  <span className="mono text-xs text-[#4a4270]">{f.n}</span>
+                </div>
+                <p className="display font-semibold mb-2 text-[15px]">{f.title}</p>
+                <p className="body-f text-sm text-[#a99fd4] leading-relaxed">{f.body}</p>
               </div>
             );
           })}
@@ -386,81 +541,83 @@ export default function TrendRadar() {
       </section>
 
       {/* FEED */}
-      <section id="feed" className="max-w-6xl mx-auto px-6 pb-16">
-        <div className="flex items-baseline justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <h2 className="display text-xl font-bold">Live feed — {activePersona.label}</h2>
+      <section id="feed" className="max-w-6xl mx-auto px-6 pb-20">
+        <div className="flex items-baseline justify-between mb-5 flex-wrap gap-3">
+          <div className="flex items-center gap-2.5">
+            <h2 className="display text-xl md:text-2xl font-bold">Live feed — {activePersona.label}</h2>
             {!checkingLive && (
               liveTrends ? (
-                <span className="flex items-center gap-1 mono text-[10px] text-[#b276ff] bg-[#1e1530] border border-[#3f2d5e] rounded-full px-2 py-0.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#b276ff] animate-pulse" /> LIVE
+                <span className="flex items-center gap-1.5 mono text-[10px] text-[#c9bfff] bg-[#160f2e] border border-[#7c5cff]/40 rounded-full px-2.5 py-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#7c5cff] animate-pulse" /> LIVE
                 </span>
               ) : (
-                <span className="mono text-[10px] text-[#6b5589] bg-[#150e22] border border-[#2a1f42] rounded-full px-2 py-0.5">
+                <span className="mono text-[10px] text-[#655a92] bg-[#0f0d1f] border border-[#1c1633] rounded-full px-2.5 py-1">
                   SAMPLE PREVIEW
                 </span>
               )
             )}
           </div>
-          <span className="mono text-xs text-[#9a7ec4]">sorted by trend score</span>
+          <span className="mono text-xs text-[#655a92]">sorted by trend score</span>
         </div>
+
         {checkingLive ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="rounded-xl border border-[#2a1f42] bg-[#150e22] p-4 h-[148px] animate-pulse">
-                <div className="h-2.5 w-20 bg-[#2a1f42] rounded mb-3" />
-                <div className="h-3.5 w-32 bg-[#2a1f42] rounded mb-6" />
-                <div className="h-8 w-full bg-[#1e1530] rounded mb-3" />
-                <div className="h-2.5 w-24 bg-[#2a1f42] rounded" />
+              <div key={i} className="glass rounded-2xl p-5 h-[156px] animate-pulse">
+                <div className="h-2.5 w-20 bg-[#1c1633] rounded mb-3" />
+                <div className="h-3.5 w-32 bg-[#1c1633] rounded mb-6" />
+                <div className="h-9 w-full bg-[#130f26] rounded mb-3" />
+                <div className="h-2.5 w-24 bg-[#1c1633] rounded" />
               </div>
             ))}
           </div>
         ) : visibleTrends.length === 0 ? (
-          <div className="rounded-xl border border-[#2a1f42] bg-[#150e22] p-10 text-center">
-            <p className="body-f text-sm text-[#bda8dc]">No signals for this persona yet — try Refresh, or check back soon.</p>
+          <div className="glass rounded-2xl p-10 text-center">
+            <p className="body-f text-sm text-[#a99fd4]">No signals for this persona yet — try Refresh, or check back soon.</p>
           </div>
         ) : (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
-          {visibleTrends.map((t, idx) => {
-            const locked = tier === "free" && idx >= freeLimit;
-            const watched = watchlist.has(t.id);
-            return (
-              <div key={t.id} className="relative rounded-xl border border-[#2a1f42] bg-[#150e22] p-4 overflow-hidden">
-                {locked && (
-                  <div className="absolute inset-0 bg-[#0a0714]/90 backdrop-blur-sm flex flex-col items-center justify-center gap-2 z-10">
-                    <Lock className="w-4 h-4 text-[#b276ff]" />
-                    <span className="mono text-xs text-[#bda8dc]">Pro signal</span>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {visibleTrends.map((t, idx) => {
+              const locked = tier === "free" && idx >= freeLimit;
+              const watched = watchlist.has(t.id);
+              return (
+                <div key={t.id} className="relative glass rounded-2xl p-5 overflow-hidden hover:border-[#7c5cff]/40 hover:-translate-y-0.5 transition-all duration-200">
+                  {locked && (
+                    <div className="absolute inset-0 bg-[#060512]/92 backdrop-blur-sm flex flex-col items-center justify-center gap-2 z-10">
+                      <Lock className="w-4 h-4 text-[#a98bff]" />
+                      <span className="mono text-xs text-[#a99fd4]">Pro signal</span>
+                    </div>
+                  )}
+                  <div className="flex items-start justify-between mb-2.5">
+                    <div>
+                      <p className="mono text-[10px] text-[#7c729f] uppercase tracking-wide">{t.category} · {t.platform}</p>
+                      <p className="display font-semibold text-[14px] mt-1.5 leading-snug">{t.name}</p>
+                    </div>
+                    <button onClick={() => toggleWatch(t.id)} className="shrink-0">
+                      <Star className={`w-4 h-4 ${watched ? "fill-[#f5b83d] text-[#f5b83d]" : "text-[#4a4270]"}`} />
+                    </button>
                   </div>
-                )}
-                <div className="flex items-start justify-between mb-2">
-                  <div>
-                    <p className="mono text-[10px] text-[#9a7ec4] uppercase tracking-wide">{t.category} · {t.platform}</p>
-                    <p className="display font-semibold text-sm mt-1">{t.name}</p>
+                  <Sparkline data={t.spark} />
+                  <div className="flex items-center justify-between mt-2.5">
+                    <span className="flex items-center gap-1 text-[#a98bff] mono text-xs font-medium">
+                      <TrendingUp className="w-3.5 h-3.5" /> +{t.velocity}% / 48h
+                    </span>
+                    <span className="mono text-[10px] text-[#7c729f]">score {t.score}</span>
                   </div>
-                  <button onClick={() => toggleWatch(t.id)} className="shrink-0">
-                    <Star className={`w-4 h-4 ${watched ? "fill-[#b276ff] text-[#b276ff]" : "text-[#6b5589]"}`} />
-                  </button>
+                  <p className="mono text-[10px] text-[#4a4270] mt-1.5">first seen {t.firstSeen ?? "recently"}h ago</p>
                 </div>
-                <Sparkline data={t.spark} />
-                <div className="flex items-center justify-between mt-2">
-                  <span className="flex items-center gap-1 text-[#b276ff] mono text-xs">
-                    <TrendingUp className="w-3.5 h-3.5" /> +{t.velocity}% / 48h
-                  </span>
-                  <span className="mono text-[10px] text-[#9a7ec4]">score {t.score}</span>
-                </div>
-                <p className="mono text-[10px] text-[#6b5589] mt-1">first seen {t.firstSeen ?? "recently"}h ago</p>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
         )}
       </section>
 
       {/* PRICING */}
-      <section id="pricing" className="max-w-6xl mx-auto px-6 pb-20">
-        <h2 className="display text-2xl font-bold mb-2">Plans</h2>
-        <p className="body-f text-[#bda8dc] mb-8 text-sm">Unlock every signal and get alerted the moment it moves.</p>
-        <div className="grid md:grid-cols-3 gap-4">
+      <section id="pricing" className="max-w-6xl mx-auto px-6 pb-24">
+        <p className="mono text-[11px] tracking-widest text-[#7c5cff] mb-3">PLANS</p>
+        <h2 className="display text-2xl md:text-3xl font-bold mb-2">Unlock every signal.</h2>
+        <p className="body-f text-[#a99fd4] mb-10 text-sm">Get alerted the moment it moves — cancel anytime.</p>
+        <div className="grid md:grid-cols-3 gap-5">
           {[
             { id: "free", name: "Free", price: "$0", period: "", features: ["3 trends free per persona, forever", "24h delayed data", "No alerts"] },
             { id: "pro", name: "Pro", price: "$29", period: "/mo", features: ["All trends, live", "Push alerts on new signals", "Watchlist & history", "Every category unlocked"], highlight: true },
@@ -469,22 +626,25 @@ export default function TrendRadar() {
             <div
               key={plan.id}
               onClick={() => setTier(plan.id)}
-              className={`cursor-pointer rounded-xl border p-6 transition relative ${
-                tier === plan.id ? "border-[#b276ff] bg-[#1e1530]" : "border-[#2a1f42] bg-[#150e22] hover:border-[#3f2d5e]"
+              className={`cursor-pointer rounded-2xl p-7 transition relative ${
+                tier === plan.id
+                  ? "border border-[#7c5cff] bg-gradient-to-b from-[#1c1440] to-[#130f26] shadow-[0_0_40px_rgba(124,92,255,0.15)]"
+                  : "glass hover:border-[#7c5cff]/30"
               }`}
             >
               {plan.highlight && (
-                <span className="absolute -top-2.5 left-6 bg-[#b276ff] text-[#0a0714] text-[10px] font-bold px-2 py-0.5 rounded-full mono">MOST POPULAR</span>
+                <span className="absolute -top-3 left-7 bg-gradient-to-r from-[#8b6bff] to-[#6941e8] text-white text-[10px] font-bold px-2.5 py-1 rounded-full mono tracking-wide">
+                  MOST POPULAR
+                </span>
               )}
               <p className="display font-bold text-lg">{plan.name}</p>
-              <p className="mono text-2xl font-bold text-[#b276ff] my-2">
-                {plan.price}<span className="text-sm text-[#9a7ec4]">{plan.period}</span>
-                {plan.originalPrice && <span className="text-sm text-[#6b5589] line-through ml-2">{plan.originalPrice}{plan.period}</span>}
+              <p className="mono text-[2rem] font-bold text-[#c9bfff] my-3">
+                {plan.price}<span className="text-sm text-[#7c729f]">{plan.period}</span>
               </p>
-              <ul className="space-y-1.5 mt-4">
+              <ul className="space-y-2 mt-5">
                 {plan.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2 text-sm body-f text-[#bda8dc]">
-                    <Check className="w-3.5 h-3.5 text-[#b276ff] mt-0.5 shrink-0" /> {f}
+                  <li key={f} className="flex items-start gap-2 text-sm body-f text-[#b3a9d9]">
+                    <Check className="w-3.5 h-3.5 text-[#7c5cff] mt-0.5 shrink-0" /> {f}
                   </li>
                 ))}
               </ul>
@@ -507,9 +667,12 @@ export default function TrendRadar() {
                     alert("Could not reach checkout. Please try again.");
                   }
                 }}
-                className={`mt-5 w-full py-2.5 rounded-lg text-sm font-semibold transition ${
-                tier === plan.id ? "bg-[#b276ff] text-[#0a0714]" : "bg-[#2a1f42] text-[#f1e9fb] hover:bg-[#3f2d5e]"
-              }`}>
+                className={`mt-6 w-full py-3 rounded-xl text-sm font-semibold transition ${
+                  tier === plan.id
+                    ? "bg-gradient-to-r from-[#8b6bff] to-[#6941e8] text-white shadow-lg hover:shadow-[0_0_25px_rgba(124,92,255,0.4)]"
+                    : "bg-[#1c1633] text-[#f2eefa] hover:bg-[#231b45]"
+                }`}
+              >
                 {plan.id === "free" ? "Get started" : "Choose plan"}
               </button>
             </div>
@@ -517,13 +680,17 @@ export default function TrendRadar() {
         </div>
       </section>
 
-      <footer className="border-t border-[#2a1f42] py-8 text-center">
-        <div className="flex items-center justify-center gap-4 mono text-[11px] text-[#9a7ec4]">
-          <a href="/privacy.html" className="hover:text-[#b276ff] transition">Privacy Policy</a>
-          <span className="text-[#3f2d5e]">·</span>
-          <a href="/terms.html" className="hover:text-[#b276ff] transition">Terms of Service</a>
+      <footer className="border-t border-[#1c1633] py-10 text-center">
+        <div className="flex items-center justify-center gap-2 mb-4">
+          <Radar className="w-4 h-4 text-[#7c5cff]" />
+          <span className="display font-bold text-sm tracking-tight">TREND/RADAR</span>
         </div>
-        <p className="mono text-[10px] text-[#6b5589] mt-3">© {new Date().getFullYear()} Trend Radar. All rights reserved.</p>
+        <div className="flex items-center justify-center gap-4 mono text-[11px] text-[#7c729f]">
+          <a href="/privacy.html" className="hover:text-[#c9bfff] transition">Privacy Policy</a>
+          <span className="text-[#2a2150]">·</span>
+          <a href="/terms.html" className="hover:text-[#c9bfff] transition">Terms of Service</a>
+        </div>
+        <p className="mono text-[10px] text-[#4a4270] mt-4">© {new Date().getFullYear()} Trend Radar. All rights reserved.</p>
       </footer>
     </div>
   );
