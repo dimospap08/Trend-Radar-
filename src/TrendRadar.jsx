@@ -1,9 +1,19 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
+import { createClient } from "@supabase/supabase-js";
 import {
   Radar, TrendingUp, Star, Users, ShoppingBag, Coins, Video,
   Check, Activity, Bell, ArrowRight, Gauge, Sparkles, Lock,
   ShieldCheck, Zap, Clock, Music2, Hash, Layers, Palette, MessageSquare,
+  Mail, LogOut, User as UserIcon,
 } from "lucide-react";
+
+/* =========================================================
+   SUPABASE (auth + trial)
+   ========================================================= */
+const SUPABASE_URL = "https://kxxedfhxmcakfxmtneeq.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_PPIszEpxdZDsv2nqLQgL1Q_V5FOX-Qp";
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const TRIAL_DAYS = 3;
 
 /* =========================================================
    MOCK SIGNAL ENGINE (fallback preview data before live data loads)
@@ -246,7 +256,6 @@ function RadarCore() {
         />
       </div>
 
-      {/* Floating marketing mockup card — illustrated, not a photo */}
       <div className="hidden md:block absolute -left-6 top-6 w-40 glass rounded-xl p-3 shadow-2xl rotate-[-8deg] hover:rotate-0 transition-transform duration-300">
         <div className="flex items-center gap-1.5 mb-2">
           <span className="w-1.5 h-1.5 rounded-full bg-[#f5b83d]" />
@@ -295,7 +304,6 @@ function GrainOverlay() {
   );
 }
 
-/* ---------- Illustrated category showcase (marketing visuals, no stock photos) ---------- */
 const CATEGORY_VISUALS = [
   { key: "Sound", icon: Music2, color: "#7c5cff", desc: "Audio & remix trends before they're everywhere" },
   { key: "Hashtag", icon: Hash, color: "#f5b83d", desc: "Tags accelerating across every platform" },
@@ -313,15 +321,74 @@ function CategoryOrb({ icon: Icon, color, label, desc }) {
         className="w-12 h-12 rounded-xl flex items-center justify-center relative"
         style={{ background: `linear-gradient(135deg, ${color}33, ${color}0d)`, border: `1px solid ${color}55` }}
       >
-        <div
-          className="absolute inset-0 rounded-xl blur-lg opacity-0 group-hover:opacity-60 transition-opacity"
-          style={{ background: color }}
-        />
+        <div className="absolute inset-0 rounded-xl blur-lg opacity-0 group-hover:opacity-60 transition-opacity" style={{ background: color }} />
         <Icon className="w-5 h-5 relative" style={{ color }} />
       </div>
       <div>
         <p className="display font-semibold text-sm mb-1">{label}</p>
         <p className="body-f text-xs text-[#a99fd4] leading-relaxed">{desc}</p>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- Auth: sign-in modal ---------- */
+function SignInModal({ onClose }) {
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState("idle"); // idle | sending | sent | error
+
+  const handleSend = async (e) => {
+    e.preventDefault();
+    if (!email) return;
+    setStatus("sending");
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: window.location.origin },
+    });
+    setStatus(error ? "error" : "sent");
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-[#060512]/80 backdrop-blur-sm" onClick={onClose}>
+      <div className="glass rounded-2xl p-7 w-full max-w-sm" onClick={(e) => e.stopPropagation()}>
+        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#8b6bff]/20 to-[#6941e8]/20 border border-[#7c5cff]/30 flex items-center justify-center mb-4">
+          <Mail className="w-4.5 h-4.5 text-[#a98bff]" />
+        </div>
+        <p className="display font-bold text-lg mb-1.5">Sign in to Trend Radar</p>
+        <p className="body-f text-sm text-[#a99fd4] mb-5">
+          Get a 3-day free trial with full access. No password needed — we'll email you a magic link.
+        </p>
+        {status === "sent" ? (
+          <div className="rounded-xl border border-[#7c5cff]/30 bg-[#160f2e] p-4">
+            <p className="body-f text-sm text-[#c9bfff]">
+              Check <span className="font-semibold">{email}</span> for your sign-in link.
+            </p>
+          </div>
+        ) : (
+          <form onSubmit={handleSend} className="space-y-3">
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              className="w-full bg-[#0f0d1f] border border-[#241c40] rounded-xl px-4 py-3 text-sm body-f text-[#f2eefa] placeholder:text-[#4a4270] outline-none focus:border-[#7c5cff] transition"
+            />
+            <button
+              type="submit"
+              disabled={status === "sending"}
+              className="w-full bg-gradient-to-r from-[#8b6bff] to-[#6941e8] text-white py-3 rounded-xl text-sm font-semibold hover:shadow-[0_0_25px_rgba(124,92,255,0.4)] transition disabled:opacity-50"
+            >
+              {status === "sending" ? "Sending..." : "Send magic link"}
+            </button>
+            {status === "error" && (
+              <p className="mono text-xs text-[#ff8a8a]">Something went wrong — please try again.</p>
+            )}
+          </form>
+        )}
+        <button onClick={onClose} className="mt-4 w-full text-center mono text-xs text-[#655a92] hover:text-[#a99fd4] transition">
+          Close
+        </button>
       </div>
     </div>
   );
@@ -333,14 +400,49 @@ function CategoryOrb({ icon: Icon, color, label, desc }) {
 export default function TrendRadar() {
   const [persona, setPersona] = useState("creator");
   const [watchlist, setWatchlist] = useState(new Set());
-  const [tier, setTier] = useState("pro");
   const [liveTrends, setLiveTrends] = useState(null);
   const [checkingLive, setCheckingLive] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
+  // Auth + trial state
+  const [session, setSession] = useState(null);
+  const [showSignIn, setShowSignIn] = useState(false);
+  const [trialStartedAt, setTrialStartedAt] = useState(null);
+  const [hasActiveSub, setHasActiveSub] = useState(false);
+  const [profileLoaded, setProfileLoaded] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setSession(data.session));
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => setSession(s));
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (!session?.user) { setProfileLoaded(true); return; }
+    let cancelled = false;
+    (async () => {
+      const { data: userRow } = await supabase
+        .from("users")
+        .select("trial_started_at")
+        .eq("id", session.user.id)
+        .maybeSingle();
+      const { data: subRow } = await supabase
+        .from("subscriptions")
+        .select("status")
+        .eq("user_id", session.user.id)
+        .eq("status", "active")
+        .maybeSingle();
+      if (cancelled) return;
+      setTrialStartedAt(userRow?.trial_started_at ?? session.user.created_at);
+      setHasActiveSub(!!subRow);
+      setProfileLoaded(true);
+    })();
+    return () => { cancelled = true; };
+  }, [session]);
+
   useEffect(() => {
     let cancelled = false;
-    fetch(`${API_BASE}/api/trends?persona=${persona}&tier=${tier}`)
+    fetch(`${API_BASE}/api/trends?persona=${persona}&tier=pro`)
       .then((r) => r.json())
       .then((data) => {
         if (cancelled) return;
@@ -350,7 +452,7 @@ export default function TrendRadar() {
       .catch(() => { if (!cancelled) setLiveTrends(null); })
       .finally(() => { if (!cancelled) setCheckingLive(false); });
     return () => { cancelled = true; };
-  }, [persona, tier]);
+  }, [persona]);
 
   useEffect(() => {
     try {
@@ -370,23 +472,54 @@ export default function TrendRadar() {
 
   const categories = CATEGORY_BY_PERSONA[persona];
   const visibleTrends = liveTrends ?? ALL_TRENDS.filter((t) => categories.includes(t.category));
-  const freeLimit = 3;
   const activePersona = PERSONAS.find((p) => p.id === persona);
 
   const handleRefresh = async () => {
     setRefreshing(true);
     try {
       await fetch(`${API_BASE}/api/trends/refresh`, { method: "POST" });
-      const r = await fetch(`${API_BASE}/api/trends?persona=${persona}&tier=${tier}`);
+      const r = await fetch(`${API_BASE}/api/trends?persona=${persona}&tier=pro`);
       const data = await r.json();
       if (data?.trends?.length > 0) setLiveTrends(data.trends.map(normalizeTrend));
-    } catch (e) { /* backend unreachable — keep current view */ }
+    } catch (e) { /* backend unreachable */ }
     finally { setRefreshing(false); }
+  };
+
+  const handleSignOut = async () => { await supabase.auth.signOut(); };
+
+  const daysUsed = trialStartedAt
+    ? Math.floor((Date.now() - new Date(trialStartedAt).getTime()) / 86400000)
+    : 0;
+  const trialDaysLeft = Math.max(0, TRIAL_DAYS - daysUsed);
+  const trialActive = trialDaysLeft > 0;
+  const isLoggedIn = !!session?.user;
+  const hasFullAccess = isLoggedIn && (trialActive || hasActiveSub);
+  const trialExpiredNoSub = isLoggedIn && profileLoaded && !trialActive && !hasActiveSub;
+
+  // Anonymous / not-yet-trialed visitors see a capped preview; expired trial sees nothing.
+  const freeLimit = trialExpiredNoSub ? 0 : hasFullAccess ? Infinity : 3;
+
+  const startCheckout = async (planId) => {
+    const email = session?.user?.email || window.prompt("Enter your email to continue to checkout:");
+    if (!email) return;
+    try {
+      const res = await fetch(`${API_BASE}/api/billing/checkout`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: session?.user?.id || email, email, tier: planId }),
+      });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+      else alert("Checkout failed to start. Please try again.");
+    } catch (err) {
+      alert("Could not reach checkout. Please try again.");
+    }
   };
 
   return (
     <div className="min-h-screen bg-[#060512] text-[#f2eefa] relative">
       <GrainOverlay />
+      {showSignIn && <SignInModal onClose={() => setShowSignIn(false)} />}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
         .display { font-family: 'Unbounded', sans-serif; }
@@ -424,6 +557,29 @@ export default function TrendRadar() {
               <Activity className={`w-3.5 h-3.5 ${refreshing ? "animate-spin" : ""}`} />
               {refreshing ? "Scanning..." : "Refresh"}
             </button>
+            {isLoggedIn ? (
+              <div className="flex items-center gap-2">
+                {hasActiveSub ? (
+                  <span className="hidden sm:flex mono text-[10px] text-[#7cffb0] bg-[#0f2a1c] border border-[#2a5540] rounded-full px-2.5 py-1">PRO</span>
+                ) : trialActive ? (
+                  <span className="hidden sm:flex mono text-[10px] text-[#c9bfff] bg-[#160f2e] border border-[#7c5cff]/40 rounded-full px-2.5 py-1">
+                    {trialDaysLeft}d trial left
+                  </span>
+                ) : (
+                  <span className="hidden sm:flex mono text-[10px] text-[#f5b83d] bg-[#2a2010] border border-[#5a4a20] rounded-full px-2.5 py-1">Trial ended</span>
+                )}
+                <button onClick={handleSignOut} className="w-8 h-8 rounded-full bg-[#130f26] border border-[#231b45] flex items-center justify-center hover:border-[#7c5cff] transition">
+                  <LogOut className="w-3.5 h-3.5 text-[#a99fd4]" />
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setShowSignIn(true)}
+                className="flex items-center gap-1.5 bg-gradient-to-r from-[#8b6bff] to-[#6941e8] text-white px-4 py-1.5 rounded-full text-[11px] mono font-medium hover:shadow-[0_0_20px_rgba(124,92,255,0.35)] transition"
+              >
+                <UserIcon className="w-3.5 h-3.5" /> Sign in
+              </button>
+            )}
           </div>
         </div>
       </header>
@@ -465,12 +621,21 @@ export default function TrendRadar() {
             })}
           </div>
           <p className="mono text-[11px] text-[#655a92] mb-8">{activePersona.tag}</p>
-          <a
-            href="#pricing"
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-[#8b6bff] to-[#6941e8] text-white px-6 py-3.5 rounded-xl font-semibold text-sm hover:shadow-[0_0_30px_rgba(124,92,255,0.45)] transition shadow-lg"
-          >
-            Start free <ArrowRight className="w-4 h-4" />
-          </a>
+          {!isLoggedIn ? (
+            <button
+              onClick={() => setShowSignIn(true)}
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-[#8b6bff] to-[#6941e8] text-white px-6 py-3.5 rounded-xl font-semibold text-sm hover:shadow-[0_0_30px_rgba(124,92,255,0.45)] transition shadow-lg"
+            >
+              Start 3-day free trial <ArrowRight className="w-4 h-4" />
+            </button>
+          ) : (
+            <a
+              href="#pricing"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-[#8b6bff] to-[#6941e8] text-white px-6 py-3.5 rounded-xl font-semibold text-sm hover:shadow-[0_0_30px_rgba(124,92,255,0.45)] transition shadow-lg"
+            >
+              {hasActiveSub ? "Manage plan" : "View plans"} <ArrowRight className="w-4 h-4" />
+            </a>
+          )}
         </div>
         <RadarCore />
       </section>
@@ -502,7 +667,7 @@ export default function TrendRadar() {
 
       <SignalTicker />
 
-      {/* CATEGORIES — illustrated marketing showcase */}
+      {/* CATEGORIES */}
       <section id="categories" className="max-w-6xl mx-auto px-6 py-20">
         <p className="mono text-[11px] tracking-widest text-[#7c5cff] mb-3">COVERAGE</p>
         <h2 className="display text-2xl md:text-3xl font-bold mb-10">Seven signal types, scanned continuously.</h2>
@@ -560,7 +725,18 @@ export default function TrendRadar() {
           <span className="mono text-xs text-[#655a92]">sorted by trend score</span>
         </div>
 
-        {checkingLive ? (
+        {trialExpiredNoSub ? (
+          <div className="glass rounded-2xl p-10 text-center">
+            <Lock className="w-5 h-5 text-[#a98bff] mx-auto mb-3" />
+            <p className="display font-semibold mb-2">Your 3-day trial has ended</p>
+            <p className="body-f text-sm text-[#a99fd4] mb-5 max-w-sm mx-auto">
+              Pick a plan below to keep tracking live signals — cancel anytime.
+            </p>
+            <a href="#pricing" className="inline-flex items-center gap-2 bg-gradient-to-r from-[#8b6bff] to-[#6941e8] text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:shadow-[0_0_25px_rgba(124,92,255,0.4)] transition">
+              View plans <ArrowRight className="w-3.5 h-3.5" />
+            </a>
+          </div>
+        ) : checkingLive ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="glass rounded-2xl p-5 h-[156px] animate-pulse">
@@ -578,14 +754,16 @@ export default function TrendRadar() {
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
             {visibleTrends.map((t, idx) => {
-              const locked = tier === "free" && idx >= freeLimit;
+              const locked = idx >= freeLimit;
               const watched = watchlist.has(t.id);
               return (
                 <div key={t.id} className="relative glass rounded-2xl p-5 overflow-hidden hover:border-[#7c5cff]/40 hover:-translate-y-0.5 transition-all duration-200">
                   {locked && (
-                    <div className="absolute inset-0 bg-[#060512]/92 backdrop-blur-sm flex flex-col items-center justify-center gap-2 z-10">
+                    <div className="absolute inset-0 bg-[#060512]/92 backdrop-blur-sm flex flex-col items-center justify-center gap-2 z-10 px-3 text-center">
                       <Lock className="w-4 h-4 text-[#a98bff]" />
-                      <span className="mono text-xs text-[#a99fd4]">Pro signal</span>
+                      <span className="mono text-xs text-[#a99fd4]">
+                        {isLoggedIn ? "Upgrade to unlock" : "Sign in for free trial"}
+                      </span>
                     </div>
                   )}
                   <div className="flex items-start justify-between mb-2.5">
@@ -616,20 +794,20 @@ export default function TrendRadar() {
       <section id="pricing" className="max-w-6xl mx-auto px-6 pb-24">
         <p className="mono text-[11px] tracking-widest text-[#7c5cff] mb-3">PLANS</p>
         <h2 className="display text-2xl md:text-3xl font-bold mb-2">Unlock every signal.</h2>
-        <p className="body-f text-[#a99fd4] mb-10 text-sm">Get alerted the moment it moves — cancel anytime.</p>
-        <div className="grid md:grid-cols-3 gap-5">
+        <p className="body-f text-[#a99fd4] mb-10 text-sm">
+          Every plan starts with a 3-day free trial — cancel anytime, no charge if you cancel before it ends.
+        </p>
+        <div className="grid md:grid-cols-2 gap-5 max-w-3xl">
           {[
-            { id: "free", name: "Free", price: "$0", period: "", features: ["3 trends free per persona, forever", "24h delayed data", "No alerts"] },
             { id: "pro", name: "Pro", price: "$29", period: "/mo", features: ["All trends, live", "Push alerts on new signals", "Watchlist & history", "Every category unlocked"], highlight: true },
             { id: "investor", name: "Signal+", price: "$99", period: "/mo", features: ["Everything in Pro", "On-chain meme-coin scanner", "API access", "Priority on new signal types"] },
           ].map((plan) => (
             <div
               key={plan.id}
-              onClick={() => setTier(plan.id)}
-              className={`cursor-pointer rounded-2xl p-7 transition relative ${
-                tier === plan.id
+              className={`rounded-2xl p-7 relative ${
+                plan.highlight
                   ? "border border-[#7c5cff] bg-gradient-to-b from-[#1c1440] to-[#130f26] shadow-[0_0_40px_rgba(124,92,255,0.15)]"
-                  : "glass hover:border-[#7c5cff]/30"
+                  : "glass"
               }`}
             >
               {plan.highlight && (
@@ -649,31 +827,13 @@ export default function TrendRadar() {
                 ))}
               </ul>
               <button
-                onClick={async (e) => {
-                  e.stopPropagation();
-                  if (plan.id === "free") { setTier("free"); return; }
-                  const email = window.prompt("Enter your email to continue to checkout:");
-                  if (!email) return;
-                  try {
-                    const res = await fetch(`${API_BASE}/api/billing/checkout`, {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ user_id: email, email, tier: plan.id }),
-                    });
-                    const data = await res.json();
-                    if (data.url) window.location.href = data.url;
-                    else alert("Checkout failed to start. Please try again.");
-                  } catch (err) {
-                    alert("Could not reach checkout. Please try again.");
-                  }
+                onClick={() => {
+                  if (!isLoggedIn) { setShowSignIn(true); return; }
+                  startCheckout(plan.id);
                 }}
-                className={`mt-6 w-full py-3 rounded-xl text-sm font-semibold transition ${
-                  tier === plan.id
-                    ? "bg-gradient-to-r from-[#8b6bff] to-[#6941e8] text-white shadow-lg hover:shadow-[0_0_25px_rgba(124,92,255,0.4)]"
-                    : "bg-[#1c1633] text-[#f2eefa] hover:bg-[#231b45]"
-                }`}
+                className="mt-6 w-full py-3 rounded-xl text-sm font-semibold transition bg-gradient-to-r from-[#8b6bff] to-[#6941e8] text-white shadow-lg hover:shadow-[0_0_25px_rgba(124,92,255,0.4)]"
               >
-                {plan.id === "free" ? "Get started" : "Choose plan"}
+                {isLoggedIn ? "Choose plan" : "Start free trial"}
               </button>
             </div>
           ))}
