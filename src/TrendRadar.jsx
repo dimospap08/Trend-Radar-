@@ -409,6 +409,7 @@ export default function TrendRadar() {
   const [showSignIn, setShowSignIn] = useState(false);
   const [trialStartedAt, setTrialStartedAt] = useState(null);
   const [hasActiveSub, setHasActiveSub] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState(null);
   const [profileLoaded, setProfileLoaded] = useState(false);
 
   useEffect(() => {
@@ -423,7 +424,7 @@ export default function TrendRadar() {
     (async () => {
       const { data: userRow } = await supabase
         .from("users")
-        .select("trial_started_at")
+        .select("trial_started_at, selected_plan")
         .eq("id", session.user.id)
         .maybeSingle();
       const { data: subRow } = await supabase
@@ -434,6 +435,7 @@ export default function TrendRadar() {
         .maybeSingle();
       if (cancelled) return;
       setTrialStartedAt(userRow?.trial_started_at ?? session.user.created_at);
+      setSelectedPlan(userRow?.selected_plan ?? null);
       setHasActiveSub(!!subRow);
       setProfileLoaded(true);
     })();
@@ -493,6 +495,12 @@ export default function TrendRadar() {
   const trialDaysLeft = Math.max(0, TRIAL_DAYS - daysUsed);
   const trialActive = trialDaysLeft > 0;
   const isLoggedIn = !!session?.user;
+  const choosePlan = async (planId) => {
+    if (!session?.user) { setShowSignIn(true); return; }
+    const { error } = await supabase.from("users").update({ selected_plan: planId }).eq("id", session.user.id);
+    if (!error) setSelectedPlan(planId);
+    else alert("Could not save your plan selection. Please try again.");
+  };
   const hasFullAccess = isLoggedIn && (trialActive || hasActiveSub);
   const trialExpiredNoSub = isLoggedIn && profileLoaded && !trialActive && !hasActiveSub;
 
@@ -725,7 +733,25 @@ export default function TrendRadar() {
           <span className="mono text-xs text-[#655a92]">sorted by trend score</span>
         </div>
 
-        {trialExpiredNoSub ? (
+        {!isLoggedIn ? (
+          <div className="glass rounded-2xl p-10 text-center">
+            <Lock className="w-5 h-5 text-[#a98bff] mx-auto mb-3" />
+            <p className="display font-semibold mb-2">Sign in to see live trends</p>
+            <p className="body-f text-sm text-[#a99fd4] mb-5">Create an account to start your 3-day free trial.</p>
+            <button onClick={() => setShowSignIn(true)} className="inline-flex items-center gap-2 bg-gradient-to-r from-[#8b6bff] to-[#6941e8] text-white px-5 py-2.5 rounded-xl text-sm font-semibold">Sign in</button>
+          </div>
+        ) : !profileLoaded ? (
+          <div className="glass rounded-2xl p-10 text-center animate-pulse"><p className="body-f text-sm text-[#a99fd4]">Loading your access…</p></div>
+        ) : !selectedPlan ? (
+          <div className="glass rounded-2xl p-8 text-center">
+            <p className="display font-semibold mb-2">Choose your plan to continue</p>
+            <p className="body-f text-sm text-[#a99fd4] mb-5">Start your 3-day free trial. You can cancel anytime.</p>
+            <div className="flex flex-wrap justify-center gap-3">
+              <button onClick={() => choosePlan("pro")} className="bg-gradient-to-r from-[#8b6bff] to-[#6941e8] text-white px-5 py-2.5 rounded-xl text-sm font-semibold">Start Pro trial</button>
+              <button onClick={() => choosePlan("investor")} className="border border-[#7c5cff]/50 text-[#c9bfff] px-5 py-2.5 rounded-xl text-sm font-semibold">Start Signal+ trial</button>
+            </div>
+          </div>
+        ) : trialExpiredNoSub ? (
           <div className="glass rounded-2xl p-10 text-center">
             <Lock className="w-5 h-5 text-[#a98bff] mx-auto mb-3" />
             <p className="display font-semibold mb-2">Your 3-day trial has ended</p>
