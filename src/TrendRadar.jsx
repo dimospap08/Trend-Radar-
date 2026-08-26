@@ -329,6 +329,7 @@ const TREND_COPY = {
   Narrative: "A cultural conversation building across communities and media channels.",
 };
 const CATEGORY_EMOJI = { Sound: "🎵", Hashtag: "#️⃣", Format: "🎬", Product: "🛍️", Aesthetic: "✨", Coin: "🪙", Narrative: "💬" };
+const TREND_ACTION = { Sound: "Use this audio in your next 1–2 posts.", Hashtag: "Add it only where it fits your content angle.", Format: "Adapt this format before it becomes saturated.", Product: "Validate demand before competitors catch up.", Aesthetic: "Build your next creative around this visual direction.", Coin: "Watch momentum and risk before taking action.", Narrative: "Create content around the conversation while it is early." };
 
 const PREVIEW_SIGNALS = [
   { category: "TikTok Sound", name: "Trending audio signal", score: 92, velocity: "+743%", color: "#35d07f" },
@@ -870,6 +871,7 @@ export default function TrendRadar() {
               const watched = watchlist.has(t.id);
               return (
                 <div key={t.id} onClick={() => setSelectedTrend(t)} role="button" tabIndex={0} onKeyDown={(event) => event.key === "Enter" && setSelectedTrend(t)} className="relative rounded-2xl border border-[#7c5cff]/15 bg-[#130f26]/60 p-4 overflow-hidden cursor-pointer hover:border-[#7c5cff]/60 hover:-translate-y-0.5 hover:shadow-[0_12px_28px_rgba(66,45,150,.22)] transition-all duration-200">
+                  <div className="h-16 -mx-4 -mt-4 mb-3 flex items-end justify-between px-4 pb-3 relative overflow-hidden" style={{background:`linear-gradient(120deg, ${categoryInfo?.color}35, transparent 68%)`}}><div className="absolute -right-3 -top-8 text-[86px] opacity-20 rotate-12">{t.emoji || CATEGORY_EMOJI[t.category] || "📡"}</div><span className={`relative z-10 mono text-[9px] font-bold tracking-widest ${t.score >= 60 ? "text-[#35d07f]" : t.score >= 30 ? "text-[#f5b83d]" : "text-[#ff6b6b]"}`}>{t.score >= 60 ? "● BREAKING" : t.score >= 30 ? "↗ RISING" : "○ COOLING"}</span><span className="relative z-10 mono text-[9px] text-[#a99fd4]">OPEN SIGNAL →</span></div>
                   {locked && (
                     <div className="absolute inset-0 bg-[#060512]/92 backdrop-blur-sm flex flex-col items-center justify-center gap-2 z-10 px-3 text-center">
                       <Lock className="w-4 h-4 text-[#a98bff]" />
@@ -888,7 +890,8 @@ export default function TrendRadar() {
                     </button>
                   </div>
                   <Sparkline data={t.spark} />
-                  <p className="body-f text-[10px] leading-relaxed text-[#7c729f] mt-1.5">{t.description || TREND_COPY[t.category] || "A live signal detected by Trend Radar."}</p>
+                  <p className="body-f text-[10px] leading-relaxed text-[#7c729f] mt-1.5"><span className="font-semibold text-[#a99fd4]">Why it matters: </span>{t.description || TREND_COPY[t.category] || "A live signal detected by Trend Radar."}</p>
+                  <p className="body-f text-[10px] leading-relaxed text-[#a98bff] mt-1"><span className="font-semibold">Do this: </span>{TREND_ACTION[t.category] || "Move early while the signal is gaining momentum."}</p>
                   <div className="flex items-center justify-between mt-1">
                     <span className={`flex items-center gap-1 mono text-[10px] font-bold ${t.score >= 60 ? "text-[#35d07f]" : t.score >= 30 ? "text-[#f5b83d]" : "text-[#ff6b6b]"}`}>
                       <TrendingUp className="w-3 h-3" /> +{t.velocity}%
