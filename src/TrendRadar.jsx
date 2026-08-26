@@ -579,6 +579,8 @@ export default function TrendRadar() {
         .theme-light [class*="bg-[#060512]/92"] { background-color: rgba(255,255,255,.94); }
         .theme-light .theme-ticker { background: #d9efff; border-color: #bcdcf2; }
         .theme-light .theme-ticker > div { color: #28577f !important; font-weight: 600; }
+        .theme-light .theme-stats { background: rgba(220,240,255,.78); border-color: #c3dff2; }
+        .theme-light h1 span { color: #5570d8; background: none; -webkit-text-fill-color: #5570d8; }
         .theme-light p, .theme-light span, .theme-light a, .theme-light button { font-weight: 500; }
         .theme-light p.display, .theme-light h1, .theme-light h2, .theme-light h3 { font-weight: 800; }
         .nav-link { display: inline-flex; align-items: center; padding: 8px 10px; border-radius: 9px; transition: color .2s ease, background .2s ease, transform .2s ease; }
@@ -697,7 +699,7 @@ export default function TrendRadar() {
       </section>
 
       {/* TRUST BAR */}
-      <section className="border-y border-[#1c1633] bg-[#0a0817]/60">
+      <section className="theme-stats border-y border-[#1c1633] bg-[#0a0817]/60">
         <div className="max-w-6xl mx-auto px-6 py-6 grid grid-cols-2 md:grid-cols-4 gap-6">
           {[
             { icon: Activity, value: "Hourly", label: "Signal refresh cycle" },
