@@ -285,7 +285,7 @@ function SignalTicker() {
   const items = useMemo(() => ALL_TRENDS.slice(0, 14), []);
   const line = items.map((t) => `${t.name} +${t.velocity}%`).join("   //   ");
   return (
-    <div className="border-y border-[#1c1633] bg-[#0b0918]/80 overflow-hidden py-2.5">
+    <div className="theme-ticker border-y border-[#1c1633] bg-[#0b0918]/80 overflow-hidden py-2.5">
       <div className="whitespace-nowrap mono text-[11px] tracking-wide text-[#8a7fc0] animate-[ticker_40s_linear_infinite]">
         {line} // {line}
       </div>
@@ -535,7 +535,7 @@ export default function TrendRadar() {
   };
 
   return (
-    <div className={`min-h-screen ${lightMode ? "theme-light" : "bg-[#060512] text-[#f2eefa]"} relative`}>
+    <div className={`min-h-screen ${lightMode ? "theme-light" : "theme-dark"} relative`}>
       <GrainOverlay />
       {showSignIn && <SignInModal onClose={() => setShowSignIn(false)} />}
       {!isLoggedIn && <a href="#pricing" className="md:hidden fixed bottom-4 left-4 right-4 z-20 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#8b6bff] to-[#6941e8] py-3.5 text-sm font-bold text-white shadow-[0_8px_30px_rgba(70,45,180,.45)]">Start 3-day free trial <ArrowRight className="w-4 h-4" /></a>}
@@ -550,7 +550,8 @@ export default function TrendRadar() {
           backdrop-filter: blur(14px);
           border: 1px solid rgba(124,92,255,0.14);
         }
-        .theme-light { background: radial-gradient(circle at 50% -15%, #ffffff 0%, #f8f7fc 42%, #efedf8 100%); color: #171329; }
+        .theme-dark { background: radial-gradient(circle at 72% 12%, #101b4a 0%, #080b24 34%, #060512 78%); color: #f2f5ff; }
+        .theme-light { background: radial-gradient(circle at 50% -15%, #ffffff 0%, #fafaff 48%, #f1f3fb 100%); color: #171329; }
         .theme-light .glass { background: rgba(255,255,255,.94); border-color: #e4e0f0; box-shadow: 0 14px 36px rgba(47,35,92,.08); }
         .theme-light .body-f, .theme-light .mono { color: #514a6d; }
         .theme-light header { background: rgba(250,249,253,.92); border-color: #ded9ef; }
@@ -576,6 +577,10 @@ export default function TrendRadar() {
         .theme-light [class*="bg-[#0f2a1c"] { background-color: #e6f8ee; }
         .theme-light [class*="bg-[#2a2010"] { background-color: #fff5d9; }
         .theme-light [class*="bg-[#060512]/92"] { background-color: rgba(255,255,255,.94); }
+        .theme-light .theme-ticker { background: #f0f2fa; border-color: #e0e4f2; }
+        .theme-light .theme-ticker > div { color: #514a78 !important; font-weight: 600; }
+        .theme-light p, .theme-light span, .theme-light a, .theme-light button { font-weight: 500; }
+        .theme-light p.display, .theme-light h1, .theme-light h2, .theme-light h3 { font-weight: 800; }
       `}</style>
 
       {/* NAV */}
