@@ -551,10 +551,10 @@ export default function TrendRadar() {
           border: 1px solid rgba(124,92,255,0.14);
         }
         .theme-dark { background: radial-gradient(circle at 72% 12%, #101b4a 0%, #080b24 34%, #060512 78%); color: #f2f5ff; }
-        .theme-light { background: linear-gradient(135deg, #eaf7ff 0%, #f5fbff 48%, #eef4ff 100%); color: #10213f; }
-        .theme-light .glass { background: rgba(255,255,255,.88); border-color: #cfe2f5; box-shadow: 0 14px 36px rgba(42,104,160,.10); }
+        .theme-light { background: #dff3ff; color: #10213f; }
+        .theme-light .glass { background: rgba(239,250,255,.92); border-color: #b7dff2; box-shadow: 0 14px 36px rgba(42,104,160,.10); }
         .theme-light .body-f, .theme-light .mono { color: #405875; }
-        .theme-light header { background: rgba(239,249,255,.94); border-color: #cfe2f5; }
+        .theme-light header { background: #c9eaff; border-color: #a9d5ed; }
         .theme-light .theme-muted { color: #716b86 !important; }
         .theme-light input { background: #fff; color: #171329; border-color: #d9d3ec; }
         .theme-light [class*="bg-[#130f26"] { background-color: #f1eff8; }
@@ -562,7 +562,7 @@ export default function TrendRadar() {
         .theme-light [class*="text-[#a99fd4"] { color: #625a7c; }
         .theme-light h1, .theme-light h2, .theme-light p.display { color: #10213f; }
         .theme-light .text-white { color: #fff !important; }
-        .theme-light [class*="bg-[#060512"] { background-color: rgba(255,255,255,.9); }
+        .theme-light [class*="bg-[#060512"] { background-color: #dff3ff; }
         .theme-light [class*="bg-[#160f2e"] { background-color: #e5f3ff; }
         .theme-light [class*="bg-[#0f0d1f"] { background-color: #f7fcff; }
         .theme-light [class*="text-[#7c729f"] { color: #647c96; }
@@ -579,7 +579,7 @@ export default function TrendRadar() {
         .theme-light [class*="bg-[#060512]/92"] { background-color: rgba(255,255,255,.94); }
         .theme-light .theme-ticker { background: #d9efff; border-color: #bcdcf2; }
         .theme-light .theme-ticker > div { color: #28577f !important; font-weight: 600; }
-        .theme-light .theme-stats { background: rgba(220,240,255,.78); border-color: #c3dff2; }
+        .theme-light .theme-stats { background: #c5e9fc; border-color: #a9d8ef; }
         .theme-light h1 span { color: #5570d8; background: none; -webkit-text-fill-color: #5570d8; }
         .theme-light p, .theme-light span, .theme-light a, .theme-light button { font-weight: 500; }
         .theme-light p.display, .theme-light h1, .theme-light h2, .theme-light h3 { font-weight: 800; }
