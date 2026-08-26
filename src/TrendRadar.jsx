@@ -587,7 +587,7 @@ export default function TrendRadar() {
             </div>
             <span className="display font-bold tracking-tight text-[15px]">TREND/RADAR</span>
           </div>
-          <nav className="hidden md:flex items-center gap-8 mono text-[11px] tracking-wide text-[#a99fd4]">
+          <nav className="hidden md:flex items-center gap-9 body-f text-[13px] font-semibold tracking-[0.08em] text-[#b9afd9]">
             <a href="#categories" className="hover:text-[#c9bfff] transition">CATEGORIES</a>
             <a href="#feed" className="hover:text-[#c9bfff] transition">LIVE FEED</a>
             <a href="#how" className="hover:text-[#c9bfff] transition">HOW IT WORKS</a>
@@ -757,7 +757,7 @@ export default function TrendRadar() {
       <section id="feed" className="max-w-6xl mx-auto px-6 pb-20">
         <div className="flex items-baseline justify-between mb-5 flex-wrap gap-3">
           <div className="flex items-center gap-2.5">
-            <h2 className="display text-xl md:text-2xl font-bold">Live feed — {activePersona.label}</h2>
+            <h2 className="display text-2xl md:text-3xl font-extrabold tracking-tight">Live feed <span className="text-[#8b6bff]">—</span> {activePersona.label}</h2>
             {!checkingLive && (
               liveTrends ? (
                 <span className="flex items-center gap-1.5 mono text-[10px] text-[#c9bfff] bg-[#160f2e] border border-[#7c5cff]/40 rounded-full px-2.5 py-1">
