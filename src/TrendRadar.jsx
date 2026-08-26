@@ -427,6 +427,7 @@ export default function TrendRadar() {
   const [refreshing, setRefreshing] = useState(false);
   const [lightMode, setLightMode] = useState(() => localStorage.getItem("trend-theme") === "light");
   const [expandedColumns, setExpandedColumns] = useState({});
+  const [selectedTrend, setSelectedTrend] = useState(null);
 
   // Auth + trial state
   const [session, setSession] = useState(null);
@@ -553,6 +554,7 @@ export default function TrendRadar() {
     <div className={`min-h-screen ${lightMode ? "theme-light" : "theme-dark"} relative`}>
       <GrainOverlay />
       {showSignIn && <SignInModal onClose={() => setShowSignIn(false)} />}
+      {selectedTrend && <div className="fixed inset-0 z-40 flex items-center justify-center bg-[#060512]/75 backdrop-blur-md px-4" onClick={() => setSelectedTrend(null)}><div className="glass rounded-3xl w-full max-w-lg p-7 shadow-2xl" onClick={(event) => event.stopPropagation()}><div className="flex items-start justify-between"><div className="flex items-center gap-3"><div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#8b6bff]/30 to-[#4b8cff]/20 border border-[#8b6bff]/40 flex items-center justify-center text-3xl">{selectedTrend.emoji || CATEGORY_EMOJI[selectedTrend.category] || "📡"}</div><div><p className="mono text-[10px] uppercase tracking-widest text-[#a98bff]">{selectedTrend.category} · {selectedTrend.platform}</p><h3 className="display text-xl font-extrabold mt-1">{selectedTrend.name}</h3></div></div><button onClick={() => setSelectedTrend(null)} className="text-[#a99fd4] text-xl">×</button></div><div className="mt-6 rounded-2xl bg-[#130f26]/70 border border-[#7c5cff]/20 p-4"><Sparkline data={selectedTrend.spark} color={selectedTrend.score >= 60 ? "#35d07f" : selectedTrend.score >= 30 ? "#f5b83d" : "#ff6b6b"} /><div className="grid grid-cols-2 gap-3 mt-4"><div><p className="mono text-[10px] text-[#7c729f]">TREND SCORE</p><p className={`display text-2xl font-extrabold ${selectedTrend.score >= 60 ? "text-[#35d07f]" : selectedTrend.score >= 30 ? "text-[#f5b83d]" : "text-[#ff6b6b]"}`}>{selectedTrend.score}</p></div><div><p className="mono text-[10px] text-[#7c729f]">VELOCITY</p><p className="display text-2xl font-extrabold text-[#a98bff]">+{selectedTrend.velocity}%</p></div></div></div><p className="body-f text-sm leading-relaxed text-[#b3a9d9] mt-5">{selectedTrend.description || TREND_COPY[selectedTrend.category] || "A live signal detected by Trend Radar."}</p><p className="mono text-[10px] text-[#7c729f] mt-4">First detected {selectedTrend.firstSeen ?? "recently"} hours ago · Updated hourly</p></div></div>}
       {!isLoggedIn && <a href="#pricing" className="md:hidden fixed bottom-4 left-4 right-4 z-20 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#8b6bff] to-[#6941e8] py-3.5 text-sm font-bold text-white shadow-[0_8px_30px_rgba(70,45,180,.45)]">Start 3-day free trial <ArrowRight className="w-4 h-4" /></a>}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
@@ -867,7 +869,7 @@ export default function TrendRadar() {
               const locked = idx >= freeLimit;
               const watched = watchlist.has(t.id);
               return (
-                <div key={t.id} className="relative rounded-xl border border-[#7c5cff]/15 bg-[#130f26]/60 p-3 overflow-hidden hover:border-[#7c5cff]/50 transition-all duration-200">
+                <div key={t.id} onClick={() => setSelectedTrend(t)} role="button" tabIndex={0} onKeyDown={(event) => event.key === "Enter" && setSelectedTrend(t)} className="relative rounded-2xl border border-[#7c5cff]/15 bg-[#130f26]/60 p-4 overflow-hidden cursor-pointer hover:border-[#7c5cff]/60 hover:-translate-y-0.5 hover:shadow-[0_12px_28px_rgba(66,45,150,.22)] transition-all duration-200">
                   {locked && (
                     <div className="absolute inset-0 bg-[#060512]/92 backdrop-blur-sm flex flex-col items-center justify-center gap-2 z-10 px-3 text-center">
                       <Lock className="w-4 h-4 text-[#a98bff]" />
@@ -879,9 +881,9 @@ export default function TrendRadar() {
                   <div className="flex items-start justify-between mb-2.5">
                     <div>
                       <div className="flex items-center gap-2"><span className="text-lg">{t.emoji || CATEGORY_EMOJI[t.category] || "📡"}</span><p className="mono text-[10px] text-[#7c729f] uppercase tracking-wide">{t.category} · {t.platform}</p></div>
-                      <p className="display font-semibold text-[11px] mt-1 leading-snug">{t.name}</p>
+                      <p className="display font-semibold text-[13px] mt-1 leading-snug">{t.name}</p>
                     </div>
-                    <button onClick={() => toggleWatch(t.id)} className="shrink-0">
+                    <button onClick={(event) => { event.stopPropagation(); toggleWatch(t.id); }} className="shrink-0">
                       <Star className={`w-4 h-4 ${watched ? "fill-[#f5b83d] text-[#f5b83d]" : "text-[#4a4270]"}`} />
                     </button>
                   </div>
