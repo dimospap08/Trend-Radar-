@@ -551,34 +551,34 @@ export default function TrendRadar() {
           border: 1px solid rgba(124,92,255,0.14);
         }
         .theme-dark { background: radial-gradient(circle at 72% 12%, #101b4a 0%, #080b24 34%, #060512 78%); color: #f2f5ff; }
-        .theme-light { background: radial-gradient(circle at 50% -15%, #ffffff 0%, #fafaff 48%, #f1f3fb 100%); color: #171329; }
-        .theme-light .glass { background: rgba(255,255,255,.94); border-color: #e4e0f0; box-shadow: 0 14px 36px rgba(47,35,92,.08); }
-        .theme-light .body-f, .theme-light .mono { color: #514a6d; }
-        .theme-light header { background: rgba(250,249,253,.92); border-color: #ded9ef; }
+        .theme-light { background: linear-gradient(135deg, #eaf7ff 0%, #f5fbff 48%, #eef4ff 100%); color: #10213f; }
+        .theme-light .glass { background: rgba(255,255,255,.88); border-color: #cfe2f5; box-shadow: 0 14px 36px rgba(42,104,160,.10); }
+        .theme-light .body-f, .theme-light .mono { color: #405875; }
+        .theme-light header { background: rgba(239,249,255,.94); border-color: #cfe2f5; }
         .theme-light .theme-muted { color: #716b86 !important; }
         .theme-light input { background: #fff; color: #171329; border-color: #d9d3ec; }
         .theme-light [class*="bg-[#130f26"] { background-color: #f1eff8; }
         .theme-light [class*="border-[#231b45"] { border-color: #ddd7ed; }
         .theme-light [class*="text-[#a99fd4"] { color: #625a7c; }
-        .theme-light h1, .theme-light h2, .theme-light p.display { color: #1a1530; }
+        .theme-light h1, .theme-light h2, .theme-light p.display { color: #10213f; }
         .theme-light .text-white { color: #fff !important; }
         .theme-light [class*="bg-[#060512"] { background-color: rgba(255,255,255,.9); }
-        .theme-light [class*="bg-[#160f2e"] { background-color: #f0ecff; }
-        .theme-light [class*="bg-[#0f0d1f"] { background-color: #f7f5fc; }
-        .theme-light [class*="text-[#7c729f"] { color: #817995; }
-        .theme-light [class*="text-[#f2eefa"] { color: #171329; }
-        .theme-light [class*="text-[#c9bfff"] { color: #5b3cc4; }
-        .theme-light [class*="text-[#b3a9d9"] { color: #5e5874; }
-        .theme-light [class*="text-[#655a92"] { color: #756d8f; }
-        .theme-light [class*="text-[#4a4270"] { color: #817995; }
-        .theme-light [class*="border-[#1c1633"] { border-color: #e4e0f0; }
-        .theme-light [class*="border-[#2a2150"] { border-color: #d8d1eb; }
-        .theme-light [class*="bg-[#130f26"] { background-color: #f3f0fa; }
+        .theme-light [class*="bg-[#160f2e"] { background-color: #e5f3ff; }
+        .theme-light [class*="bg-[#0f0d1f"] { background-color: #f7fcff; }
+        .theme-light [class*="text-[#7c729f"] { color: #647c96; }
+        .theme-light [class*="text-[#f2eefa"] { color: #10213f; }
+        .theme-light [class*="text-[#c9bfff"] { color: #315fc0; }
+        .theme-light [class*="text-[#b3a9d9"] { color: #405875; }
+        .theme-light [class*="text-[#655a92"] { color: #607894; }
+        .theme-light [class*="text-[#4a4270"] { color: #71879e; }
+        .theme-light [class*="border-[#1c1633"] { border-color: #cfe2f5; }
+        .theme-light [class*="border-[#2a2150"] { border-color: #bed8ee; }
+        .theme-light [class*="bg-[#130f26"] { background-color: #eaf5fc; }
         .theme-light [class*="bg-[#0f2a1c"] { background-color: #e6f8ee; }
         .theme-light [class*="bg-[#2a2010"] { background-color: #fff5d9; }
         .theme-light [class*="bg-[#060512]/92"] { background-color: rgba(255,255,255,.94); }
-        .theme-light .theme-ticker { background: #f0f2fa; border-color: #e0e4f2; }
-        .theme-light .theme-ticker > div { color: #514a78 !important; font-weight: 600; }
+        .theme-light .theme-ticker { background: #d9efff; border-color: #bcdcf2; }
+        .theme-light .theme-ticker > div { color: #28577f !important; font-weight: 600; }
         .theme-light p, .theme-light span, .theme-light a, .theme-light button { font-weight: 500; }
         .theme-light p.display, .theme-light h1, .theme-light h2, .theme-light h3 { font-weight: 800; }
         .nav-link { display: inline-flex; align-items: center; padding: 8px 10px; border-radius: 9px; transition: color .2s ease, background .2s ease, transform .2s ease; }
