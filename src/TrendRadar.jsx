@@ -69,6 +69,8 @@ function generateTrends() {
         velocity, spark,
         firstSeen: Math.round(1 + rand() * 60),
         score: Math.min(99, Math.round(velocity / 9 + rand() * 15)),
+        description: "A live signal detected by Trend Radar.",
+        emoji: "📡",
       });
     });
   });
@@ -94,6 +96,8 @@ function normalizeTrend(t) {
     platform: t.platform,
     velocity: Number(t.velocity_pct ?? t.velocity ?? 30),
     score: Number(t.score ?? 50),
+    description: t.description || TREND_COPY[t.category] || "A live signal detected by Trend Radar.",
+    emoji: CATEGORY_EMOJI[t.category] || "📡",
     spark,
     firstSeen: hoursAgo,
   };
@@ -314,6 +318,17 @@ const CATEGORY_VISUALS = [
   { key: "Coin", icon: Coins, color: "#ffd166", desc: "On-chain narratives gaining early velocity" },
   { key: "Narrative", icon: MessageSquare, color: "#7cc8ff", desc: "Cultural moments forming in real time" },
 ];
+
+const TREND_COPY = {
+  Sound: "Audio gaining momentum across short-form video. Use it early before saturation.",
+  Hashtag: "Conversation accelerating across social platforms with growing audience intent.",
+  Format: "A repeatable video format that creators are beginning to copy at scale.",
+  Product: "Early demand signal before competition and ad costs rise.",
+  Aesthetic: "A visual direction spreading through feeds and creator content.",
+  Coin: "An emerging on-chain narrative showing unusual momentum and attention.",
+  Narrative: "A cultural conversation building across communities and media channels.",
+};
+const CATEGORY_EMOJI = { Sound: "🎵", Hashtag: "#️⃣", Format: "🎬", Product: "🛍️", Aesthetic: "✨", Coin: "🪙", Narrative: "💬" };
 
 const PREVIEW_SIGNALS = [
   { category: "TikTok Sound", name: "Trending audio signal", score: 92, velocity: "+743%", color: "#35d07f" },
@@ -863,7 +878,7 @@ export default function TrendRadar() {
                   )}
                   <div className="flex items-start justify-between mb-2.5">
                     <div>
-                      <p className="mono text-[10px] text-[#7c729f] uppercase tracking-wide">{t.category} · {t.platform}</p>
+                      <div className="flex items-center gap-2"><span className="text-lg">{t.emoji || CATEGORY_EMOJI[t.category] || "📡"}</span><p className="mono text-[10px] text-[#7c729f] uppercase tracking-wide">{t.category} · {t.platform}</p></div>
                       <p className="display font-semibold text-[11px] mt-1 leading-snug">{t.name}</p>
                     </div>
                     <button onClick={() => toggleWatch(t.id)} className="shrink-0">
@@ -871,6 +886,7 @@ export default function TrendRadar() {
                     </button>
                   </div>
                   <Sparkline data={t.spark} />
+                  <p className="body-f text-[10px] leading-relaxed text-[#7c729f] mt-1.5">{t.description || TREND_COPY[t.category] || "A live signal detected by Trend Radar."}</p>
                   <div className="flex items-center justify-between mt-1">
                     <span className={`flex items-center gap-1 mono text-[10px] font-bold ${t.score >= 60 ? "text-[#35d07f]" : t.score >= 30 ? "text-[#f5b83d]" : "text-[#ff6b6b]"}`}>
                       <TrendingUp className="w-3 h-3" /> +{t.velocity}%
