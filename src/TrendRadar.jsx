@@ -581,6 +581,9 @@ export default function TrendRadar() {
         .theme-light .theme-ticker > div { color: #514a78 !important; font-weight: 600; }
         .theme-light p, .theme-light span, .theme-light a, .theme-light button { font-weight: 500; }
         .theme-light p.display, .theme-light h1, .theme-light h2, .theme-light h3 { font-weight: 800; }
+        .nav-link { display: inline-flex; align-items: center; padding: 8px 10px; border-radius: 9px; transition: color .2s ease, background .2s ease, transform .2s ease; }
+        .nav-link:hover, .nav-link:focus-visible { color: #79a8ff !important; background: rgba(76,126,255,.14); transform: translateY(-1px); outline: none; }
+        .theme-light .nav-link:hover, .theme-light .nav-link:focus-visible { color: #4b64d8 !important; background: #e9edff; }
       `}</style>
 
       {/* NAV */}
@@ -593,10 +596,10 @@ export default function TrendRadar() {
             <span className="display font-bold tracking-tight text-[15px]">TREND/RADAR</span>
           </div>
           <nav className="hidden md:flex items-center gap-9 body-f text-[13px] font-semibold tracking-[0.08em] text-[#b9afd9]">
-            <a href="#categories" className="hover:text-[#c9bfff] transition">CATEGORIES</a>
-            <a href="#feed" className="hover:text-[#c9bfff] transition">LIVE FEED</a>
-            <a href="#how" className="hover:text-[#c9bfff] transition">HOW IT WORKS</a>
-            <a href="#pricing" className="hover:text-[#c9bfff] transition">PRICING</a>
+            <a href="#categories" className="nav-link">CATEGORIES</a>
+            <a href="#feed" className="nav-link">LIVE FEED</a>
+            <a href="#how" className="nav-link">HOW IT WORKS</a>
+            <a href="#pricing" className="nav-link">PRICING</a>
           </nav>
           <div className="flex items-center gap-3">
             <button onClick={toggleTheme} aria-label="Toggle theme" className="w-9 h-9 rounded-full border border-[#2a2150] flex items-center justify-center hover:border-[#7c5cff] transition">
@@ -662,7 +665,7 @@ export default function TrendRadar() {
                 <button
                   key={p.id}
                   onClick={() => setPersona(p.id)}
-                  className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full text-sm mono transition ${
+                    className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm body-f font-semibold transition ${
                     active
                       ? "bg-gradient-to-r from-[#8b6bff] to-[#6941e8] text-white font-medium shadow-[0_0_20px_rgba(124,92,255,0.35)]"
                       : "bg-[#130f26] text-[#a99fd4] hover:bg-[#1c1633] border border-[#231b45]"
