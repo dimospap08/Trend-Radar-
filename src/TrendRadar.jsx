@@ -565,6 +565,17 @@ export default function TrendRadar() {
         .theme-light [class*="bg-[#160f2e"] { background-color: #f0ecff; }
         .theme-light [class*="bg-[#0f0d1f"] { background-color: #f7f5fc; }
         .theme-light [class*="text-[#7c729f"] { color: #817995; }
+        .theme-light [class*="text-[#f2eefa"] { color: #171329; }
+        .theme-light [class*="text-[#c9bfff"] { color: #5b3cc4; }
+        .theme-light [class*="text-[#b3a9d9"] { color: #5e5874; }
+        .theme-light [class*="text-[#655a92"] { color: #756d8f; }
+        .theme-light [class*="text-[#4a4270"] { color: #817995; }
+        .theme-light [class*="border-[#1c1633"] { border-color: #e4e0f0; }
+        .theme-light [class*="border-[#2a2150"] { border-color: #d8d1eb; }
+        .theme-light [class*="bg-[#130f26"] { background-color: #f3f0fa; }
+        .theme-light [class*="bg-[#0f2a1c"] { background-color: #e6f8ee; }
+        .theme-light [class*="bg-[#2a2010"] { background-color: #fff5d9; }
+        .theme-light [class*="bg-[#060512]/92"] { background-color: rgba(255,255,255,.94); }
       `}</style>
 
       {/* NAV */}
