@@ -925,7 +925,7 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
       </section>
 
       {/* FEED */}
-      <section id="feed" className="max-w-6xl mx-auto px-6 pb-20">
+      <section id="feed" className="screener-feed max-w-6xl mx-auto px-6 pb-20">
         <div className="flex flex-col items-center mb-7 gap-4">
           <div className="flex items-center gap-2.5">
             <h2 className="display text-2xl md:text-3xl font-extrabold tracking-tight">Live feed <span className="text-[#8b6bff]">—</span> {activePersona.label}</h2>
