@@ -321,6 +321,12 @@ const CATEGORY_VISUALS = [
   { key: "Coin", icon: Coins, color: "#ffd166", desc: "On-chain narratives gaining early velocity" },
   { key: "Narrative", icon: MessageSquare, color: "#7cc8ff", desc: "Cultural moments forming in real time" },
 ];
+const SIGNAL_LOCKED_FOLDERS = [
+  { key: "Meme Coins", icon: Coins, color: "#ffd166", desc: "Early meme-coin momentum and attention shifts" },
+  { key: "Crypto Markets", icon: TrendingUp, color: "#58b8ff", desc: "Crypto narratives, sectors and market signals" },
+  { key: "Narratives", icon: MessageSquare, color: "#c084fc", desc: "Long-horizon stories shaping the next cycle" },
+  { key: "Global Markets", icon: Gauge, color: "#35d07f", desc: "Macro themes and cross-market opportunities" },
+];
 
 const TREND_COPY = {
   Sound: "Audio gaining momentum across short-form video. Use it early before saturation.",
@@ -487,6 +493,7 @@ export default function TrendRadar() {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [footballMatches, setFootballMatches] = useState([]);
   const [footballOpen, setFootballOpen] = useState(false);
+  const [signalNotice, setSignalNotice] = useState(false);
   const [footballQuery, setFootballQuery] = useState("");
   const [footballLoading, setFootballLoading] = useState(false);
   const [selectedMatch, setSelectedMatch] = useState(null);
@@ -901,6 +908,7 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
           {CATEGORY_VISUALS.map((item) => { const Icon = item.icon; return <button key={item.key} onClick={() => { setSelectedCategory(item.key); document.getElementById("feed")?.scrollIntoView({ behavior: "smooth" }); }} className="glass rounded-2xl border border-[#6f8dff]/25 p-4 text-left hover:-translate-y-1 hover:border-[#58b8ff] transition"><div className="flex h-10 w-10 items-center justify-center rounded-xl mb-3" style={{ background: `${item.color}25` }}><Icon className="h-5 w-5" style={{ color: item.color }} /></div><p className="display text-xs font-bold">{item.key === "Sound" ? "TikTok Sounds" : `${item.key}s`}</p><p className="body-f text-[10px] text-[#9eb9e8] mt-1">Open folder →</p></button>; })}
           <button onClick={() => { setFootballOpen(true); document.getElementById("football-signals")?.scrollIntoView({ behavior: "smooth" }); }} className="glass rounded-2xl border border-[#35d07f]/35 p-4 text-left hover:-translate-y-1 hover:border-[#35d07f] transition"><div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#35d07f]/15 mb-3 text-xl">⚽</div><p className="display text-xs font-bold">Football & Betting</p><p className="body-f text-[10px] text-[#9eb9e8] mt-1">Live folder →</p></button>
+          {SIGNAL_LOCKED_FOLDERS.map((item) => { const Icon = item.icon; return <button key={item.key} onClick={() => { setSignalNotice(true); window.setTimeout(() => setSignalNotice(false), 4200); }} className="group relative glass rounded-2xl border border-[#c084fc]/25 p-4 text-left hover:-translate-y-1 hover:border-[#c084fc] transition"><div className="absolute right-3 top-3 rounded-full bg-[#0b1028]/80 p-1.5 text-[#c084fc]"><Lock className="h-3.5 w-3.5" /></div><div className="flex h-10 w-10 items-center justify-center rounded-xl mb-3" style={{ background: `${item.color}25` }}><Icon className="h-5 w-5" style={{ color: item.color }} /></div><p className="display text-xs font-bold">{item.key}</p><p className="body-f text-[10px] text-[#9eb9e8] mt-1">Signal plan · locked</p></button>; })}
         </div>
       </section>
       {/* FOOTBALL SIGNALS */}
@@ -1055,6 +1063,8 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
           </>
         )}
       </section>
+
+      {signalNotice && <div className="fixed bottom-6 left-1/2 z-[80] w-[min(92vw,430px)] -translate-x-1/2 rounded-2xl border border-[#c084fc]/50 bg-[#11142f]/95 p-4 shadow-[0_0_35px_rgba(192,132,252,.25)] backdrop-blur-xl animate-[shake_.45s_ease-in-out]"><div className="flex items-start gap-3"><div className="rounded-xl bg-[#c084fc]/15 p-2 text-[#c084fc]"><Lock className="h-5 w-5" /></div><div><p className="display text-sm font-bold">Signal folder locked</p><p className="body-f text-xs text-[#b9ccef] mt-1">Ξεκλείδωσε το Signal plan για πρόσβαση σε Meme Coins, Crypto, Narratives και Global Markets.</p><button onClick={() => { setSignalNotice(false); document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" }); }} className="mt-3 rounded-lg bg-gradient-to-r from-[#8b6bff] to-[#6941e8] px-3 py-2 text-[11px] font-bold text-white">View Signal plan →</button></div><button onClick={() => setSignalNotice(false)} className="ml-auto text-[#9eb9e8]">×</button></div></div>}
 
       {/* PRICING */}
       <section id="pricing" className="max-w-6xl mx-auto px-6 pb-24">
