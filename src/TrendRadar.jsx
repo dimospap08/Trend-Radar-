@@ -5,7 +5,7 @@ import {
   Check, Activity, Bell, ArrowRight, Gauge, Sparkles, Lock,
   ShieldCheck, Zap, Clock, Music2, Hash, Layers, Palette, MessageSquare,
   Mail, LogOut, User as UserIcon,
-  Sun, Moon, RefreshCw,
+  Sun, Moon, RefreshCw, Search,
 } from "lucide-react";
 
 /* =========================================================
@@ -353,6 +353,14 @@ function trendVerdict(score) {
   if (score >= 30) return { label: "Watch closely", text: "Momentum is building — validate it before committing." };
   return { label: "Wait", text: "Momentum is weak or cooling — avoid spending money yet." };
 }
+function platformMark(platform) {
+  if (/tiktok/i.test(platform || "")) return "♪";
+  if (/instagram/i.test(platform || "")) return "◎";
+  if (/youtube/i.test(platform || "")) return "▶";
+  if (/telegram/i.test(platform || "")) return "✈";
+  if (/x/i.test(platform || "")) return "𝕏";
+  return "✦";
+}
 
 const PREVIEW_SIGNALS = [
   { category: "TikTok Sound", name: "Trending audio signal", score: 92, velocity: "+743%", color: "#35d07f" },
@@ -452,6 +460,7 @@ export default function TrendRadar() {
   const [lightMode, setLightMode] = useState(() => localStorage.getItem("trend-theme") === "light");
   const [expandedColumns, setExpandedColumns] = useState({});
   const [selectedTrend, setSelectedTrend] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Auth + trial state
   const [session, setSession] = useState(null);
@@ -522,7 +531,12 @@ export default function TrendRadar() {
   };
 
   const categories = CATEGORY_BY_PERSONA[persona];
-  const visibleTrends = liveTrends ?? ALL_TRENDS.filter((t) => categories.includes(t.category));
+  const allVisibleTrends = liveTrends ?? ALL_TRENDS.filter((t) => categories.includes(t.category));
+  const visibleTrends = allVisibleTrends.filter((t) => {
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return true;
+    return [t.name, t.category, t.platform, t.description].some((value) => String(value || "").toLowerCase().includes(query));
+  });
   const activePersona = PERSONAS.find((p) => p.id === persona);
 
   const handleRefresh = async () => {
@@ -806,7 +820,7 @@ export default function TrendRadar() {
 
       {/* FEED */}
       <section id="feed" className="max-w-6xl mx-auto px-6 pb-20">
-        <div className="flex items-baseline justify-between mb-5 flex-wrap gap-3">
+        <div className="flex items-end justify-between mb-5 flex-wrap gap-3">
           <div className="flex items-center gap-2.5">
             <h2 className="display text-2xl md:text-3xl font-extrabold tracking-tight">Live feed <span className="text-[#8b6bff]">—</span> {activePersona.label}</h2>
             {!checkingLive && (
@@ -821,7 +835,13 @@ export default function TrendRadar() {
               )
             )}
           </div>
-          <span className="mono text-xs text-[#655a92]">sorted by trend score</span>
+          <div className="flex items-center gap-3 w-full md:w-auto">
+            <div className="relative flex-1 md:w-72">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8ea7ff]" />
+              <input value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder="Search TikTok, crypto, products…" className="w-full rounded-xl border border-[#7c5cff]/30 bg-[#100c20]/80 py-2.5 pl-9 pr-3 text-xs body-f outline-none focus:border-[#8ea7ff]" />
+            </div>
+            <span className="hidden lg:block mono text-xs text-[#655a92]">sorted by signal strength</span>
+          </div>
         </div>
 
         {!isLoggedIn ? (
@@ -905,7 +925,7 @@ export default function TrendRadar() {
                   )}
                   <div className="flex items-start justify-between mb-2.5">
                     <div>
-                      <div className="flex items-center gap-2"><span className="text-lg">{t.emoji || CATEGORY_EMOJI[t.category] || "📡"}</span><p className="mono text-[10px] text-[#7c729f] uppercase tracking-wide">{t.category} · {t.platform}</p></div>
+                      <div className="flex items-center gap-2"><span className="text-lg">{t.emoji || CATEGORY_EMOJI[t.category] || "📡"}</span><p className="mono text-[10px] text-[#7c729f] uppercase tracking-wide">{t.category}</p><span className="inline-flex items-center gap-1 rounded-full border border-[#7c5cff]/25 bg-[#7c5cff]/10 px-2 py-0.5 mono text-[9px] text-[#bcaeff]"><span className="text-sm leading-none">{platformMark(t.platform)}</span>{t.platform}</span></div>
                       <p className="display font-semibold text-[13px] mt-1 leading-snug">{t.name}</p>
                     </div>
                     <button onClick={(event) => { event.stopPropagation(); toggleWatch(t.id); }} className="shrink-0">
