@@ -896,6 +896,13 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
           <span className="text-4xl">⚽</span><span><span className="display block text-lg font-extrabold">Football & Betting</span><span className="body-f text-xs text-[#9eb9e8]">Live matches, odds and AI statistics · {footballOpen ? "folder open" : "click to open"}</span></span><span className="ml-auto text-2xl text-[#58b8ff]">{footballOpen ? "⌃" : "⌄"}</span>
         </button>
       </section>
+      <section className="max-w-6xl mx-auto px-6 pb-8">
+        <div className="mb-4"><p className="mono text-[10px] uppercase tracking-[.22em] text-[#8ea7ff]">Explore the radar</p><h2 className="display text-2xl md:text-3xl font-extrabold mt-1">Signal folders</h2><p className="body-f text-sm theme-muted mt-2">Choose a folder to explore what is moving right now.</p></div>
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+          {CATEGORY_VISUALS.map((item) => { const Icon = item.icon; return <button key={item.key} onClick={() => { setSelectedCategory(item.key); document.getElementById("feed")?.scrollIntoView({ behavior: "smooth" }); }} className="glass rounded-2xl border border-[#6f8dff]/25 p-4 text-left hover:-translate-y-1 hover:border-[#58b8ff] transition"><div className="flex h-10 w-10 items-center justify-center rounded-xl mb-3" style={{ background: `${item.color}25` }}><Icon className="h-5 w-5" style={{ color: item.color }} /></div><p className="display text-xs font-bold">{item.key === "Sound" ? "TikTok Sounds" : `${item.key}s`}</p><p className="body-f text-[10px] text-[#9eb9e8] mt-1">Open folder →</p></button>; })}
+          <button onClick={() => { setFootballOpen(true); document.getElementById("football-signals")?.scrollIntoView({ behavior: "smooth" }); }} className="glass rounded-2xl border border-[#35d07f]/35 p-4 text-left hover:-translate-y-1 hover:border-[#35d07f] transition"><div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#35d07f]/15 mb-3 text-xl">⚽</div><p className="display text-xs font-bold">Football & Betting</p><p className="body-f text-[10px] text-[#9eb9e8] mt-1">Live folder →</p></button>
+        </div>
+      </section>
       {/* FOOTBALL SIGNALS */}
       <section id="football-signals" className={`max-w-6xl mx-auto px-6 pb-16 ${footballOpen ? "" : "hidden"}`}>
         <div className="flex items-end justify-between gap-4 mb-5">
