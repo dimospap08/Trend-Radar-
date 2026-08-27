@@ -484,6 +484,7 @@ export default function TrendRadar() {
   const [expandedColumns, setExpandedColumns] = useState({});
   const [selectedTrend, setSelectedTrend] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [footballMatches, setFootballMatches] = useState([]);
   const [footballLoading, setFootballLoading] = useState(false);
 
@@ -574,6 +575,7 @@ export default function TrendRadar() {
     return matchesTrendSearch(t, query);
   });
   const activePersona = PERSONAS.find((p) => p.id === persona);
+  const categoriesToRender = selectedCategory ? [selectedCategory] : [];
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -943,8 +945,13 @@ export default function TrendRadar() {
             <p className="body-f text-sm text-[#a99fd4]">No signals for this persona yet — try Refresh, or check back soon.</p>
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4 items-start">
-            {categories.map((category) => {
+          <>
+          <div className="mb-7 flex flex-wrap items-center justify-center gap-3">
+            {selectedCategory && <button onClick={() => setSelectedCategory(null)} className="rounded-xl border border-[#6f8dff]/40 px-4 py-3 text-xs font-semibold text-[#b9d5ff] hover:bg-[#1b3770]">← All categories</button>}
+            {(categories).map((category) => { const info = CATEGORY_VISUALS.find((item) => item.key === category); const Icon = info?.icon ?? Layers; return <button key={category} onClick={() => setSelectedCategory(category)} className={`group w-[150px] rounded-2xl border p-4 text-left transition hover:-translate-y-1 hover:border-[#58b8ff]/70 hover:shadow-[0_12px_30px_rgba(50,130,255,.2)] ${selectedCategory === category ? "border-[#58b8ff] bg-[#18366d]" : "border-[#6f8dff]/25 bg-[#101a38]/90"}`}><div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl" style={{ background: `${info?.color || "#58b8ff"}25` }}><Icon className="h-5 w-5" style={{ color: info?.color || "#58b8ff" }} /></div><p className="display text-sm font-bold">{category === "Sound" ? "TikTok Sounds" : `${category}s`}</p><p className="body-f mt-1 text-[10px] text-[#9eb9e8]">Open category →</p></button>; })}
+          </div>
+          {!selectedCategory ? <div className="rounded-3xl border border-[#6f8dff]/25 bg-gradient-to-br from-[#122452] to-[#101a38] p-10 text-center"><p className="mono text-[10px] uppercase tracking-[.2em] text-[#8ea7ff]">Choose your radar folder</p><h3 className="display mt-2 text-2xl font-extrabold">Pick a signal category to explore</h3><p className="body-f mt-2 text-sm text-[#b9ccef]">Open one folder to see the trends, examples and AI action plan inside.</p></div> : <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4 items-start">
+            {categoriesToRender.map((category) => {
               const categoryInfo = CATEGORY_VISUALS.find((item) => item.key === category);
               const CategoryIcon = categoryInfo?.icon ?? Layers;
               const categoryTrends = visibleTrends.filter((t) => t.category === category);
@@ -997,7 +1004,8 @@ export default function TrendRadar() {
                 {categoryTrends.length > 4 && <button onClick={() => setExpandedColumns((prev) => ({...prev, [category]: !isExpanded}))} className="w-full mt-3 py-2 rounded-lg border border-[#7c5cff]/25 text-[#a98bff] mono text-[10px] font-bold hover:bg-[#7c5cff]/10 transition">{isExpanded ? "Show less" : `See more (${categoryTrends.length - 4})`}</button>}
               </div>;
             })}
-          </div>
+          </div>}
+          </>
         )}
       </section>
 
