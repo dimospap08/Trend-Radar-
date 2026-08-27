@@ -484,6 +484,8 @@ export default function TrendRadar() {
   const [expandedColumns, setExpandedColumns] = useState({});
   const [selectedTrend, setSelectedTrend] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [footballMatches, setFootballMatches] = useState([]);
+  const [footballLoading, setFootballLoading] = useState(false);
 
   // Auth + trial state
   const [session, setSession] = useState(null);
@@ -536,6 +538,17 @@ export default function TrendRadar() {
       .finally(() => { if (!cancelled) setCheckingLive(false); });
     return () => { cancelled = true; };
   }, [persona]);
+
+  useEffect(() => {
+    let cancelled = false;
+    setFootballLoading(true);
+    fetch(`${API_BASE}/api/sports/matches`)
+      .then((response) => response.json())
+      .then((data) => { if (!cancelled) setFootballMatches(Array.isArray(data?.matches) ? data.matches.slice(0, 12) : []); })
+      .catch(() => { if (!cancelled) setFootballMatches([]); })
+      .finally(() => { if (!cancelled) setFootballLoading(false); });
+    return () => { cancelled = true; };
+  }, []);
 
   useEffect(() => {
     try {
@@ -839,6 +852,15 @@ export default function TrendRadar() {
             );
           })}
         </div>
+      </section>
+
+      {/* FOOTBALL SIGNALS */}
+      <section id="football-signals" className="max-w-6xl mx-auto px-6 pb-16">
+        <div className="flex items-end justify-between gap-4 mb-5">
+          <div><p className="mono text-[10px] uppercase tracking-[.22em] text-[#8ea7ff]">Pro intelligence</p><h2 className="display text-2xl md:text-3xl font-extrabold mt-1">Football Signals <span className="text-[#35d07f]">· live</span></h2><p className="body-f text-sm theme-muted mt-2">Real fixtures first. AI analysis comes after the numbers.</p></div>
+          <span className="mono text-[10px] text-[#35d07f] border border-[#35d07f]/30 rounded-full px-3 py-1">LIVE DATA</span>
+        </div>
+        {footballLoading ? <div className="glass rounded-2xl p-8 text-center body-f theme-muted">Loading today’s fixtures…</div> : footballMatches.length === 0 ? <div className="glass rounded-2xl p-8 text-center body-f theme-muted">No fixtures available right now.</div> : <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">{footballMatches.map((match) => { const home = match.teams?.home; const away = match.teams?.away; const date = match.fixture?.date ? new Date(match.fixture.date).toLocaleString([], { weekday: "short", hour: "2-digit", minute: "2-digit" }) : "Upcoming"; return <div key={match.fixture?.id} className="glass rounded-2xl p-4 hover:border-[#58b8ff]/60 transition cursor-pointer" onClick={() => alert("Full AI match analysis is coming next. This match is connected to live data.")}><div className="flex items-center justify-between mb-4"><span className="mono text-[9px] uppercase tracking-widest text-[#8ea7ff]">{match.league?.name || "Football"}</span><span className="mono text-[9px] text-[#35d07f]">{date}</span></div><div className="flex items-center justify-between gap-3"><div className="flex-1 text-center"><img src={home?.logo} alt="" className="w-10 h-10 object-contain mx-auto mb-2" /><p className="display text-xs font-bold leading-tight">{home?.name || "Home"}</p></div><div className="mono text-xs text-[#a99fd4]">VS</div><div className="flex-1 text-center"><img src={away?.logo} alt="" className="w-10 h-10 object-contain mx-auto mb-2" /><p className="display text-xs font-bold leading-tight">{away?.name || "Away"}</p></div></div><div className="mt-4 rounded-xl bg-[#142650]/60 border border-[#6f8dff]/20 px-3 py-2 text-center"><span className="mono text-[9px] text-[#b9d5ff]">OPEN FULL AI MATCH ANALYSIS →</span></div></div>; })}</div>}
       </section>
 
       {/* FEED */}
