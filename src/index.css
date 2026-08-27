@@ -8,6 +8,11 @@
   75% { transform: translateX(calc(-50% + 5px)) rotate(1deg); }
 }
 
+@keyframes sourcePulse {
+  0%, 100% { box-shadow: 0 0 18px rgba(53, 208, 127, .35); }
+  50% { box-shadow: 0 0 34px rgba(53, 208, 127, .75), 0 0 0 6px rgba(53, 208, 127, .10); }
+}
+
 /* Compact data-screener layout for trend columns. */
 .screener-feed .glass.rounded-2xl.p-4 { padding: .7rem; border-radius: .75rem; }
 .screener-feed .glass.rounded-2xl.p-4 .h-16 { height: 2.45rem; margin-bottom: .45rem; padding-bottom: .35rem; }
