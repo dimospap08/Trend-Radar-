@@ -348,6 +348,11 @@ function fallbackMediaForTrend(trend) {
   const seed = String(trend.id || trend.name || "trend").split("").reduce((sum, char) => sum + char.charCodeAt(0), 0);
   return pool[seed % pool.length];
 }
+function trendVerdict(score) {
+  if (score >= 60) return { label: "Act now", text: "Strong early signal — test it while momentum is high." };
+  if (score >= 30) return { label: "Watch closely", text: "Momentum is building — validate it before committing." };
+  return { label: "Wait", text: "Momentum is weak or cooling — avoid spending money yet." };
+}
 
 const PREVIEW_SIGNALS = [
   { category: "TikTok Sound", name: "Trending audio signal", score: 92, velocity: "+743%", color: "#35d07f" },
@@ -909,7 +914,7 @@ export default function TrendRadar() {
                   </div>
                   <Sparkline data={t.spark} />
                   <p className="body-f text-[10px] leading-relaxed text-[#7c729f] mt-1.5"><span className="font-semibold text-[#a99fd4]">Why it matters: </span>{t.description || TREND_COPY[t.category] || "A live signal detected by Trend Radar."}</p>
-                  <p className="body-f text-[10px] leading-relaxed text-[#a98bff] mt-1"><span className="font-semibold">Do this: </span>{TREND_ACTION[t.category] || "Move early while the signal is gaining momentum."}</p>
+                  <p className="body-f text-[10px] leading-relaxed text-[#a98bff] mt-1"><span className="font-semibold">Do this: </span>{TREND_ACTION[t.category] || "Move early while the signal is gaining momentum."}</p>\n                  <div className="mt-3 rounded-xl border border-[#7c5cff]/15 bg-[#0f0b20]/55 px-3 py-2"><div className="flex items-center justify-between"><span className="mono text-[9px] uppercase tracking-widest text-[#8ea7ff]">Decision</span><span className={`mono text-[9px] font-bold ${t.score >= 60 ? "text-[#35d07f]" : t.score >= 30 ? "text-[#f5b83d]" : "text-[#ff6b6b]"}`}>{trendVerdict(t.score).label}</span></div><p className="body-f text-[10px] leading-relaxed text-[#b3a9d9] mt-1">{trendVerdict(t.score).text}</p></div>
                   <div className="flex items-center justify-between mt-1">
                     <span className={`flex items-center gap-1 mono text-[10px] font-bold ${t.score >= 60 ? "text-[#35d07f]" : t.score >= 30 ? "text-[#f5b83d]" : "text-[#ff6b6b]"}`}>
                       <TrendingUp className="w-3 h-3" /> +{t.velocity}%
