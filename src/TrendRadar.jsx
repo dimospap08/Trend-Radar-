@@ -968,7 +968,7 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
           </div>
         ) : !profileLoaded ? (
           <div className="glass rounded-2xl p-10 text-center animate-pulse"><p className="body-f text-sm text-[#a99fd4]">Loading your access…</p></div>
-        ) : !selectedPlan ? (
+        ) : !selectedPlan && !trialActive ? (
           <div className="glass rounded-2xl p-8 text-center">
             <p className="display font-semibold mb-2">Choose your plan to continue</p>
             <p className="body-f text-sm text-[#a99fd4] mb-5">Start your 3-day free trial. You can cancel anytime.</p>
