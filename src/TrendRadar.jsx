@@ -351,9 +351,11 @@ const TREND_MEDIA_POOL = {
   Narrative: [TREND_MEDIA.Narrative, "https://images.unsplash.com/photo-1535378917042-10a22c95931a?auto=format&fit=crop&w=1000&q=80", "https://images.unsplash.com/photo-1559757175-0eb30cd8c063?auto=format&fit=crop&w=1000&q=80"],
 };
 function fallbackMediaForTrend(trend) {
-  const pool = TREND_MEDIA_POOL[trend.category] || TREND_MEDIA_POOL.Narrative;
-  const seed = String(trend.id || trend.name || "trend").split("").reduce((sum, char) => sum + char.charCodeAt(0), 0);
-  return pool[seed % pool.length];
+  const name = String(trend.name || "").toLowerCase();
+  if (trend.category === "Coin" && /bitcoin|btc/.test(name)) return "https://assets.coincap.io/assets/icons/btc@2x.png";
+  const emoji = CATEGORY_EMOJI[trend.category] || "📡";
+  const label = encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="900" height="420"><defs><linearGradient id="g" x1="0" x2="1"><stop stop-color="#142650"/><stop offset="1" stop-color="#24145a"/></linearGradient></defs><rect width="900" height="420" fill="url(#g)"/><circle cx="450" cy="190" r="115" fill="#58b8ff" opacity=".12"/><text x="450" y="225" text-anchor="middle" font-size="120">${emoji}</text><text x="450" y="350" text-anchor="middle" fill="#d5e4ff" font-family="Arial" font-size="26">${trend.category} signal</text></svg>`);
+  return `data:image/svg+xml,${label}`;
 }
 function trendVerdict(score) {
   if (score >= 60) return { label: "Act now", text: "Strong early signal — test it while momentum is high." };
