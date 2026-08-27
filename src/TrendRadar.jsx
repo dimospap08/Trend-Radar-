@@ -361,6 +361,12 @@ function platformMark(platform) {
   if (/x/i.test(platform || "")) return "𝕏";
   return "✦";
 }
+const SEARCH_SUGGESTIONS = [
+  "TikTok sounds", "TikTok hashtags", "TikTok formats", "Instagram Reels", "YouTube Shorts",
+  "football trends", "football match signals", "sports audience", "football creator ideas",
+  "crypto narratives", "meme coins", "DeFi", "Bitcoin", "Solana", "AI products",
+  "viral products", "e-commerce ideas", "beauty trends", "fashion aesthetics", "marketing hooks",
+];
 
 const PREVIEW_SIGNALS = [
   { category: "TikTok Sound", name: "Trending audio signal", score: 92, velocity: "+743%", color: "#35d07f" },
@@ -820,7 +826,7 @@ export default function TrendRadar() {
 
       {/* FEED */}
       <section id="feed" className="max-w-6xl mx-auto px-6 pb-20">
-        <div className="flex items-end justify-between mb-5 flex-wrap gap-3">
+        <div className="flex flex-col items-center mb-7 gap-4">
           <div className="flex items-center gap-2.5">
             <h2 className="display text-2xl md:text-3xl font-extrabold tracking-tight">Live feed <span className="text-[#8b6bff]">—</span> {activePersona.label}</h2>
             {!checkingLive && (
@@ -835,10 +841,12 @@ export default function TrendRadar() {
               )
             )}
           </div>
-          <div className="flex items-center gap-3 w-full md:w-auto">
-            <div className="relative flex-1 md:w-72">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8ea7ff]" />
-              <input value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder="Search TikTok, crypto, products…" className="w-full rounded-xl border border-[#7c5cff]/30 bg-[#100c20]/80 py-2.5 pl-9 pr-3 text-xs body-f outline-none focus:border-[#8ea7ff]" />
+          <div className="flex items-center justify-center gap-3 w-full">
+            <div className="relative flex-1 md:w-[420px]">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#8ea7ff]" />
+              <input list="trend-search-suggestions" value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder="Search any trend: TikTok, football, crypto…" className="w-full rounded-2xl border-2 border-[#6f8dff]/55 bg-[#15234a]/90 py-4 pl-12 pr-4 text-sm body-f text-white shadow-[0_0_28px_rgba(75,130,255,.18)] outline-none focus:border-[#58b8ff] focus:shadow-[0_0_32px_rgba(75,180,255,.3)]" />
+              <datalist id="trend-search-suggestions">{SEARCH_SUGGESTIONS.map((suggestion) => <option key={suggestion} value={suggestion} />)}</datalist>
+              {searchQuery && <div className="absolute z-30 left-0 right-0 top-full mt-2 rounded-xl border border-[#6f8dff]/40 bg-[#101a38] p-2 shadow-2xl">{SEARCH_SUGGESTIONS.filter((suggestion) => suggestion.toLowerCase().includes(searchQuery.toLowerCase())).slice(0, 6).map((suggestion) => <button key={suggestion} onClick={() => setSearchQuery(suggestion)} className="block w-full rounded-lg px-3 py-2 text-left text-xs text-[#d5e4ff] hover:bg-[#284b91]">{suggestion}</button>)}</div>}
             </div>
             <span className="hidden lg:block mono text-xs text-[#655a92]">sorted by signal strength</span>
           </div>
