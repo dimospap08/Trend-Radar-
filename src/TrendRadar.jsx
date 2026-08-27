@@ -1006,7 +1006,7 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
         ) : (
           <>
           {selectedCategory && <div className="mb-7 flex justify-center"><button onClick={() => { setSelectedCategory(null); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="rounded-xl border border-[#6f8dff]/40 px-4 py-3 text-xs font-semibold text-[#b9d5ff] hover:bg-[#1b3770]">← Back to signal folders</button></div>}
-          {!selectedCategory ? <div className="rounded-3xl border border-[#6f8dff]/25 bg-gradient-to-br from-[#122452] to-[#101a38] p-10 text-center"><p className="mono text-[10px] uppercase tracking-[.2em] text-[#8ea7ff]">Choose your radar folder</p><h3 className="display mt-2 text-2xl font-extrabold">Pick a signal category to explore</h3><p className="body-f mt-2 text-sm text-[#b9ccef]">Open one folder to see the trends, examples and AI action plan inside.</p></div> : <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4 items-start">
+          {!selectedCategory ? <div className="rounded-3xl border border-[#6f8dff]/25 bg-gradient-to-br from-[#122452] to-[#101a38] p-10 text-center"><p className="mono text-[10px] uppercase tracking-[.2em] text-[#8ea7ff]">Choose your radar folder</p><h3 className="display mt-2 text-2xl font-extrabold">Pick a signal category to explore</h3><p className="body-f mt-2 text-sm text-[#b9ccef]">Open one folder to see the trends, examples and AI action plan inside.</p></div> : <div className="grid grid-cols-1 gap-4 items-start w-full">
             {categoriesToRender.map((category) => {
               const categoryInfo = CATEGORY_VISUALS.find((item) => item.key === category);
               const CategoryIcon = categoryInfo?.icon ?? Layers;
@@ -1018,7 +1018,7 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
                   <div className="flex items-center gap-2.5"><div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{background:`${categoryInfo?.color}22`}}><CategoryIcon className="w-4 h-4" style={{color:categoryInfo?.color}} /></div><div><p className="display text-xs font-bold">{category === "Sound" ? "TikTok Sounds" : category + "s"}</p><p className="mono text-[9px] theme-muted">{categoryTrends.length} signals</p></div></div>
                   <span className="mono text-[9px] text-[#7c5cff]">TOP VIRAL</span>
                 </div>
-                <div className="space-y-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                 {shownTrends.map((t, idx) => {
               const locked = idx >= freeLimit;
               const watched = watchlist.has(t.id);
