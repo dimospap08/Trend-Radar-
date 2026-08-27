@@ -486,6 +486,7 @@ export default function TrendRadar() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [footballMatches, setFootballMatches] = useState([]);
+  const [footballOpen, setFootballOpen] = useState(false);
   const [footballQuery, setFootballQuery] = useState("");
   const [footballLoading, setFootballLoading] = useState(false);
   const [selectedMatch, setSelectedMatch] = useState(null);
@@ -890,8 +891,13 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
         </div>
       </section>
 
+      <section className="max-w-6xl mx-auto px-6 pb-6">
+        <button onClick={() => setFootballOpen((value) => !value)} className="flex w-full items-center gap-4 rounded-3xl border border-[#58b8ff]/40 bg-gradient-to-r from-[#142650] to-[#101a38] p-5 text-left hover:border-[#35d07f] transition">
+          <span className="text-4xl">⚽</span><span><span className="display block text-lg font-extrabold">Football & Betting</span><span className="body-f text-xs text-[#9eb9e8]">Live matches, odds and AI statistics · {footballOpen ? "folder open" : "click to open"}</span></span><span className="ml-auto text-2xl text-[#58b8ff]">{footballOpen ? "⌃" : "⌄"}</span>
+        </button>
+      </section>
       {/* FOOTBALL SIGNALS */}
-      <section id="football-signals" className="max-w-6xl mx-auto px-6 pb-16">
+      <section id="football-signals" className={`max-w-6xl mx-auto px-6 pb-16 ${footballOpen ? "" : "hidden"}`}>
         <div className="flex items-end justify-between gap-4 mb-5">
           <div><p className="mono text-[10px] uppercase tracking-[.22em] text-[#8ea7ff]">Pro intelligence</p><h2 className="display text-2xl md:text-3xl font-extrabold mt-1">Football Signals <span className="text-[#35d07f]">· live</span></h2><p className="body-f text-sm theme-muted mt-2">Real fixtures first. AI analysis comes after the numbers.</p></div>
           <span className="mono text-[10px] text-[#35d07f] border border-[#35d07f]/30 rounded-full px-3 py-1">LIVE DATA</span>
