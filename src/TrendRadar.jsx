@@ -515,6 +515,12 @@ export default function TrendRadar() {
   const [matchDetails, setMatchDetails] = useState(null);
   const [matchLoading, setMatchLoading] = useState(false);
   const [savedMatches, setSavedMatches] = useState(() => new Set(JSON.parse(localStorage.getItem("saved-matches") || "[]")));
+  const [showProfilePanel, setShowProfilePanel] = useState(false);
+  const [profileAvatar, setProfileAvatar] = useState(() => localStorage.getItem("trend-profile-avatar") || "");
+  const [profileSettings, setProfileSettings] = useState(() => {
+    try { return { showExplanations: true, showSourceLinks: true, showMetrics: true, compactCards: false, ...JSON.parse(localStorage.getItem("trend-profile-settings") || "{}") }; }
+    catch (_) { return { showExplanations: true, showSourceLinks: true, showMetrics: true, compactCards: false }; }
+  });
 
   // Auth + trial state
   const [session, setSession] = useState(null);
@@ -585,6 +591,18 @@ export default function TrendRadar() {
       if (saved) setWatchlist(new Set(JSON.parse(saved)));
     } catch (e) { /* nothing saved yet */ }
   }, []);
+
+  useEffect(() => { localStorage.setItem("trend-profile-settings", JSON.stringify(profileSettings)); }, [profileSettings]);
+
+  const updateProfileSetting = (key) => setProfileSettings((previous) => ({ ...previous, [key]: !previous[key] }));
+  const handleProfileAvatar = (event) => {
+    const file = event.target.files?.[0];
+    if (!file || !file.type.startsWith("image/")) return;
+    if (file.size > 2 * 1024 * 1024) { window.alert("Please choose an image smaller than 2MB."); return; }
+    const reader = new FileReader();
+    reader.onload = () => { const value = String(reader.result || ""); setProfileAvatar(value); localStorage.setItem("trend-profile-avatar", value); };
+    reader.readAsDataURL(file);
+  };
 
   const toggleWatch = (id) => {
     setWatchlist((prev) => {
@@ -745,10 +763,12 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
         .nav-link { display: inline-flex; align-items: center; padding: 8px 10px; border-radius: 9px; transition: color .2s ease, background .2s ease, transform .2s ease; }
         .nav-link:hover, .nav-link:focus-visible { color: #79a8ff !important; background: rgba(76,126,255,.14); transform: translateY(-1px); outline: none; }
         .theme-light .nav-link:hover, .theme-light .nav-link:focus-visible { color: #4b64d8 !important; background: #e9edff; }
+        .profile-compact .glass.rounded-2xl.p-4 { padding: .65rem; }
+        .profile-compact .glass.rounded-2xl.p-4 .body-f { font-size: .64rem; }
       `}</style>
 
       {/* NAV */}
-      <header className="border-b border-[#1c1633] sticky top-0 bg-[#060512]/85 backdrop-blur-md z-30">
+      <header className="relative border-b border-[#1c1633] sticky top-0 bg-[#060512]/85 backdrop-blur-md z-30">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="relative w-7 h-7 flex items-center justify-center rounded-lg bg-gradient-to-br from-[#7c5cff] to-[#4a2fb8]">
@@ -785,6 +805,9 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
                 ) : (
                   <span className="hidden sm:flex mono text-[10px] text-[#f5b83d] bg-[#2a2010] border border-[#5a4a20] rounded-full px-2.5 py-1">Trial ended</span>
                 )}
+                <button onClick={() => setShowProfilePanel((value) => !value)} aria-label="Open profile and settings" className="relative h-9 w-9 overflow-hidden rounded-full border-2 border-[#7c5cff]/60 bg-gradient-to-br from-[#8b6bff] to-[#284b91] text-white shadow-[0_0_18px_rgba(124,92,255,.3)] transition hover:scale-105 hover:border-[#58b8ff]">
+                  {profileAvatar ? <img src={profileAvatar} alt="Profile" className="h-full w-full object-cover" /> : <UserIcon className="mx-auto h-4 w-4" />}
+                </button>
                 <button onClick={handleSignOut} className="w-8 h-8 rounded-full bg-[#130f26] border border-[#231b45] flex items-center justify-center hover:border-[#7c5cff] transition">
                   <LogOut className="w-3.5 h-3.5 text-[#a99fd4]" />
                 </button>
@@ -799,6 +822,12 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
             )}
           </div>
         </div>
+        {isLoggedIn && showProfilePanel && <div className="absolute right-6 top-full z-50 mt-3 w-[min(92vw,360px)] rounded-2xl border border-[#6f8dff]/45 bg-[#101a38]/98 p-5 text-left shadow-2xl backdrop-blur-xl">
+          <div className="flex items-center gap-3 border-b border-[#6f8dff]/20 pb-4"><div className="h-12 w-12 overflow-hidden rounded-full border-2 border-[#58b8ff]/70 bg-gradient-to-br from-[#8b6bff] to-[#284b91] flex items-center justify-center text-white">{profileAvatar ? <img src={profileAvatar} alt="Profile" className="h-full w-full object-cover" /> : <UserIcon className="h-5 w-5" />}</div><div className="min-w-0"><p className="display text-sm font-bold text-white">Your Trend Radar profile</p><p className="body-f truncate text-xs text-[#9eb9e8]">{session?.user?.email || "Signed-in account"}</p></div><button onClick={() => setShowProfilePanel(false)} className="ml-auto text-lg text-[#9eb9e8]">×</button></div>
+          <label className="mt-4 flex cursor-pointer items-center justify-center rounded-xl border border-dashed border-[#58b8ff]/45 bg-[#142650]/70 px-3 py-3 text-xs font-semibold text-[#b9d5ff] transition hover:border-[#35d07f] hover:text-[#8ff0b7]"><span>📷 {profileAvatar ? "Change profile photo" : "Add profile photo"}</span><input type="file" accept="image/*" onChange={handleProfileAvatar} className="hidden" /></label>
+          <div className="mt-4"><p className="mono text-[10px] uppercase tracking-widest text-[#8ea7ff]">Dashboard preferences</p>{[["showExplanations","Show trend explanations"],["showSourceLinks","Show original source links"],["showMetrics","Show score and velocity"],["compactCards","Use compact trend cards"]].map(([key,label]) => <button key={key} onClick={() => updateProfileSetting(key)} className="mt-2 flex w-full items-center justify-between rounded-xl border border-[#6f8dff]/20 bg-[#15234a]/60 px-3 py-2.5 text-left text-xs text-[#d5e4ff]"><span>{label}</span><span className={`h-5 w-9 rounded-full p-0.5 transition ${profileSettings[key] ? "bg-[#35d07f]" : "bg-[#38476d]"}`}><span className={`block h-4 w-4 rounded-full bg-white transition ${profileSettings[key] ? "translate-x-4" : ""}`} /></span></button>)}</div>
+          <p className="body-f mt-4 text-[10px] leading-relaxed text-[#8ea7ff]">Οι ρυθμίσεις αποθηκεύονται αυτόματα σε αυτή τη συσκευή.</p>
+        </div>}
       </header>
 
       {/* HERO */}
@@ -948,7 +977,7 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
       </section>
 
       {/* FEED */}
-      <section id="feed" className="screener-feed max-w-6xl mx-auto px-6 pb-20">
+      <section id="feed" className={`screener-feed max-w-6xl mx-auto px-6 pb-20 ${profileSettings.compactCards ? "profile-compact" : ""}`}>
         <div className="flex flex-col items-center mb-7 gap-4">
           <div className="flex items-center gap-2.5">
             <h2 className="display text-2xl md:text-3xl font-extrabold tracking-tight">Live feed <span className="text-[#8b6bff]">—</span> {activePersona.label}</h2>
@@ -1074,17 +1103,19 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
                       <Star className={`w-4 h-4 ${watched ? "fill-[#f5b83d] text-[#f5b83d]" : "text-[#4a4270]"}`} />
                     </button>
                   </div>
-                  <Sparkline data={t.spark} />
-                  <p className="body-f text-[10px] leading-relaxed text-[#7c729f] mt-1.5"><span className="font-semibold text-[#a99fd4]">Why it matters: </span>{t.description || TREND_COPY[t.category] || "A live signal detected by Trend Radar."}</p>
-                  <p className="body-f text-[10px] leading-relaxed text-[#a98bff] mt-1"><span className="font-semibold">Do this: </span>{TREND_ACTION[t.category] || "Move early while the signal is gaining momentum."}</p>
+                  {profileSettings.showMetrics && <Sparkline data={t.spark} />}
+                  {profileSettings.showExplanations && <>
+                    <p className="body-f text-[10px] leading-relaxed text-[#7c729f] mt-1.5"><span className="font-semibold text-[#a99fd4]">Why it matters: </span>{t.description || TREND_COPY[t.category] || "A live signal detected by Trend Radar."}</p>
+                    <p className="body-f text-[10px] leading-relaxed text-[#a98bff] mt-1"><span className="font-semibold">Do this: </span>{TREND_ACTION[t.category] || "Move early while the signal is gaining momentum."}</p>
+                  </>}
                   <div className="mt-3 rounded-xl border border-[#7c5cff]/15 bg-[#0f0b20]/55 px-3 py-2"><div className="flex items-center justify-between"><span className="mono text-[9px] uppercase tracking-widest text-[#8ea7ff]">Decision</span><span className={`mono text-[9px] font-bold ${t.score >= 60 ? "text-[#35d07f]" : t.score >= 30 ? "text-[#f5b83d]" : "text-[#ff6b6b]"}`}>{trendVerdict(t.score).label}</span></div><p className="body-f text-[10px] leading-relaxed text-[#b3a9d9] mt-1">{trendVerdict(t.score).text}</p></div>
-                  <div className="flex items-center justify-between mt-1">
+                  {profileSettings.showMetrics && <div className="flex items-center justify-between mt-1">
                     <span className={`flex items-center gap-1 mono text-[10px] font-bold ${t.score >= 60 ? "text-[#35d07f]" : t.score >= 30 ? "text-[#f5b83d]" : "text-[#ff6b6b]"}`}>
                       <TrendingUp className="w-3 h-3" /> +{t.velocity}%
                     </span>
                     <span className={`mono text-[9px] font-bold ${t.score >= 60 ? "text-[#35d07f]" : t.score >= 30 ? "text-[#f5b83d]" : "text-[#ff6b6b]"}`}>{t.score >= 60 ? "HOT" : t.score >= 30 ? "WARMING" : "COOLING"} · {t.score}</span>
-                  </div>
-                  <p className="mono text-[9px] text-[#4a4270] mt-1">first seen {t.firstSeen ?? "recently"}h ago</p>
+                  </div>}
+                  {profileSettings.showMetrics && <p className="mono text-[9px] text-[#4a4270] mt-1">first seen {t.firstSeen ?? "recently"}h ago</p>}
                 </div>
               );
                 })}
@@ -1099,7 +1130,7 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
 
       {signalNotice && <div className="fixed bottom-6 left-1/2 z-[80] w-[min(92vw,430px)] -translate-x-1/2 rounded-2xl border border-[#c084fc]/50 bg-[#11142f]/95 p-4 shadow-[0_0_35px_rgba(192,132,252,.25)] backdrop-blur-xl animate-[shake_.45s_ease-in-out]"><div className="flex items-start gap-3"><div className="rounded-xl bg-[#c084fc]/15 p-2 text-[#c084fc]"><Lock className="h-5 w-5" /></div><div><p className="display text-sm font-bold">Signal folder locked</p><p className="body-f text-xs text-[#b9ccef] mt-1">Ξεκλείδωσε το Signal plan για πρόσβαση σε Meme Coins, Crypto, Narratives και Global Markets.</p><button onClick={() => { setSignalNotice(false); document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" }); }} className="mt-3 rounded-lg bg-gradient-to-r from-[#8b6bff] to-[#6941e8] px-3 py-2 text-[11px] font-bold text-white">View Signal plan →</button></div><button onClick={() => setSignalNotice(false)} className="ml-auto text-[#9eb9e8]">×</button></div></div>}
 
-      {selectedTrend?.sourceUrl && <a href={selectedTrend.sourceUrl} target="_blank" rel="noreferrer" className="fixed bottom-6 right-6 z-[90] inline-flex items-center gap-3 rounded-2xl border-2 border-[#35d07f] bg-gradient-to-r from-[#159957] to-[#35d07f] px-6 py-4 text-sm font-extrabold text-white shadow-[0_0_30px_rgba(53,208,127,.55)] animate-[sourcePulse_1.8s_ease-in-out_infinite] hover:scale-105 hover:from-[#35d07f] hover:to-[#159957] transition">🔗 Open original source <span className="text-lg">↗</span></a>}
+      {profileSettings.showSourceLinks && selectedTrend?.sourceUrl && <a href={selectedTrend.sourceUrl} target="_blank" rel="noreferrer" className="fixed bottom-6 right-6 z-[90] inline-flex items-center gap-3 rounded-2xl border-2 border-[#35d07f] bg-gradient-to-r from-[#159957] to-[#35d07f] px-6 py-4 text-sm font-extrabold text-white shadow-[0_0_30px_rgba(53,208,127,.55)] animate-[sourcePulse_1.8s_ease-in-out_infinite] hover:scale-105 hover:from-[#35d07f] hover:to-[#159957] transition">🔗 Open original source <span className="text-lg">↗</span></a>}
 
       {/* PRICING */}
       <section id="pricing" className="max-w-6xl mx-auto px-6 pb-24">
