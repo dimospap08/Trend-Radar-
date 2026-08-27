@@ -367,6 +367,23 @@ const SEARCH_SUGGESTIONS = [
   "crypto narratives", "meme coins", "DeFi", "Bitcoin", "Solana", "AI products",
   "viral products", "e-commerce ideas", "beauty trends", "fashion aesthetics", "marketing hooks",
 ];
+const SEARCH_ALIASES = {
+  tiktok: ["tiktok", "sound", "hashtag", "format"],
+  crypto: ["coin", "narrative", "crypto", "bitcoin", "solana", "defi"],
+  "meme coin": ["coin", "narrative"],
+  products: ["product", "aesthetic"],
+  product: ["product", "aesthetic"],
+  fashion: ["aesthetic"],
+  marketing: ["hashtag", "format", "aesthetic"],
+};
+function matchesTrendSearch(trend, query) {
+  const q = query.trim().toLowerCase();
+  if (!q) return true;
+  const fields = [trend.name, trend.category, trend.platform, trend.description].map((value) => String(value || "").toLowerCase());
+  if (fields.some((field) => field.includes(q))) return true;
+  const aliases = Object.entries(SEARCH_ALIASES).find(([key]) => q.includes(key) || key.includes(q));
+  return !!aliases && aliases[1].some((term) => fields.some((field) => field.includes(term)));
+}
 
 const PREVIEW_SIGNALS = [
   { category: "TikTok Sound", name: "Trending audio signal", score: 92, velocity: "+743%", color: "#35d07f" },
@@ -541,7 +558,7 @@ export default function TrendRadar() {
   const visibleTrends = allVisibleTrends.filter((t) => {
     const query = searchQuery.trim().toLowerCase();
     if (!query) return true;
-    return [t.name, t.category, t.platform, t.description].some((value) => String(value || "").toLowerCase().includes(query));
+    return matchesTrendSearch(t, query);
   });
   const activePersona = PERSONAS.find((p) => p.id === persona);
 
@@ -848,7 +865,7 @@ export default function TrendRadar() {
               <datalist id="trend-search-suggestions">{SEARCH_SUGGESTIONS.map((suggestion) => <option key={suggestion} value={suggestion} />)}</datalist>
               {searchQuery && <div className="absolute z-30 left-0 right-0 top-full mt-2 rounded-xl border border-[#6f8dff]/40 bg-[#101a38] p-2 shadow-2xl">{SEARCH_SUGGESTIONS.filter((suggestion) => suggestion.toLowerCase().includes(searchQuery.toLowerCase())).slice(0, 6).map((suggestion) => <button key={suggestion} onClick={() => setSearchQuery(suggestion)} className="block w-full rounded-lg px-3 py-2 text-left text-xs text-[#d5e4ff] hover:bg-[#284b91]">{suggestion}</button>)}</div>}
             </div>
-            <span className="hidden lg:block mono text-xs text-[#655a92]">sorted by signal strength</span>
+            <span className="hidden lg:block mono text-xs text-[#655a92]">AI signal search</span>
           </div>
         </div>
 
