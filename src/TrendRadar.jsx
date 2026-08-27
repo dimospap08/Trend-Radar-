@@ -98,12 +98,21 @@ function normalizeTrend(t) {
     score: Number(t.score ?? 50),
     description: t.description || TREND_COPY[t.category] || "A live signal detected by Trend Radar.",
     emoji: CATEGORY_EMOJI[t.category] || "📡",
-    sourceUrl: /^https?:\/\//i.test(String(t.source_url || "")) ? t.source_url : null,
+    sourceUrl: /^https?:\/\//i.test(String(t.source_url || "")) ? t.source_url : trendFallbackUrl(t),
     mediaUrl: /^https?:\/\//i.test(String(t.media_url || "")) ? t.media_url : null,
     mediaType: t.media_type === "video" ? "video" : "image",
     spark,
     firstSeen: hoursAgo,
   };
+}
+
+function trendFallbackUrl(trend) {
+  const query = encodeURIComponent(`${trend.name || "trend"} ${trend.platform || ""}`.trim());
+  if (trend.category === "Coin") return `https://dexscreener.com/search?q=${query}`;
+  if (trend.category === "Sound" || /tiktok/i.test(trend.platform || "")) return `https://www.tiktok.com/search?q=${query}`;
+  if (/instagram/i.test(trend.platform || "")) return `https://www.instagram.com/explore/search/keyword/?q=${query}`;
+  if (/youtube/i.test(trend.platform || "")) return `https://www.youtube.com/results?search_query=${query}`;
+  return `https://www.google.com/search?q=${query}`;
 }
 
 /* =========================================================
