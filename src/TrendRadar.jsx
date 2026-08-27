@@ -5,7 +5,7 @@ import {
   Check, Activity, Bell, ArrowRight, Gauge, Sparkles, Lock,
   ShieldCheck, Zap, Clock, Music2, Hash, Layers, Palette, MessageSquare,
   Mail, LogOut, User as UserIcon,
-  Sun, Moon, RefreshCw, Search,
+  Sun, Moon, RefreshCw, Search, SlidersHorizontal,
 } from "lucide-react";
 
 /* =========================================================
@@ -502,6 +502,9 @@ export default function TrendRadar() {
   const [expandedColumns, setExpandedColumns] = useState({});
   const [selectedTrend, setSelectedTrend] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
+  const [trendSort, setTrendSort] = useState("signal");
+  const [trendWindow, setTrendWindow] = useState("all");
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [footballMatches, setFootballMatches] = useState([]);
   const [footballOpen, setFootballOpen] = useState(false);
@@ -596,8 +599,17 @@ export default function TrendRadar() {
   const allVisibleTrends = liveTrends ?? ALL_TRENDS.filter((t) => categories.includes(t.category));
   const visibleTrends = allVisibleTrends.filter((t) => {
     const query = searchQuery.trim().toLowerCase();
+    const hours = Number(t.firstSeen);
+    const inWindow = trendWindow === "all" || (Number.isFinite(hours) && hours <= Number(trendWindow));
+    if (!inWindow) return false;
     if (!query) return true;
     return matchesTrendSearch(t, query);
+  }).sort((a, b) => {
+    if (trendSort === "newest") return Number(a.firstSeen ?? 99999) - Number(b.firstSeen ?? 99999);
+    if (trendSort === "oldest") return Number(b.firstSeen ?? -1) - Number(a.firstSeen ?? -1);
+    if (trendSort === "score") return Number(b.score ?? 0) - Number(a.score ?? 0);
+    if (trendSort === "velocity") return Number(b.velocity ?? 0) - Number(a.velocity ?? 0);
+    return (Number(b.score ?? 0) * 2 + Number(b.velocity ?? 0)) - (Number(a.score ?? 0) * 2 + Number(a.velocity ?? 0));
   });
   const activePersona = PERSONAS.find((p) => p.id === persona);
   const categoriesToRender = selectedCategory ? [selectedCategory] : [];
@@ -958,6 +970,15 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
               <input list="trend-search-suggestions" value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder="Search any trend: TikTok, football, crypto…" className="w-full rounded-2xl border-2 border-[#6f8dff]/55 bg-[#15234a]/90 py-4 pl-12 pr-4 text-sm body-f text-white shadow-[0_0_28px_rgba(75,130,255,.18)] outline-none focus:border-[#58b8ff] focus:shadow-[0_0_32px_rgba(75,180,255,.3)]" />
               <datalist id="trend-search-suggestions">{SEARCH_SUGGESTIONS.map((suggestion) => <option key={suggestion} value={suggestion} />)}</datalist>
               {searchQuery && <div className="absolute z-30 left-0 right-0 top-full mt-2 rounded-xl border border-[#6f8dff]/40 bg-[#101a38] p-2 shadow-2xl">{SEARCH_SUGGESTIONS.filter((suggestion) => suggestion.toLowerCase().includes(searchQuery.toLowerCase())).slice(0, 6).map((suggestion) => <button key={suggestion} onClick={() => setSearchQuery(suggestion)} className="block w-full rounded-lg px-3 py-2 text-left text-xs text-[#d5e4ff] hover:bg-[#284b91]">{suggestion}</button>)}</div>}
+            </div>
+            <div className="relative shrink-0">
+              <button onClick={() => setShowFilters((value) => !value)} aria-label="Open trend filters" className={`inline-flex items-center gap-2 rounded-2xl border-2 px-4 py-4 text-sm font-bold transition ${showFilters ? "border-[#35d07f] bg-[#123c32] text-[#8ff0b7]" : "border-[#6f8dff]/55 bg-[#15234a]/90 text-[#d5e4ff] hover:border-[#35d07f]"}`}><SlidersHorizontal className="h-5 w-5" /> <span className="hidden sm:inline">Filters</span></button>
+              {showFilters && <div className="absolute right-0 top-full z-40 mt-3 w-[min(92vw,330px)] rounded-2xl border border-[#35d07f]/45 bg-[#101a38]/98 p-4 text-left shadow-2xl backdrop-blur-xl">
+                <div className="mb-3 flex items-center justify-between"><p className="display text-sm font-bold text-white">Trend controls</p><span className="mono text-[9px] text-[#35d07f]">SMART SORT</span></div>
+                <label className="mono text-[10px] uppercase tracking-widest text-[#9eb9e8]">Sort by<select value={trendSort} onChange={(event) => setTrendSort(event.target.value)} className="mt-1 w-full rounded-xl border border-[#6f8dff]/35 bg-[#15234a] px-3 py-2.5 text-sm normal-case tracking-normal text-white outline-none"><option value="signal">Top signal strength</option><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="score">Highest score</option><option value="velocity">Fastest rising</option></select></label>
+                <label className="mono mt-3 block text-[10px] uppercase tracking-widest text-[#9eb9e8]">Time window<select value={trendWindow} onChange={(event) => setTrendWindow(event.target.value)} className="mt-1 w-full rounded-xl border border-[#6f8dff]/35 bg-[#15234a] px-3 py-2.5 text-sm normal-case tracking-normal text-white outline-none"><option value="all">All available signals</option><option value="24">Last 24 hours</option><option value="72">Last 3 days</option><option value="168">Last 7 days</option><option value="720">Last 30 days</option></select></label>
+                <p className="body-f mt-3 text-[10px] leading-relaxed text-[#8ea7ff]">Find the strongest opportunities faster: freshness, momentum and signal score are recalculated instantly.</p>
+              </div>}
             </div>
             <span className="hidden lg:block mono text-xs text-[#655a92]">AI signal search</span>
           </div>
