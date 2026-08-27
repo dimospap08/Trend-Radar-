@@ -8,4 +8,12 @@
   75% { transform: translateX(calc(-50% + 5px)) rotate(1deg); }
 }
 
+/* Compact data-screener layout for trend columns. */
+.screener-feed .glass.rounded-2xl.p-4 { padding: .7rem; border-radius: .75rem; }
+.screener-feed .glass.rounded-2xl.p-4 .h-16 { height: 2.45rem; margin-bottom: .45rem; padding-bottom: .35rem; }
+.screener-feed .glass.rounded-2xl.p-4 .h-16 .absolute { font-size: 2.7rem; }
+.screener-feed .glass.rounded-2xl.p-4 .h-9 { height: 1.55rem; margin-top: .35rem; }
+.screener-feed .glass.rounded-2xl.p-4 .mt-5 { margin-top: .55rem; }
+.screener-feed .glass.rounded-2xl.p-4 .mt-4 { margin-top: .45rem; }
+
 html, body { margin: 0; padding: 0; }
