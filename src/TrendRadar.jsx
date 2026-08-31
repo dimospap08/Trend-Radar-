@@ -682,13 +682,13 @@ export default function TrendRadar() {
   const freeLimit = trialExpiredNoSub ? 0 : hasFullAccess ? Infinity : 3;
 
   const startCheckout = async (planId) => {
-    const email = session?.user?.email || window.prompt("Enter your email to continue to checkout:");
-    if (!email) return;
+    const email = session?.user?.email;
+    if (!session?.access_token || !email) { setShowSignIn(true); return; }
     try {
       const res = await fetch(`${API_BASE}/api/billing/checkout`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: session?.user?.id || email, email, tier: planId }),
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
+        body: JSON.stringify({ email, tier: planId }),
       });
       const data = await res.json();
       if (data.url) window.location.href = data.url;
