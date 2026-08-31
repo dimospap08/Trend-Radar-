@@ -720,7 +720,7 @@ export default function TrendRadar() {
                 </span>
               ) : (
                 <span className="mono text-[10px] text-[#655a92] bg-[#0f0d1f] border border-[#1c1633] rounded-full px-2.5 py-1">
-                  SAMPLE PREVIEW
+                  LIVE PREVIEW
                 </span>
               )
             )}
