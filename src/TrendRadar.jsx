@@ -310,17 +310,6 @@ function SignalTicker() {
   );
 }
 
-function GrainOverlay() {
-  return (
-    <svg className="fixed inset-0 w-full h-full pointer-events-none z-[1] opacity-[0.05] mix-blend-overlay">
-      <filter id="grain">
-        <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch" />
-      </filter>
-      <rect width="100%" height="100%" filter="url(#grain)" />
-    </svg>
-  );
-}
-
 const CATEGORY_VISUALS = [
   { key: "Sound", icon: Music2, color: "#7c5cff", desc: "Audio & remix trends before they're everywhere" },
   { key: "Hashtag", icon: Hash, color: "#f5b83d", desc: "Tags accelerating across every platform" },
@@ -785,7 +774,6 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
   return (
     <div className={`min-h-screen ${lightMode ? "theme-light" : "theme-dark"} relative`}>
       {matchOverlay}
-      <GrainOverlay />
       {showSignIn && <SignInModal onClose={() => setShowSignIn(false)} />}
       {selectedTrend && <div className="fixed inset-0 z-40 flex items-center justify-center bg-[#060512]/75 backdrop-blur-md px-4" onClick={() => setSelectedTrend(null)}><div className="glass rounded-3xl w-full max-w-lg p-7 shadow-2xl max-h-[92vh] overflow-y-auto" onClick={(event) => event.stopPropagation()}><div className="flex items-start justify-between"><div className="flex items-center gap-3"><div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#8b6bff]/30 to-[#4b8cff]/20 border border-[#8b6bff]/40 flex items-center justify-center text-3xl">{selectedTrend.emoji || CATEGORY_EMOJI[selectedTrend.category] || "📡"}</div><div><p className="mono text-[10px] uppercase tracking-widest text-[#a98bff]">{selectedTrend.category} · {selectedTrend.platform}</p><h3 className="display text-xl font-extrabold mt-1">{selectedTrend.name}</h3></div></div><button onClick={() => setSelectedTrend(null)} className="text-[#a99fd4] text-xl">×</button></div><div className="relative mt-6 h-52 rounded-2xl overflow-hidden border border-[#7c5cff]/25">{selectedTrend.mediaUrl ? (selectedTrend.mediaType === "video" ? <video src={selectedTrend.mediaUrl} controls playsInline className="w-full h-full object-cover" /> : <img src={selectedTrend.mediaUrl} alt={`Preview for ${selectedTrend.name}`} className="w-full h-full object-cover" />) : <img src={fallbackMediaForTrend(selectedTrend)} alt={`Example visual for ${selectedTrend.name}`} className="w-full h-full object-cover" />}<div className="absolute inset-0 bg-gradient-to-t from-[#060512]/80 via-transparent to-transparent" /><div className="absolute bottom-4 left-4 flex items-center gap-2"><span className="w-9 h-9 rounded-full bg-white text-[#4b35b8] flex items-center justify-center text-sm">▶</span><span className="mono text-[10px] text-white uppercase tracking-widest">Example preview · {selectedTrend.platform}</span></div></div><div className="mt-5 rounded-2xl bg-[#130f26]/70 border border-[#7c5cff]/20 p-4"><Sparkline data={selectedTrend.spark} color={selectedTrend.score >= 60 ? "#35d07f" : selectedTrend.score >= 30 ? "#f5b83d" : "#ff6b6b"} /><div className="grid grid-cols-2 gap-3 mt-4"><div><p className="mono text-[10px] text-[#7c729f]">TREND SCORE</p><p className={`display text-2xl font-extrabold ${selectedTrend.score >= 60 ? "text-[#35d07f]" : selectedTrend.score >= 30 ? "text-[#f5b83d]" : "text-[#ff6b6b]"}`}>{selectedTrend.score}</p></div><div><p className="mono text-[10px] text-[#7c729f]">VELOCITY</p><p className="display text-2xl font-extrabold text-[#a98bff]">+{selectedTrend.velocity}%</p></div></div></div><p className="body-f text-sm leading-relaxed text-[#b3a9d9] mt-5">{selectedTrend.description || TREND_COPY[selectedTrend.category] || "A live signal detected by Trend Radar."}</p><p className="body-f text-xs leading-relaxed text-[#a98bff] mt-2">{TREND_ACTION[selectedTrend.category] || "Move early while the signal is gaining momentum."}</p><p className="mono text-[10px] text-[#7c729f] mt-4">First detected {selectedTrend.firstSeen ?? "recently"} hours ago · Updated hourly</p>{profileSettings.showSourceLinks && selectedTrend.sourceUrl && <a href={selectedTrend.sourceUrl} target="_blank" rel="noreferrer" className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl border-2 border-[#35d07f] bg-gradient-to-r from-[#159957] to-[#35d07f] px-4 py-3 text-sm font-extrabold text-white shadow-[0_0_22px_rgba(53,208,127,.3)] transition hover:scale-[1.02]">🔗 Open original source <span className="text-lg">↗</span></a>}</div></div>}
       {!isLoggedIn && <a href="#pricing" className="md:hidden fixed bottom-4 left-4 right-4 z-20 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#8b6bff] to-[#6941e8] py-3.5 text-sm font-bold text-white shadow-[0_8px_30px_rgba(70,45,180,.45)]">Start 3-day free trial <ArrowRight className="w-4 h-4" /></a>}
