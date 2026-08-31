@@ -495,6 +495,7 @@ function SignInModal({ onClose }) {
 export default function TrendRadar() {
   const [persona, setPersona] = useState("creator");
   const [watchlist, setWatchlist] = useState(new Set());
+  const [showWatchlistOnly, setShowWatchlistOnly] = useState(false);
   const [liveTrends, setLiveTrends] = useState(null);
   const [sourceStatus, setSourceStatus] = useState({ google: "unknown", gdelt: "unknown" });
   const [checkingLive, setCheckingLive] = useState(true);
@@ -651,6 +652,7 @@ export default function TrendRadar() {
   const categories = CATEGORY_BY_PERSONA[persona];
   const allVisibleTrends = liveTrends ?? ALL_TRENDS.filter((t) => categories.includes(t.category));
   const visibleTrends = allVisibleTrends.filter((t) => {
+    if (showWatchlistOnly && !watchlist.has(t.id)) return false;
     const query = searchQuery.trim().toLowerCase();
     const hours = Number(t.firstSeen);
     const inWindow = trendWindow === "all" || (Number.isFinite(hours) && hours <= Number(trendWindow));
@@ -1044,7 +1046,9 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
                 <p className="body-f mt-3 text-[10px] leading-relaxed text-[#8ea7ff]">Find the strongest opportunities faster: freshness, momentum and signal score are recalculated instantly.</p>
               </div>}
             </div>
-            <span className="hidden lg:block mono text-xs text-[#655a92]">AI signal search</span>
+            <button onClick={() => setShowWatchlistOnly((value) => !value)} className={`inline-flex items-center gap-2 rounded-2xl border-2 px-4 py-4 text-sm font-bold transition ${showWatchlistOnly ? "border-[#f5b83d] bg-[#3b2a12] text-[#ffd77b]" : "border-[#6f8dff]/55 bg-[#15234a]/90 text-[#d5e4ff] hover:border-[#f5b83d]"}`} aria-pressed={showWatchlistOnly}>
+              <Star className="h-5 w-5" /> <span className="hidden sm:inline">My Watchlist</span>
+            </button>
           </div>
         </div>
 
