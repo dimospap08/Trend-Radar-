@@ -592,6 +592,15 @@ export default function TrendRadar() {
     } catch (e) { /* nothing saved yet */ }
   }, []);
 
+  useEffect(() => {
+    if (!session?.user) return;
+    let cancelled = false;
+    supabase.from("watchlist").select("trend_id").then(({ data }) => {
+      if (!cancelled && Array.isArray(data)) setWatchlist(new Set(data.map((row) => row.trend_id)));
+    });
+    return () => { cancelled = true; };
+  }, [session]);
+
   useEffect(() => { localStorage.setItem("trend-profile-settings", JSON.stringify(profileSettings)); }, [profileSettings]);
 
   const updateProfileSetting = (key) => setProfileSettings((previous) => ({ ...previous, [key]: !previous[key] }));
@@ -604,7 +613,14 @@ export default function TrendRadar() {
     reader.readAsDataURL(file);
   };
 
-  const toggleWatch = (id) => {
+  const toggleWatch = async (id) => {
+    if (session?.user) {
+      const exists = watchlist.has(id);
+      const result = exists
+        ? await supabase.from("watchlist").delete().eq("user_id", session.user.id).eq("trend_id", id)
+        : await supabase.from("watchlist").insert({ user_id: session.user.id, trend_id: id });
+      if (result.error) { window.alert("Could not update your watchlist. Please try again."); return; }
+    }
     setWatchlist((prev) => {
       const next = new Set(prev);
       next.has(id) ? next.delete(id) : next.add(id);
