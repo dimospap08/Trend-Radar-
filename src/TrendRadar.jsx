@@ -531,6 +531,7 @@ export default function TrendRadar() {
   const [hasActiveSub, setHasActiveSub] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [profileLoaded, setProfileLoaded] = useState(false);
+  const [alerts, setAlerts] = useState([]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSession(data.session));
@@ -605,6 +606,15 @@ export default function TrendRadar() {
   }, [session]);
 
   useEffect(() => {
+    if (!session?.user) { setAlerts([]); return; }
+    let cancelled = false;
+    supabase.from("alerts").select("id, trend_id, threshold_score, threshold_velocity, sent_at").order("id", { ascending: false }).then(({ data }) => {
+      if (!cancelled) setAlerts(Array.isArray(data) ? data : []);
+    });
+    return () => { cancelled = true; };
+  }, [session]);
+
+  useEffect(() => {
     if (!selectedTrend?.id) return;
     let cancelled = false;
     fetch(`${API_BASE}/api/trends/${selectedTrend.id}/history`)
@@ -660,7 +670,15 @@ export default function TrendRadar() {
     }
     const { error } = await supabase.from("alerts").insert({ user_id: session.user.id, trend_id: trend.id, threshold_score: Math.round(thresholdScore) });
     if (error) { window.alert("Could not create the alert. Please try again."); return; }
+    setAlerts((previous) => [{ id: `local-${Date.now()}`, trend_id: trend.id, threshold_score: Math.round(thresholdScore), sent_at: null }, ...previous]);
     window.alert("Alert created. We will email you when the score reaches your threshold.");
+  };
+
+  const deleteAlert = async (alertId) => {
+    if (String(alertId).startsWith("local-")) { setAlerts((previous) => previous.filter((item) => item.id !== alertId)); return; }
+    const { error } = await supabase.from("alerts").delete().eq("id", alertId);
+    if (error) { window.alert("Could not delete the alert. Please try again."); return; }
+    setAlerts((previous) => previous.filter((item) => item.id !== alertId));
   };
 
   const categories = CATEGORY_BY_PERSONA[persona];
@@ -877,6 +895,10 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
           <div className="flex items-center gap-3 border-b border-[#6f8dff]/20 pb-4"><div className="h-12 w-12 overflow-hidden rounded-full border-2 border-[#58b8ff]/70 bg-gradient-to-br from-[#8b6bff] to-[#284b91] flex items-center justify-center text-white">{profileAvatar ? <img src={profileAvatar} alt="Profile" className="h-full w-full object-cover" /> : <UserIcon className="h-5 w-5" />}</div><div className="min-w-0"><p className="display text-sm font-bold text-white">Your Trend Radar profile</p><p className="body-f truncate text-xs text-[#9eb9e8]">{session?.user?.email || "Signed-in account"}</p></div><button onClick={() => setShowProfilePanel(false)} className="ml-auto text-lg text-[#9eb9e8]">×</button></div>
           <label className="mt-4 flex cursor-pointer items-center justify-center rounded-xl border border-dashed border-[#58b8ff]/45 bg-[#142650]/70 px-3 py-3 text-xs font-semibold text-[#b9d5ff] transition hover:border-[#35d07f] hover:text-[#8ff0b7]"><span>📷 {profileAvatar ? "Change profile photo" : "Add profile photo"}</span><input type="file" accept="image/*" onChange={handleProfileAvatar} className="hidden" /></label>
           <div className="mt-4"><p className="mono text-[10px] uppercase tracking-widest text-[#8ea7ff]">Dashboard preferences</p>{[["showExplanations","Show trend explanations"],["showSourceLinks","Show original source links"],["showMetrics","Show score and velocity"],["compactCards","Use compact trend cards"]].map(([key,label]) => <button key={key} onClick={() => updateProfileSetting(key)} className="mt-2 flex w-full items-center justify-between rounded-xl border border-[#6f8dff]/20 bg-[#15234a]/60 px-3 py-2.5 text-left text-xs text-[#d5e4ff]"><span>{label}</span><span className={`h-5 w-9 rounded-full p-0.5 transition ${profileSettings[key] ? "bg-[#35d07f]" : "bg-[#38476d]"}`}><span className={`block h-4 w-4 rounded-full bg-white transition ${profileSettings[key] ? "translate-x-4" : ""}`} /></span></button>)}</div>
+          <div className="mt-5 border-t border-[#6f8dff]/20 pt-4">
+            <div className="flex items-center justify-between"><p className="mono text-[10px] uppercase tracking-widest text-[#8ea7ff]">My Alerts</p><span className="mono text-[9px] text-[#a99fd4]">{alerts.length}</span></div>
+            {alerts.length === 0 ? <p className="body-f mt-2 text-[10px] text-[#9eb9e8]">No alerts yet. Use the Alert button on a trend.</p> : <div className="mt-2 max-h-36 space-y-2 overflow-y-auto">{alerts.map((item) => <div key={item.id} className="flex items-center justify-between gap-2 rounded-lg border border-[#6f8dff]/20 bg-[#15234a]/60 px-2.5 py-2"><div><p className="mono text-[9px] text-[#d5e4ff]">Score ≥ {item.threshold_score ?? "—"}</p><p className="mono text-[8px] text-[#8ea7ff]">{item.sent_at ? "Sent" : "Waiting"}</p></div><button onClick={() => deleteAlert(item.id)} className="text-[10px] text-[#ff9b9b] hover:text-white" aria-label="Delete alert">Delete</button></div>)}</div>}
+          </div>
           <p className="body-f mt-4 text-[10px] leading-relaxed text-[#8ea7ff]">Settings are saved automatically on this device.</p>
         </div>}
       </header>
