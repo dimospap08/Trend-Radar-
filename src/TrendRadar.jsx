@@ -1168,7 +1168,7 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
                       <div className="flex items-center gap-2"><span className="text-lg">{t.emoji || CATEGORY_EMOJI[t.category] || "📡"}</span><p className="mono text-[10px] text-[#7c729f] uppercase tracking-wide">{t.category}</p><span className="inline-flex items-center gap-1 rounded-full border border-[#7c5cff]/25 bg-[#7c5cff]/10 px-2 py-0.5 mono text-[9px] text-[#bcaeff]"><span className="text-sm leading-none">{platformMark(t.platform)}</span>{t.platform}</span></div>
                       <p className="display font-semibold text-[13px] mt-1 leading-snug">{t.name}</p>
                     </div>
-                    <button onClick={(event) => { event.stopPropagation(); toggleWatch(t.id); }} className="shrink-0">
+                    <button onClick={(event) => { event.stopPropagation(); toggleWatch(t.id); }} className="shrink-0" aria-label={watched ? `Remove ${t.name} from watchlist` : `Add ${t.name} to watchlist`} aria-pressed={watched}>
                       <Star className={`w-4 h-4 ${watched ? "fill-[#f5b83d] text-[#f5b83d]" : "text-[#4a4270]"}`} />
                     </button>
                   </div>
