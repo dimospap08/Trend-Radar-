@@ -649,6 +649,20 @@ export default function TrendRadar() {
     });
   };
 
+  const createTrendAlert = async (trend) => {
+    if (!session?.user) { setShowSignIn(true); return; }
+    const threshold = window.prompt("Alert me when this trend reaches score:", String(Math.max(1, Number(trend.score || 0))));
+    if (threshold === null) return;
+    const thresholdScore = Number(threshold);
+    if (!Number.isFinite(thresholdScore) || thresholdScore < 0 || thresholdScore > 99) {
+      window.alert("Please enter a score from 0 to 99.");
+      return;
+    }
+    const { error } = await supabase.from("alerts").insert({ user_id: session.user.id, trend_id: trend.id, threshold_score: Math.round(thresholdScore) });
+    if (error) { window.alert("Could not create the alert. Please try again."); return; }
+    window.alert("Alert created. We will email you when the score reaches your threshold.");
+  };
+
   const categories = CATEGORY_BY_PERSONA[persona];
   const allVisibleTrends = liveTrends ?? ALL_TRENDS.filter((t) => categories.includes(t.category));
   const visibleTrends = allVisibleTrends.filter((t) => {
@@ -1154,7 +1168,12 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
                     </span>
                     <span className={`mono text-[9px] font-bold ${t.score >= 60 ? "text-[#35d07f]" : t.score >= 30 ? "text-[#f5b83d]" : "text-[#ff6b6b]"}`}>{t.score >= 60 ? "HOT" : t.score >= 30 ? "WARMING" : "COOLING"} · {t.score}</span>
                   </div>}
-                  {profileSettings.showMetrics && <p className="mono text-[9px] text-[#4a4270] mt-1">first seen {t.firstSeen ?? "recently"}h ago</p>}
+                  <div className="mt-3 flex items-center justify-between gap-2">
+                    {profileSettings.showMetrics && <p className="mono text-[9px] text-[#4a4270]">first seen {t.firstSeen ?? "recently"}h ago</p>}
+                    <button onClick={(event) => { event.stopPropagation(); createTrendAlert(t); }} className="inline-flex items-center gap-1 rounded-lg border border-[#8b6bff]/35 px-2 py-1.5 mono text-[9px] font-bold text-[#c9bfff] hover:border-[#8b6bff] hover:bg-[#8b6bff]/10" aria-label={`Create alert for ${t.name}`}>
+                      <Bell className="h-3 w-3" /> Alert
+                    </button>
+                  </div>
                 </div>
               );
                 })}
