@@ -140,7 +140,7 @@ function Sparkline({ data, color = "#7c5cff" }) {
 }
 
 /* ---------- 3D Radar Core (signature hero element) ---------- */
-function RadarCore() {
+function RadarCore({ trends }) {
   const wrapRef = useRef(null);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const [angle, setAngle] = useState(0);
@@ -166,8 +166,9 @@ function RadarCore() {
   };
   const handleLeave = () => setTilt({ x: 0, y: 0 });
 
+  const sourceTrends = Array.isArray(trends) && trends.length ? trends : ALL_TRENDS;
   const blips = useMemo(
-    () => ALL_TRENDS.slice(0, 9).map((t, i) => ({
+    () => sourceTrends.slice(0, 9).map((t, i) => ({
       id: t.id,
       r: 34 + ((i * 19) % 58),
       theta: (i * 71) % 360,
@@ -176,7 +177,7 @@ function RadarCore() {
       label: t.name,
       velocity: t.velocity,
     })),
-    []
+    [sourceTrends]
   );
 
   return (
@@ -297,8 +298,9 @@ function RadarCore() {
   );
 }
 
-function SignalTicker() {
-  const items = useMemo(() => ALL_TRENDS.slice(0, 14), []);
+function SignalTicker({ trends }) {
+  const sourceTrends = Array.isArray(trends) && trends.length ? trends : ALL_TRENDS;
+  const items = useMemo(() => sourceTrends.slice(0, 14), [sourceTrends]);
   const line = items.map((t) => `${t.name} +${t.velocity}%`).join("   //   ");
   return (
     <div className="theme-ticker border-y border-[#1c1633] bg-[#0b0918]/80 overflow-hidden py-2.5">
@@ -948,7 +950,7 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
             </a>
           )}
         </div>
-        <RadarCore />
+        <RadarCore trends={liveTrends} />
       </section>
 
       {/* TRUST BAR */}
@@ -976,7 +978,7 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
         </div>
       </section>
 
-      <SignalTicker />
+      <SignalTicker trends={liveTrends} />
 
       {/* CATEGORIES */}
       <section id="categories" className="max-w-6xl mx-auto px-6 py-20">
