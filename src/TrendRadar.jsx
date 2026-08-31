@@ -601,6 +601,23 @@ export default function TrendRadar() {
     return () => { cancelled = true; };
   }, [session]);
 
+  useEffect(() => {
+    if (!selectedTrend?.id) return;
+    let cancelled = false;
+    fetch(`${API_BASE}/api/trends/${selectedTrend.id}/history`)
+      .then((response) => response.ok ? response.json() : null)
+      .then((data) => {
+        const history = Array.isArray(data?.history) ? data.history : [];
+        if (cancelled || history.length < 2) return;
+        const spark = history.map((point) => Number(point.score)).filter(Number.isFinite);
+        if (spark.length < 2) return;
+        setSelectedTrend((current) => current ? { ...current, spark } : current);
+        setLiveTrends((current) => current ? current.map((trend) => String(trend.id) === String(selectedTrend.id) ? { ...trend, spark } : trend) : current);
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [selectedTrend?.id]);
+
   useEffect(() => { localStorage.setItem("trend-profile-settings", JSON.stringify(profileSettings)); }, [profileSettings]);
 
   const updateProfileSetting = (key) => setProfileSettings((previous) => ({ ...previous, [key]: !previous[key] }));
