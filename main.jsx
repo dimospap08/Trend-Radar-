@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { inject } from "@vercel/analytics";
-import TrendRadar from "./TrendRadar.jsx";
+import TrendRadar from "./src/TrendRadar.jsx";
 import "./index.css";
 
 inject();
