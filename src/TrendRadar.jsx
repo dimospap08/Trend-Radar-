@@ -668,6 +668,10 @@ export default function TrendRadar() {
       window.alert("Please enter a score from 0 to 99.");
       return;
     }
+    if (alerts.some((item) => String(item.trend_id) === String(trend.id) && Number(item.threshold_score) === Math.round(thresholdScore) && !item.sent_at)) {
+      window.alert("You already have this alert.");
+      return;
+    }
     const { error } = await supabase.from("alerts").insert({ user_id: session.user.id, trend_id: trend.id, threshold_score: Math.round(thresholdScore) });
     if (error) { window.alert("Could not create the alert. Please try again."); return; }
     setAlerts((previous) => [{ id: `local-${Date.now()}`, trend_id: trend.id, threshold_score: Math.round(thresholdScore), sent_at: null }, ...previous]);
