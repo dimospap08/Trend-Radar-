@@ -496,6 +496,7 @@ export default function TrendRadar() {
   const [persona, setPersona] = useState("creator");
   const [watchlist, setWatchlist] = useState(new Set());
   const [liveTrends, setLiveTrends] = useState(null);
+  const [sourceStatus, setSourceStatus] = useState({ google: "unknown", gdelt: "unknown" });
   const [checkingLive, setCheckingLive] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [lightMode, setLightMode] = useState(() => localStorage.getItem("trend-theme") === "light");
@@ -566,6 +567,7 @@ export default function TrendRadar() {
       .then((r) => r.json())
       .then((data) => {
         if (cancelled) return;
+        setSourceStatus(data?.sourceStatus || { google: "unknown", gdelt: "unknown" });
         if (data?.trends?.length > 0) setLiveTrends(data.trends.map(normalizeTrend));
         else setLiveTrends(null);
       })
@@ -1017,7 +1019,7 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
             {!checkingLive && (
               liveTrends ? (
                 <span className="flex items-center gap-1.5 mono text-[10px] text-[#c9bfff] bg-[#160f2e] border border-[#7c5cff]/40 rounded-full px-2.5 py-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#7c5cff] animate-pulse" /> LIVE
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#7c5cff] animate-pulse" /> LIVE · Google {sourceStatus.google} · GDELT {sourceStatus.gdelt}
                 </span>
               ) : (
                 <span className="mono text-[10px] text-[#655a92] bg-[#0f0d1f] border border-[#1c1633] rounded-full px-2.5 py-1">
