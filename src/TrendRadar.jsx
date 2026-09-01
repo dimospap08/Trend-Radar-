@@ -682,6 +682,7 @@ export default function TrendRadar() {
     setAlerts((previous) => previous.filter((item) => item.id !== alertId));
   };
 
+  const isLoggedIn = !!session?.user;
   const hasSignalAccess = isLoggedIn && activeTier === "investor";
   const categories = hasSignalAccess
     ? CATEGORY_VISUALS.map((item) => item.key)
@@ -741,7 +742,6 @@ export default function TrendRadar() {
     : 0;
   const trialDaysLeft = Math.max(0, TRIAL_DAYS - daysUsed);
   const trialActive = trialDaysLeft > 0;
-  const isLoggedIn = !!session?.user;
   const choosePlan = async (planId) => {
     if (!session?.user) { setShowSignIn(true); return; }
     const { error } = await supabase.from("users").update({ selected_plan: planId }).eq("id", session.user.id);
