@@ -540,12 +540,14 @@ export default function TrendRadar() {
         .select("trial_started_at, selected_plan")
         .eq("id", session.user.id)
         .maybeSingle();
-      const { data: subRow } = await supabase
+      const { data: activeSubscriptions } = await supabase
         .from("subscriptions")
         .select("status, tier")
         .eq("user_id", session.user.id)
-        .eq("status", "active")
-        .maybeSingle();
+        .eq("status", "active");
+      const subRow = (activeSubscriptions ?? []).find((row) => row.tier === "investor")
+        ?? activeSubscriptions?.[0]
+        ?? null;
       if (cancelled) return;
       setTrialStartedAt(userRow?.trial_started_at ?? session.user.created_at);
       setSelectedPlan(userRow?.selected_plan ?? null);
