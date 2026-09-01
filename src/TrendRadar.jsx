@@ -520,6 +520,7 @@ export default function TrendRadar() {
   const [showSignIn, setShowSignIn] = useState(false);
   const [trialStartedAt, setTrialStartedAt] = useState(null);
   const [hasActiveSub, setHasActiveSub] = useState(false);
+  const [activeTier, setActiveTier] = useState(null);
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [profileLoaded, setProfileLoaded] = useState(false);
   const [alerts, setAlerts] = useState([]);
@@ -541,7 +542,7 @@ export default function TrendRadar() {
         .maybeSingle();
       const { data: subRow } = await supabase
         .from("subscriptions")
-        .select("status")
+        .select("status, tier")
         .eq("user_id", session.user.id)
         .eq("status", "active")
         .maybeSingle();
@@ -549,6 +550,7 @@ export default function TrendRadar() {
       setTrialStartedAt(userRow?.trial_started_at ?? session.user.created_at);
       setSelectedPlan(userRow?.selected_plan ?? null);
       setHasActiveSub(!!subRow);
+      setActiveTier(subRow?.tier ?? null);
       setProfileLoaded(true);
     })();
     return () => { cancelled = true; };
@@ -860,7 +862,7 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
             {isLoggedIn ? (
               <div className="flex items-center gap-2">
                 {hasActiveSub ? (
-                  <span className="hidden sm:flex mono text-[10px] text-[#7cffb0] bg-[#0f2a1c] border border-[#2a5540] rounded-full px-2.5 py-1">PRO</span>
+                  <span className="hidden sm:flex mono text-[10px] text-[#7cffb0] bg-[#0f2a1c] border border-[#2a5540] rounded-full px-2.5 py-1">{activeTier === "investor" ? "SIGNAL+" : "PRO"}</span>
                 ) : trialActive ? (
                   <span className="hidden sm:flex mono text-[10px] text-[#c9bfff] bg-[#160f2e] border border-[#7c5cff]/40 rounded-full px-2.5 py-1">
                     {trialDaysLeft}d trial left
