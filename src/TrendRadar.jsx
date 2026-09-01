@@ -322,10 +322,10 @@ const CATEGORY_VISUALS = [
   { key: "Narrative", icon: MessageSquare, color: "#7cc8ff", desc: "Cultural moments forming in real time" },
 ];
 const SIGNAL_LOCKED_FOLDERS = [
-  { key: "Meme Coins", icon: Coins, color: "#ffd166", desc: "Early meme-coin momentum and attention shifts" },
-  { key: "Crypto Markets", icon: TrendingUp, color: "#58b8ff", desc: "Crypto narratives, sectors and market signals" },
-  { key: "Narratives", icon: MessageSquare, color: "#c084fc", desc: "Long-horizon stories shaping the next cycle" },
-  { key: "Global Markets", icon: Gauge, color: "#35d07f", desc: "Macro themes and cross-market opportunities" },
+  { key: "Meme Coins", category: "Coin", icon: Coins, color: "#ffd166", desc: "Early meme-coin momentum and attention shifts" },
+  { key: "Crypto Markets", category: "Coin", icon: TrendingUp, color: "#58b8ff", desc: "Crypto narratives, sectors and market signals" },
+  { key: "Narratives", category: "Narrative", icon: MessageSquare, color: "#c084fc", desc: "Long-horizon stories shaping the next cycle" },
+  { key: "Global Markets", category: "News", icon: Gauge, color: "#35d07f", desc: "Macro themes and cross-market opportunities" },
 ];
 const FREE_TRIAL_FOLDERS = new Set(["Sound", "Hashtag", "Format"]);
 
@@ -560,7 +560,9 @@ export default function TrendRadar() {
 
   useEffect(() => {
     let cancelled = false;
-    fetch(`${API_BASE}/api/trends?persona=${persona}`)
+    const headers = session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {};
+    const tierQuery = activeTier ? `&tier=${encodeURIComponent(activeTier)}` : "";
+    fetch(`${API_BASE}/api/trends?persona=${persona}${tierQuery}`, { headers })
       .then((r) => r.json())
       .then((data) => {
         if (cancelled) return;
@@ -571,7 +573,7 @@ export default function TrendRadar() {
       .catch(() => { if (!cancelled) setLiveTrends(null); })
       .finally(() => { if (!cancelled) setCheckingLive(false); });
     return () => { cancelled = true; };
-  }, [persona]);
+  }, [persona, session?.access_token, activeTier]);
 
   useEffect(() => {
     let cancelled = false;
@@ -680,7 +682,9 @@ export default function TrendRadar() {
     setAlerts((previous) => previous.filter((item) => item.id !== alertId));
   };
 
-  const categories = CATEGORY_BY_PERSONA[persona];
+  const categories = hasSignalAccess
+    ? CATEGORY_VISUALS.map((item) => item.key)
+    : CATEGORY_BY_PERSONA[persona];
   const allVisibleTrends = liveTrends ?? ALL_TRENDS.filter((t) => categories.includes(t.category));
   const visibleTrends = allVisibleTrends.filter((t) => {
     if (showWatchlistOnly && !watchlist.has(t.id)) return false;
@@ -1037,6 +1041,7 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
           </button>; })}
           <button onClick={() => { setFootballOpen(true); document.getElementById("football-signals")?.scrollIntoView({ behavior: "smooth" }); }} className="glass rounded-2xl border border-[#35d07f]/35 p-4 text-left hover:-translate-y-1 hover:border-[#35d07f] transition"><div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#35d07f]/15 mb-3 text-xl">⚽</div><p className="display text-xs font-bold">Football & Betting</p><p className="body-f text-[10px] text-[#9eb9e8] mt-1">Live folder →</p></button>
           {!hasSignalAccess && SIGNAL_LOCKED_FOLDERS.map((item) => { const Icon = item.icon; return <button key={item.key} onClick={() => { setSignalNotice(true); window.setTimeout(() => setSignalNotice(false), 4200); }} className="group relative glass rounded-2xl border border-[#c084fc]/25 p-4 text-left hover:-translate-y-1 hover:border-[#c084fc] transition"><div className="absolute right-3 top-3 rounded-full bg-[#0b1028]/80 p-1.5 text-[#c084fc]"><Lock className="h-3.5 w-3.5" /></div><div className="flex h-10 w-10 items-center justify-center rounded-xl mb-3" style={{ background: `${item.color}25` }}><Icon className="h-5 w-5" style={{ color: item.color }} /></div><p className="display text-xs font-bold">{item.key}</p><p className="body-f text-[10px] text-[#9eb9e8] mt-1">Signal plan · locked</p></button>; })}
+          {hasSignalAccess && SIGNAL_LOCKED_FOLDERS.map((item) => { const Icon = item.icon; return <button key={item.key} onClick={() => { setSelectedCategory(item.category); document.getElementById("feed")?.scrollIntoView({ behavior: "smooth" }); }} className="group relative glass rounded-2xl border border-[#35d07f]/25 p-4 text-left hover:-translate-y-1 hover:border-[#35d07f] transition"><div className="flex h-10 w-10 items-center justify-center rounded-xl mb-3" style={{ background: `${item.color}25` }}><Icon className="h-5 w-5" style={{ color: item.color }} /></div><p className="display text-xs font-bold">{item.key}</p><p className="body-f text-[10px] text-[#9eb9e8] mt-1">Open folder →</p></button>; })}
         </div>
       </section>
       {/* FOOTBALL SIGNALS */}
