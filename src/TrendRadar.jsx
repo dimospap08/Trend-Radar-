@@ -682,6 +682,7 @@ export default function TrendRadar() {
     setAlerts((previous) => previous.filter((item) => item.id !== alertId));
   };
 
+  const hasSignalAccess = isLoggedIn && activeTier === "investor";
   const categories = hasSignalAccess
     ? CATEGORY_VISUALS.map((item) => item.key)
     : CATEGORY_BY_PERSONA[persona];
@@ -748,7 +749,6 @@ export default function TrendRadar() {
     else alert("Could not save your plan selection. Please try again.");
   };
   const hasFullAccess = isLoggedIn && (trialActive || hasActiveSub);
-  const hasSignalAccess = isLoggedIn && activeTier === "investor";
   const trialExpiredNoSub = isLoggedIn && profileLoaded && !trialActive && !hasActiveSub;
 
   // Anonymous / not-yet-trialed visitors see a capped preview; expired trial sees nothing.
