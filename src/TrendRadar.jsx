@@ -867,7 +867,6 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
         .profile-panel button { font-family: 'Plus Jakarta Sans', sans-serif; }
         /* The current data plan supports today's fixtures only. */
         select option[value="3"], select option[value="7"] { display: none; }
-        .theme-dark { background: #151a21 !important; }
         /* Navy brand palette: keep the original semantic classes, but map the
            purple utility tokens to the same blue family as the new logo. */
         [class*="bg-[#060512]"], [class*="bg-[#0a0714]"], [class*="bg-[#0b0918]"] { background-color: #151a21 !important; }
