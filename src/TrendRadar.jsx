@@ -1022,7 +1022,7 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
         <div>
           <div className="inline-flex items-center gap-1.5 mono text-[10px] tracking-widest text-[#c9bfff] bg-[#160f2e] border border-[#2a2150] rounded-full px-3 py-1 mb-6">
             <span className="w-1.5 h-1.5 rounded-full bg-[#7c5cff] animate-pulse" />
-            LIVE GOOGLE SEARCH SIGNAL ENGINE
+            SOURCE-AWARE WEB SIGNAL ENGINE
           </div>
           <h1 className="display text-[2.6rem] leading-[1.06] md:text-6xl font-bold mb-6 tracking-tight">
             See the trend<br />
@@ -1077,10 +1077,10 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
       <section className="theme-stats border-y border-[#1c1633] bg-[#0a0817]/60">
         <div className="max-w-6xl mx-auto px-6 py-6 grid grid-cols-2 md:grid-cols-4 gap-6">
           {[
-            { icon: Activity, value: "Hourly", label: "Signal refresh cycle" },
-            { icon: ShieldCheck, value: "Encrypted", label: "Data in transit & at rest" },
-            { icon: Zap, value: "Google Search", label: "Live-grounded AI signals" },
-            { icon: Clock, value: "< 60s", label: "Manual scan turnaround" },
+            { icon: Activity, value: "Hourly", label: "Scheduled signal refresh" },
+            { icon: ShieldCheck, value: "Protected", label: "Authenticated premium data" },
+            { icon: Zap, value: "Linked", label: "Original source when available" },
+            { icon: Clock, value: "Live", label: "Status shown in the dashboard" },
           ].map((s) => {
             const Icon = s.icon;
             return (
@@ -1103,7 +1103,7 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
       {/* CATEGORIES */}
       <section id="categories" className="max-w-6xl mx-auto px-6 py-20">
         <p className="mono text-[11px] tracking-widest text-[#7c5cff] mb-3">COVERAGE</p>
-        <h2 className="display text-2xl md:text-3xl font-bold mb-10">Seven signal types, scanned continuously.</h2>
+        <h2 className="display text-2xl md:text-3xl font-bold mb-10">Signal intelligence, organized by use case.</h2>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {CATEGORY_VISUALS.map((c) => (
             <CategoryOrb key={c.key} icon={c.icon} color={c.color} label={c.key} desc={c.desc} />
