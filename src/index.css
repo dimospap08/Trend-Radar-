@@ -61,3 +61,25 @@ html, body { margin: 0; padding: 0; overflow-x: hidden; background: #151a21; fon
 .theme-dark .screener-feed .relative.rounded-2xl.border { background: #202c38 !important; border-color: #42617a !important; }
 .theme-dark section[id="categories"] .glass, .theme-dark section[id="categories"] button { background: #183b62 !important; border-color: #3c75a5 !important; }
 .theme-dark input, .theme-dark select { background: #1c3043 !important; border-color: #4c789d !important; }
+
+/* Strict two-colour dark identity, matched to the Trend Radar mark. */
+.theme-dark,
+.theme-dark main,
+.theme-dark section { background: #1e2731 !important; }
+.theme-dark .glass,
+.theme-dark .screener-feed .glass.rounded-2xl.p-4,
+.theme-dark .screener-feed .relative.rounded-2xl.border,
+.theme-dark section[id="categories"] .glass,
+.theme-dark section[id="categories"] button,
+.theme-dark input,
+.theme-dark select { background: #1e2731 !important; border-color: #63b0f5 !important; }
+.theme-dark button.bg-gradient-to-r,
+.theme-dark a.bg-gradient-to-r { background: #63b0f5 !important; color: #1e2731 !important; box-shadow: none !important; }
+.theme-dark button.bg-gradient-to-r:hover,
+.theme-dark a.bg-gradient-to-r:hover { background: #63b0f5 !important; transform: translateY(-1px); }
+.theme-dark [class*="bg-gradient-to-br"],
+.theme-dark [class*="bg-gradient-to-r"] { background-image: none !important; }
+.theme-dark .theme-ticker { background: #1e2731 !important; border-color: #63b0f5 !important; }
+.theme-dark .screener-feed .relative.rounded-2xl.border:hover,
+.theme-dark section[id="categories"] button:hover { background: #1e2731 !important; border-color: #63b0f5 !important; }
+.theme-dark h1, .theme-dark h2, .theme-dark h3, .theme-dark p.display { color: #f5f8fb !important; }
