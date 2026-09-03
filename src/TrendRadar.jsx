@@ -724,11 +724,17 @@ export default function TrendRadar() {
   };
 
   const categories = hasSignalAccess
-    ? CATEGORY_VISUALS.map((item) => item.key)
+    ? [...CATEGORY_VISUALS.map((item) => item.key), ...SIGNAL_LOCKED_FOLDERS.map((item) => item.category)]
     : CATEGORY_BY_PERSONA[persona];
-  const allVisibleTrends = liveTrends
-    ? [...liveTrends, ...ALL_TRENDS.filter((t) => categories.includes(t.category) && !liveTrends.some((live) => live.category === t.category)).map((t) => ({ ...t, id: `fallback-${t.id}` }))]
-    : ALL_TRENDS.filter((t) => categories.includes(t.category));
+  const fallbackToMinimum = liveTrends
+    ? categories.flatMap((category) => {
+      const liveForCategory = liveTrends.filter((trend) => trend.category === category);
+      const existingNames = new Set(liveForCategory.map((trend) => String(trend.name).toLowerCase()));
+      const needed = Math.max(0, 10 - liveForCategory.length);
+      return ALL_TRENDS.filter((trend) => trend.category === category && !existingNames.has(String(trend.name).toLowerCase())).slice(0, needed).map((trend) => ({ ...trend, id: `fallback-${trend.id}` }));
+    })
+    : [];
+  const allVisibleTrends = liveTrends ? [...liveTrends, ...fallbackToMinimum] : ALL_TRENDS.filter((t) => categories.includes(t.category));
   const visibleTrends = allVisibleTrends.filter((t) => {
     if (showWatchlistOnly && !watchlist.has(t.id)) return false;
     const query = searchQuery.trim().toLowerCase();
