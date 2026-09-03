@@ -865,6 +865,18 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
         .command-input { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.01em; }
         .profile-panel { box-shadow: 0 24px 80px rgba(2, 5, 20, .55), 0 0 0 1px rgba(124,92,255,.08); }
         .profile-panel button { font-family: 'Plus Jakarta Sans', sans-serif; }
+        /* Navy brand palette: keep the original semantic classes, but map the
+           purple utility tokens to the same blue family as the new logo. */
+        [class*="bg-[#060512]"], [class*="bg-[#0a0714]"], [class*="bg-[#0b0918]"] { background-color: #06142f !important; }
+        [class*="bg-[#130f26]"], [class*="bg-[#160f2e]"], [class*="bg-[#0f0d1f]"] { background-color: #0b2042 !important; }
+        [class*="bg-[#101a38]"], [class*="bg-[#142650]"], [class*="bg-[#15234a]"] { background-color: #102d54 !important; }
+        [class*="text-[#7c5cff]"], [class*="text-[#8b6bff]"], [class*="text-[#a98bff]"], [class*="text-[#c084fc]"] { color: #65aef2 !important; }
+        [class*="text-[#c9bfff]"], [class*="text-[#bcaeff]"], [class*="text-[#b9a3ff]"] { color: #a8d4ff !important; }
+        [class*="border-[#7c5cff]"], [class*="border-[#8b6bff]"], [class*="border-[#c084fc]"] { border-color: rgba(63,140,255,.45) !important; }
+        [class*="from-[#8b6bff]"] { --tw-gradient-from: #3f8cff var(--tw-gradient-from-position) !important; }
+        [class*="to-[#6941e8]"] { --tw-gradient-to: #1f5da8 var(--tw-gradient-to-position) !important; }
+        [class*="from-[#9b78ff]"] { --tw-gradient-from: #58a6e8 var(--tw-gradient-from-position) !important; }
+        [class*="to-[#5c3ee8]"] { --tw-gradient-to: #194d91 var(--tw-gradient-to-position) !important; }
       `}</style>
 
       {/* NAV */}
@@ -872,7 +884,7 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="relative w-7 h-7 flex items-center justify-center rounded-lg bg-gradient-to-br from-[#7c5cff] to-[#4a2fb8]">
-              <Radar className="w-4 h-4 text-white" />
+              <img src="/favicon.svg" alt="TrendRadar" className="w-6 h-6" />
             </div>
             <span className="display font-bold tracking-tight text-[15px]">TREND/RADAR</span>
           </div>
@@ -1299,7 +1311,7 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
 
       <footer className="border-t border-[#1c1633] py-10 text-center">
         <div className="flex items-center justify-center gap-2 mb-4">
-          <Radar className="w-4 h-4 text-[#7c5cff]" />
+          <img src="/favicon.svg" alt="TrendRadar" className="w-5 h-5" />
           <span className="display font-bold text-sm tracking-tight">TREND/RADAR</span>
         </div>
         <div className="flex items-center justify-center gap-4 mono text-[11px] text-[#7c729f]">
