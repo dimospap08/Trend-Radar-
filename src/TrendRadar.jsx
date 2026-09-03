@@ -1318,6 +1318,8 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
 
       {profileSettings.showSourceLinks && selectedTrend?.sourceUrl && <a href={selectedTrend.sourceUrl} target="_blank" rel="noreferrer" className="fixed bottom-6 right-6 z-[90] inline-flex items-center gap-3 rounded-2xl border-2 border-[#35d07f] bg-gradient-to-r from-[#159957] to-[#35d07f] px-6 py-4 text-sm font-extrabold text-white shadow-[0_0_30px_rgba(53,208,127,.55)] animate-[sourcePulse_1.8s_ease-in-out_infinite] hover:scale-105 hover:from-[#35d07f] hover:to-[#159957] transition">🔗 Open original source <span className="text-lg">↗</span></a>}
 
+      {selectedTrend?.sourceUrl && ["CopyTrader", "GlobalMarket"].includes(selectedTrend.category) && <a href={selectedTrend.sourceUrl} target="_blank" rel="noreferrer" className="fixed bottom-6 right-6 z-[95] inline-flex items-center gap-3 rounded-2xl border-2 border-[#35d07f] bg-gradient-to-r from-[#159957] to-[#35d07f] px-6 py-4 text-sm font-extrabold text-white shadow-[0_0_30px_rgba(53,208,127,.55)] hover:scale-105 transition">{selectedTrend.category === "CopyTrader" ? "Trader profile & stats" : "Open market data"} <span className="text-lg">↗</span></a>}
+
       {/* PRICING */}
       <section id="pricing" className="max-w-6xl mx-auto px-6 pb-24">
         <p className="mono text-[11px] tracking-widest text-[#7c5cff] mb-3">PLANS</p>
