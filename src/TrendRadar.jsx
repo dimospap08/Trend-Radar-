@@ -869,12 +869,12 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
         select option[value="3"], select option[value="7"] { display: none; }
         /* Navy brand palette: keep the original semantic classes, but map the
            purple utility tokens to the same blue family as the new logo. */
-        [class*="bg-[#060512]"], [class*="bg-[#0a0714]"], [class*="bg-[#0b0918]"] { background-color: #06142f !important; }
-        [class*="bg-[#130f26]"], [class*="bg-[#160f2e]"], [class*="bg-[#0f0d1f]"] { background-color: #0b2042 !important; }
-        [class*="bg-[#101a38]"], [class*="bg-[#142650]"], [class*="bg-[#15234a]"] { background-color: #102d54 !important; }
+        [class*="bg-[#060512]"], [class*="bg-[#0a0714]"], [class*="bg-[#0b0918]"] { background-color: #0b0f16 !important; }
+        [class*="bg-[#130f26]"], [class*="bg-[#160f2e]"], [class*="bg-[#0f0d1f]"] { background-color: #111821 !important; }
+        [class*="bg-[#101a38]"], [class*="bg-[#142650]"], [class*="bg-[#15234a]"] { background-color: #172333 !important; }
         [class*="text-[#7c5cff]"], [class*="text-[#8b6bff]"], [class*="text-[#a98bff]"], [class*="text-[#c084fc]"] { color: #65aef2 !important; }
         [class*="text-[#c9bfff]"], [class*="text-[#bcaeff]"], [class*="text-[#b9a3ff]"] { color: #a8d4ff !important; }
-        [class*="border-[#7c5cff]"], [class*="border-[#8b6bff]"], [class*="border-[#c084fc]"] { border-color: rgba(63,140,255,.45) !important; }
+        [class*="border-[#7c5cff]"], [class*="border-[#8b6bff]"], [class*="border-[#c084fc]"] { border-color: rgba(63,140,255,.42) !important; }
         [class*="from-[#8b6bff]"] { --tw-gradient-from: #3f8cff var(--tw-gradient-from-position) !important; }
         [class*="to-[#6941e8]"] { --tw-gradient-to: #1f5da8 var(--tw-gradient-to-position) !important; }
         [class*="from-[#9b78ff]"] { --tw-gradient-from: #58a6e8 var(--tw-gradient-from-position) !important; }
