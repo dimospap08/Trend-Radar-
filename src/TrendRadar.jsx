@@ -508,6 +508,7 @@ export default function TrendRadar() {
   const [footballDays, setFootballDays] = useState(1);
   const [footballLeague, setFootballLeague] = useState("");
   const [footballStatus, setFootballStatus] = useState("all");
+  const [footballQuality, setFootballQuality] = useState("all");
   const [footballLoading, setFootballLoading] = useState(false);
   const [selectedMatch, setSelectedMatch] = useState(null);
   const [matchDetails, setMatchDetails] = useState(null);
@@ -713,15 +714,20 @@ export default function TrendRadar() {
   });
   const activePersona = PERSONAS.find((p) => p.id === persona);
   const categoriesToRender = selectedCategory ? [selectedCategory] : [];
+  const topLeagueNames = ["Premier League", "La Liga", "Serie A", "Bundesliga", "Ligue 1", "UEFA Champions League", "UEFA Europa League", "World Cup", "Euro Championship"];
   const filteredFootballMatches = footballMatches.filter((match) => {
     const q = footballQuery.trim().toLowerCase();
     const textMatch = !q || [match.teams?.home?.name, match.teams?.away?.name, match.league?.name, match.league?.country].some((value) => String(value || "").toLowerCase().includes(q));
     const leagueMatch = !footballLeague || String(match.league?.name || "") === footballLeague;
     const status = String(match.fixture?.status?.short || "");
     const statusMatch = footballStatus === "all" || (footballStatus === "upcoming" ? ["NS", "TBD"].includes(status) : ["1H", "HT", "2H", "ET", "P"].includes(status));
-    return textMatch && leagueMatch && statusMatch;
-  });
-  const footballLeagues = [...new Set(footballMatches.map((match) => match.league?.name).filter(Boolean))].sort();
+    const qualityMatch = footballQuality === "all" || topLeagueNames.some((name) => String(match.league?.name || "").toLowerCase().includes(name.toLowerCase()));
+    return textMatch && leagueMatch && statusMatch && qualityMatch;
+  }).sort((a, b) => footballQuality === "top"
+    ? topLeagueNames.findIndex((name) => String(a.league?.name || "").toLowerCase().includes(name.toLowerCase())) - topLeagueNames.findIndex((name) => String(b.league?.name || "").toLowerCase().includes(name.toLowerCase()))
+    : new Date(a.fixture?.date || 0) - new Date(b.fixture?.date || 0));
+  const recommendedLeagues = ["Premier League", "La Liga", "Serie A", "Bundesliga", "Ligue 1", "UEFA Champions League", "UEFA Europa League"];
+  const footballLeagues = [...new Set([...recommendedLeagues, ...footballMatches.map((match) => match.league?.name).filter(Boolean)])].sort();
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -1069,6 +1075,7 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
       {/* FOOTBALL SIGNALS */}
       <section id="football-signals" className={`max-w-6xl mx-auto px-6 pb-16 ${footballOpen && hasSignalAccess ? "" : "hidden"}`}>
         <div className="flex flex-wrap items-center justify-center gap-2 mb-5"><label className="mono text-[10px] text-[#9eb9e8]">Show next</label><select value={footballDays} onChange={(e) => setFootballDays(Number(e.target.value))} className="rounded-lg border border-[#6f8dff]/40 bg-[#142650] px-3 py-2 text-xs text-white"><option value="1">Today</option><option value="3">3 days</option><option value="7">7 days</option></select><select value={footballLeague} onChange={(e) => setFootballLeague(e.target.value)} className="max-w-[190px] rounded-lg border border-[#6f8dff]/40 bg-[#142650] px-3 py-2 text-xs text-white"><option value="">All leagues</option>{footballLeagues.map((league) => <option key={league} value={league}>{league}</option>)}</select><select value={footballStatus} onChange={(e) => setFootballStatus(e.target.value)} className="rounded-lg border border-[#6f8dff]/40 bg-[#142650] px-3 py-2 text-xs text-white"><option value="all">All statuses</option><option value="upcoming">Upcoming</option><option value="live">Live</option></select><span className="mono text-[10px] text-[#8ea7ff]">{filteredFootballMatches.length} matches</span></div>
+        <div className="flex justify-center mb-3"><select value={footballQuality} onChange={(e) => setFootballQuality(e.target.value)} className="rounded-lg border border-[#6f8dff]/40 bg-[#142650] px-3 py-2 text-xs text-white"><option value="all">All matches</option><option value="top">Top rated leagues</option></select></div>
         <div className="flex items-end justify-between gap-4 mb-5">
           <div><p className="mono text-[10px] uppercase tracking-[.22em] text-[#8ea7ff]">Signal+ intelligence</p><h2 className="display text-2xl md:text-3xl font-extrabold mt-1">Football Signals <span className="text-[#35d07f]">· live</span></h2><p className="body-f text-sm theme-muted mt-2">Real fixtures first. AI analysis comes after the numbers. Informational only — not betting advice.</p></div>
           <span className="mono text-[10px] text-[#35d07f] border border-[#35d07f]/30 rounded-full px-3 py-1">LIVE DATA</span>
