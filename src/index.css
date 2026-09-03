@@ -85,4 +85,4 @@ html, body { margin: 0; padding: 0; overflow-x: hidden; background: #151a21; fon
 .theme-dark h1, .theme-dark h2, .theme-dark h3, .theme-dark p.display { color: #f5f8fb !important; }
 .theme-dark h1 span { color: #63b0f5 !important; -webkit-text-fill-color: #63b0f5 !important; background: none !important; }
 .theme-dark [class*="text-[#a99fd4"], .theme-dark [class*="text-[#b3a9d9"], .theme-dark [class*="text-[#c9bfff"], .theme-dark [class*="text-[#8a7fc0"], .theme-dark [class*="text-[#655a92"] { color: #9fcdf2 !important; }
-.theme-dark .relative.w-full.aspect-square.max-w-md { filter: hue-rotate(42deg) saturate(.82); }
+.theme-dark .relative.w-full.aspect-square.max-w-md { filter: hue-rotate(-40deg) saturate(.78) brightness(1.05); }
