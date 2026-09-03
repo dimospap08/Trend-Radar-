@@ -585,7 +585,9 @@ export default function TrendRadar() {
     setFootballLoading(true);
     fetch(`${API_BASE}/api/sports/matches`, { headers: { Authorization: `Bearer ${session.access_token}` } })
       .then((response) => response.json())
-      .then((data) => { if (!cancelled) setFootballMatches(Array.isArray(data?.matches) ? data.matches.slice(0, 12) : []); })
+      // Keep the complete fixture list returned by the football provider.
+      // The old 12-match cap made it look as if only the biggest clubs existed.
+      .then((data) => { if (!cancelled) setFootballMatches(Array.isArray(data?.matches) ? data.matches : []); })
       .catch(() => { if (!cancelled) setFootballMatches([]); })
       .finally(() => { if (!cancelled) setFootballLoading(false); });
     return () => { cancelled = true; };
