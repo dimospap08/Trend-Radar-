@@ -869,9 +869,9 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
         select option[value="3"], select option[value="7"] { display: none; }
         /* Navy brand palette: keep the original semantic classes, but map the
            purple utility tokens to the same blue family as the new logo. */
-        [class*="bg-[#060512]"], [class*="bg-[#0a0714]"], [class*="bg-[#0b0918]"] { background-color: #0b0f16 !important; }
-        [class*="bg-[#130f26]"], [class*="bg-[#160f2e]"], [class*="bg-[#0f0d1f]"] { background-color: #111821 !important; }
-        [class*="bg-[#101a38]"], [class*="bg-[#142650]"], [class*="bg-[#15234a]"] { background-color: #172333 !important; }
+        [class*="bg-[#060512]"], [class*="bg-[#0a0714]"], [class*="bg-[#0b0918]"] { background-color: #151a21 !important; }
+        [class*="bg-[#130f26]"], [class*="bg-[#160f2e]"], [class*="bg-[#0f0d1f]"] { background-color: #1d252e !important; }
+        [class*="bg-[#101a38]"], [class*="bg-[#142650]"], [class*="bg-[#15234a]"] { background-color: #203142 !important; }
         [class*="text-[#7c5cff]"], [class*="text-[#8b6bff]"], [class*="text-[#a98bff]"], [class*="text-[#c084fc]"] { color: #65aef2 !important; }
         [class*="text-[#c9bfff]"], [class*="text-[#bcaeff]"], [class*="text-[#b9a3ff]"] { color: #a8d4ff !important; }
         [class*="border-[#7c5cff]"], [class*="border-[#8b6bff]"], [class*="border-[#c084fc]"] { border-color: rgba(63,140,255,.42) !important; }
@@ -879,6 +879,10 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
         [class*="to-[#6941e8]"] { --tw-gradient-to: #1f5da8 var(--tw-gradient-to-position) !important; }
         [class*="from-[#9b78ff]"] { --tw-gradient-from: #58a6e8 var(--tw-gradient-from-position) !important; }
         [class*="to-[#5c3ee8]"] { --tw-gradient-to: #194d91 var(--tw-gradient-to-position) !important; }
+        /* One consistent navy surface for every clickable product element. */
+        button[class*="glass"], button[class*="bg-gradient"], .screener-feed .glass, #football-signals .glass { background: #123b63 !important; background-image: none !important; }
+        button[class*="glass"]:hover, button[class*="bg-gradient"]:hover, .screener-feed .glass:hover, #football-signals .glass:hover { background: #174d7f !important; }
+        .screener-feed .glass { border-color: rgba(91,165,225,.38) !important; }
       `}</style>
 
       {/* NAV */}

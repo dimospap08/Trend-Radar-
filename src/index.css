@@ -21,4 +21,4 @@
 .screener-feed .glass.rounded-2xl.p-4 .mt-5 { margin-top: .55rem; }
 .screener-feed .glass.rounded-2xl.p-4 .mt-4 { margin-top: .45rem; }
 
-html, body { margin: 0; padding: 0; overflow-x: hidden; font-family: 'Plus Jakarta Sans', 'DM Sans', system-ui, sans-serif; }
+html, body { margin: 0; padding: 0; overflow-x: hidden; background: #151a21; font-family: 'Plus Jakarta Sans', 'DM Sans', system-ui, sans-serif; }
