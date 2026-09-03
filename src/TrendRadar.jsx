@@ -509,6 +509,7 @@ export default function TrendRadar() {
   const [footballLeague, setFootballLeague] = useState("");
   const [footballStatus, setFootballStatus] = useState("all");
   const [footballQuality, setFootballQuality] = useState("all");
+  const [footballCollapsed, setFootballCollapsed] = useState(false);
   const [footballLoading, setFootballLoading] = useState(false);
   const [selectedMatch, setSelectedMatch] = useState(null);
   const [matchDetails, setMatchDetails] = useState(null);
@@ -865,6 +866,7 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
         .command-input { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.01em; }
         .profile-panel { box-shadow: 0 24px 80px rgba(2, 5, 20, .55), 0 0 0 1px rgba(124,92,255,.08); }
         .profile-panel button { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .football-collapsed [class*="grid"][class*="md:grid-cols-2"] { display: none !important; }
         /* The current data plan supports today's fixtures only. */
         select option[value="3"], select option[value="7"] { display: none; }
         /* Navy brand palette: keep the original semantic classes, but map the
@@ -1091,10 +1093,11 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
         </div>
       </section>
       {/* FOOTBALL SIGNALS */}
-      <section id="football-signals" className={`max-w-6xl mx-auto px-6 pb-16 ${footballOpen && hasSignalAccess ? "" : "hidden"}`}>
+      <section id="football-signals" className={`max-w-6xl mx-auto px-6 pb-16 ${footballOpen && hasSignalAccess ? "" : "hidden"} ${footballCollapsed ? "football-collapsed" : ""}`}>
         <div className="flex flex-wrap items-center justify-center gap-2 mb-5"><label className="mono text-[10px] text-[#9eb9e8]">Show next</label><select value={footballDays} onChange={(e) => setFootballDays(Number(e.target.value))} className="rounded-lg border border-[#6f8dff]/40 bg-[#142650] px-3 py-2 text-xs text-white"><option value="1">Today</option><option value="3">3 days</option><option value="7">7 days</option></select><select value={footballLeague} onChange={(e) => setFootballLeague(e.target.value)} className="max-w-[190px] rounded-lg border border-[#6f8dff]/40 bg-[#142650] px-3 py-2 text-xs text-white"><option value="">All leagues</option>{footballLeagues.map((league) => <option key={league} value={league}>{league}</option>)}</select><select value={footballStatus} onChange={(e) => setFootballStatus(e.target.value)} className="rounded-lg border border-[#6f8dff]/40 bg-[#142650] px-3 py-2 text-xs text-white"><option value="all">All statuses</option><option value="upcoming">Upcoming</option><option value="live">Live</option></select><span className="mono text-[10px] text-[#8ea7ff]">{filteredFootballMatches.length} matches</span></div>
         <div className="flex justify-center mb-3"><select value={footballQuality} onChange={(e) => setFootballQuality(e.target.value)} className="rounded-lg border border-[#6f8dff]/40 bg-[#142650] px-3 py-2 text-xs text-white"><option value="all">All matches</option><option value="top">Top rated leagues</option></select></div>
         <div className="flex items-end justify-between gap-4 mb-5">
+          <button onClick={() => setFootballCollapsed((value) => !value)} className="rounded-lg border border-[#5ba5e1]/45 bg-[#123b63] px-3 py-2 text-xs font-semibold text-white hover:bg-[#174d7f]">{footballCollapsed ? "Show matches" : "Collapse matches"}</button>
           <div><p className="mono text-[10px] uppercase tracking-[.22em] text-[#8ea7ff]">Signal+ intelligence</p><h2 className="display text-2xl md:text-3xl font-extrabold mt-1">Football Signals <span className="text-[#35d07f]">· live</span></h2><p className="body-f text-sm theme-muted mt-2">Real fixtures first. AI analysis comes after the numbers. Informational only — not betting advice.</p></div>
           <span className="mono text-[10px] text-[#35d07f] border border-[#35d07f]/30 rounded-full px-3 py-1">LIVE DATA</span>
         </div>
