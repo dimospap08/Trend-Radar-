@@ -114,7 +114,9 @@ function normalizeTrend(t) {
 
 function trendFallbackUrl(trend) {
   const query = encodeURIComponent(`${trend.name || "trend"} ${trend.platform || ""}`.trim());
-  if (trend.category === "Coin") return `https://dexscreener.com/search?q=${query}`;
+  if (trend.category === "Coin" || trend.category === "MemeCoin") return `https://dexscreener.com/search?q=${query}`;
+  if (trend.category === "CryptoCoin") return `https://www.coingecko.com/en/search?query=${query}`;
+  if (trend.category === "Product") return `https://www.amazon.com/s?k=${query}`;
   if (trend.category === "Sound" || /tiktok/i.test(trend.platform || "")) return `https://www.tiktok.com/search?q=${query}`;
   if (/instagram/i.test(trend.platform || "")) return `https://www.instagram.com/explore/search/keyword/?q=${query}`;
   if (/youtube/i.test(trend.platform || "")) return `https://www.youtube.com/results?search_query=${query}`;
