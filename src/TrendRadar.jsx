@@ -36,17 +36,17 @@ const CATEGORY_BY_PERSONA = {
 };
 
 const NAME_POOL = {
-  Sound: ["\"Corridor\" slowed remix", "8-bit villain riff", "rainy lo-fi loop v2", "static-hum transition cue", "brainrot sound mashup #7"],
-  Hashtag: ["#quietluxury2", "#deskbombing", "#feralgirlsummer3", "#cozycore.exe", "#glitchcore.tools", "#italianbrainrot"],
-  Format: ["POV: silent vlog", "3-second hook stitch", "\"rate my setup\" duet", "split-screen reaction", "AI-narrated brainrot skit"],
-  Product: ["mini heatless curler v2", "glass-skin serum stick", "LED desk fog lamp", "wearable neck-fan clip", "magnetic phone tripod", "portable espresso maker", "sunset projector lamp", "smart posture trainer"],
-  Aesthetic: ["mob wife 2.0", "dopamine minimalism", "goblincore office", "liminal beige"],
+  Sound: ["\"Corridor\" slowed remix", "8-bit villain riff", "rainy lo-fi loop v2", "static-hum transition cue", "brainrot sound mashup #7", "midnight piano edit", "hyperpop rewind", "acoustic diary loop", "cinematic rise transition", "summer night bass"],
+  Hashtag: ["#quietluxury2", "#deskbombing", "#feralgirlsummer3", "#cozycore.exe", "#glitchcore.tools", "#italianbrainrot", "#slowproductivity", "#weekendreset", "#streetstylefinds", "#creatorworkflow"],
+  Format: ["POV: silent vlog", "3-second hook stitch", "\"rate my setup\" duet", "split-screen reaction", "AI-narrated brainrot skit", "one-take tutorial", "comment-to-video reply", "before-and-after reveal", "street interview remix", "day-in-the-life speedrun"],
+  Product: ["mini heatless curler v2", "glass-skin serum stick", "LED desk fog lamp", "wearable neck-fan clip", "magnetic phone tripod", "portable espresso maker", "sunset projector lamp", "smart posture trainer", "cordless label printer", "rechargeable hand warmer"],
+  Aesthetic: ["mob wife 2.0", "dopamine minimalism", "goblincore office", "liminal beige", "coastal tech", "soft industrial", "retro futurism", "quiet outdoors", "chromatic study", "warm brutalism"],
   Coin: ["$FROGWIF", "$STATIC", "$NANOCAT", "$GHOSTPEPE", "$BRAINROT"],
-  Narrative: ["AI-agent memes", "retro-internet nostalgia", "sleep-deprived dev humor", "anti-hustle culture", "Italian brainrot animal lore", "surreal AI-generated meme creatures"],
-  CryptoCoin: ["Bitcoin ETF flows", "Solana DeFi rotation", "Ethereum restaking", "Base ecosystem growth", "Chainlink oracle demand"],
-  MemeCoin: ["PEPE community revival", "BONK trading velocity", "FLOKI gaming narrative", "BRETT Base momentum", "WIF social dominance"],
-  CryptoMaker: ["Open-source wallet tooling", "Solana developer SDK", "Ethereum rollup analytics", "On-chain identity protocol", "Decentralized storage builder"],
-  GlobalMarket: ["AI infrastructure spending", "Copper demand cycle", "Freight rates rebound", "Energy storage buildout", "Emerging-market currency rotation", "Defence technology investment"],
+  Narrative: ["AI-agent memes", "retro-internet nostalgia", "sleep-deprived dev humor", "anti-hustle culture", "Italian brainrot animal lore", "surreal AI-generated meme creatures", "creator economy shift", "privacy-first internet", "digital nomad culture", "open-source revival"],
+  CryptoCoin: ["Bitcoin ETF flows", "Solana DeFi rotation", "Ethereum restaking", "Base ecosystem growth", "Chainlink oracle demand", "Avalanche subnet activity", "Arbitrum governance", "Polygon zk adoption", "Cosmos interoperability", "Sui ecosystem growth"],
+  MemeCoin: ["PEPE community revival", "BONK trading velocity", "FLOKI gaming narrative", "BRETT Base momentum", "WIF social dominance", "DOGE payment chatter", "SHIB ecosystem updates", "MOG community growth", "POPCAT attention cycle", "NEIRO exchange activity"],
+  CryptoMaker: ["Open-source wallet tooling", "Solana developer SDK", "Ethereum rollup analytics", "On-chain identity protocol", "Decentralized storage builder", "Cross-chain data indexer", "Account abstraction toolkit", "Zero-knowledge developer stack", "Web3 security platform", "Tokenization infrastructure"],
+  GlobalMarket: ["AI infrastructure spending", "Copper demand cycle", "Freight rates rebound", "Energy storage buildout", "Emerging-market currency rotation", "Defence technology investment", "Global cloud capex", "Renewable grid upgrades", "Semiconductor equipment demand", "Food commodity logistics"],
 };
 const PLATFORMS = ["TikTok", "Instagram Reels", "X", "YouTube Shorts", "Telegram"];
 
@@ -1242,7 +1242,7 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
               const CategoryIcon = categoryInfo?.icon ?? Layers;
               const categoryTrends = visibleTrends.filter((t) => t.category === category);
               const isExpanded = expandedColumns[category];
-              const shownTrends = isExpanded ? categoryTrends : categoryTrends.slice(0, 4);
+              const shownTrends = isExpanded ? categoryTrends : categoryTrends.slice(0, 10);
               return <div key={category} className="glass rounded-2xl p-4">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2.5"><div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{background:`${categoryInfo?.color}22`}}><CategoryIcon className="w-4 h-4" style={{color:categoryInfo?.color}} /></div><div><p className="display text-xs font-bold">{category === "Sound" ? "TikTok Sounds" : category + "s"}</p><p className="mono text-[9px] theme-muted">{categoryTrends.length} signals</p></div></div>
@@ -1294,7 +1294,7 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
               );
                 })}
                 </div>
-                {categoryTrends.length > 4 && <button onClick={() => setExpandedColumns((prev) => ({...prev, [category]: !isExpanded}))} className="w-full mt-3 py-2 rounded-lg border border-[#7c5cff]/25 text-[#a98bff] mono text-[10px] font-bold hover:bg-[#7c5cff]/10 transition">{isExpanded ? "Show less" : `See more (${categoryTrends.length - 4})`}</button>}
+                {categoryTrends.length > 10 && <button onClick={() => setExpandedColumns((prev) => ({...prev, [category]: !isExpanded}))} className="w-full mt-3 py-2 rounded-lg border border-[#7c5cff]/25 text-[#a98bff] mono text-[10px] font-bold hover:bg-[#7c5cff]/10 transition">{isExpanded ? "Show less" : `See more (${categoryTrends.length - 10})`}</button>}
               </div>;
             })}
           </div>}
