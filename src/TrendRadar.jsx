@@ -117,6 +117,8 @@ function trendFallbackUrl(trend) {
   if (trend.category === "Coin" || trend.category === "MemeCoin") return `https://dexscreener.com/search?q=${query}`;
   if (trend.category === "CryptoCoin") return `https://www.coingecko.com/en/search?query=${query}`;
   if (trend.category === "Product") return `https://www.amazon.com/s?k=${query}`;
+  if (trend.category === "CopyTrader") return `https://www.google.com/search?q=${encodeURIComponent(`${trend.name || "trader"} copy trading profile performance`)}`;
+  if (trend.category === "GlobalMarket") return `https://news.google.com/search?q=${query}`;
   if (trend.category === "Sound" || /tiktok/i.test(trend.platform || "")) return `https://www.tiktok.com/search?q=${query}`;
   if (/instagram/i.test(trend.platform || "")) return `https://www.instagram.com/explore/search/keyword/?q=${query}`;
   if (/youtube/i.test(trend.platform || "")) return `https://www.youtube.com/results?search_query=${query}`;
