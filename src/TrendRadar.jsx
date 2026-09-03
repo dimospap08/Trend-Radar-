@@ -45,7 +45,7 @@ const NAME_POOL = {
   Narrative: ["AI-agent memes", "retro-internet nostalgia", "sleep-deprived dev humor", "anti-hustle culture", "Italian brainrot animal lore", "surreal AI-generated meme creatures", "creator economy shift", "privacy-first internet", "digital nomad culture", "open-source revival"],
   CryptoCoin: ["Bitcoin ETF flows", "Solana DeFi rotation", "Ethereum restaking", "Base ecosystem growth", "Chainlink oracle demand", "Avalanche subnet activity", "Arbitrum governance", "Polygon zk adoption", "Cosmos interoperability", "Sui ecosystem growth"],
   MemeCoin: ["PEPE community revival", "BONK trading velocity", "FLOKI gaming narrative", "BRETT Base momentum", "WIF social dominance", "DOGE payment chatter", "SHIB ecosystem updates", "MOG community growth", "POPCAT attention cycle", "NEIRO exchange activity"],
-  CryptoMaker: ["Open-source wallet tooling", "Solana developer SDK", "Ethereum rollup analytics", "On-chain identity protocol", "Decentralized storage builder", "Cross-chain data indexer", "Account abstraction toolkit", "Zero-knowledge developer stack", "Web3 security platform", "Tokenization infrastructure"],
+  CopyTrader: ["Top crypto futures trader", "Balanced BTC portfolio", "Low-risk altcoin trader", "DeFi swing specialist", "Momentum trader leaderboard", "Consistent monthly performer", "High-conviction crypto trader", "Diversified copy portfolio", "Short-term futures leader", "Long-term trend follower"],
   GlobalMarket: ["AI infrastructure spending", "Copper demand cycle", "Freight rates rebound", "Energy storage buildout", "Emerging-market currency rotation", "Defence technology investment", "Global cloud capex", "Renewable grid upgrades", "Semiconductor equipment demand", "Food commodity logistics"],
 };
 const PLATFORMS = ["TikTok", "Instagram Reels", "X", "YouTube Shorts", "Telegram"];
@@ -339,14 +339,14 @@ const TREND_DETAIL_THEMES = {
   Narrative: { accent: "#7cc8ff", surface: "#173653", soft: "#1d5b87" },
   CryptoCoin: { accent: "#58b8ff", surface: "#173653", soft: "#1d5b87" },
   MemeCoin: { accent: "#ff8b6a", surface: "#3b241d", soft: "#70402d" },
-  CryptoMaker: { accent: "#38bdf8", surface: "#12354a", soft: "#176080" },
+  CopyTrader: { accent: "#38bdf8", surface: "#12354a", soft: "#176080" },
   GlobalMarket: { accent: "#35d07f", surface: "#123b2d", soft: "#176044" },
   default: { accent: "#58b8ff", surface: "#182534", soft: "#1d4f82" },
 };
 const SIGNAL_LOCKED_FOLDERS = [
   { key: "Meme Coins", category: "MemeCoin", icon: Coins, color: "#ff8b6a", desc: "Meme-coin momentum and community attention" },
   { key: "Crypto Markets", category: "CryptoCoin", icon: TrendingUp, color: "#58b8ff", desc: "Crypto assets, sectors and market signals" },
-  { key: "Crypto Makers", category: "CryptoMaker", icon: Users, color: "#38bdf8", desc: "Builders and protocols shaping the crypto stack" },
+  { key: "Copy Trading", category: "CopyTrader", icon: Users, color: "#38bdf8", desc: "Public trader profiles with current performance signals" },
   { key: "Narratives", category: "Narrative", icon: MessageSquare, color: "#7cc8ff", desc: "Long-horizon stories shaping the next cycle" },
   { key: "Global Markets", category: "GlobalMarket", icon: Gauge, color: "#35d07f", desc: "Macro themes and cross-market opportunities" },
 ];
@@ -363,11 +363,11 @@ const TREND_COPY = {
   CryptoCoin: "Large-cap crypto assets showing fresh attention and momentum.",
   MemeCoin: "Meme-coin communities and tokens showing unusual early attention.",
   GlobalMarket: "A macro theme showing measurable acceleration across markets and news.",
-  CryptoMaker: "A crypto builder, protocol or developer tool showing fresh adoption signals.",
+  CopyTrader: "An active copy-trading profile showing transparent performance and risk metrics.",
 };
-const CATEGORY_EMOJI = { Sound: "🎵", Hashtag: "#️⃣", Format: "🎬", Product: "🛍️", Aesthetic: "✨", Coin: "🪙", Narrative: "💬", CryptoCoin: "₿", MemeCoin: "🐸", CryptoMaker: "🛠️", GlobalMarket: "🌐" };
-const TREND_ACTION = { Sound: "Use this audio in your next 1–2 posts.", Hashtag: "Add it only where it fits your content angle.", Format: "Adapt this format before it becomes saturated.", Product: "Validate demand before competitors catch up.", Aesthetic: "Build your next creative around this visual direction.", Coin: "Watch momentum and risk before taking action.", Narrative: "Create content around the conversation while it is early.", CryptoCoin: "Review liquidity and risk before taking action.", MemeCoin: "Check liquidity, holders and risk before taking action.", CryptoMaker: "Research the team, product and adoption before making a decision.", GlobalMarket: "Track the macro catalyst and confirm it across independent sources." };
-const TREND_MEDIA = { Sound: "https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=1000&q=80", Hashtag: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&w=1000&q=80", Format: "https://images.unsplash.com/photo-1492724441997-5dc865305da7?auto=format&fit=crop&w=1000&q=80", Product: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1000&q=80", Aesthetic: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1000&q=80", Coin: "https://images.unsplash.com/photo-1621416894569-0f39ed31d247?auto=format&fit=crop&w=1000&q=80", Narrative: "https://images.unsplash.com/photo-1531058020387-3be344556be6?auto=format&fit=crop&w=1000&q=80", CryptoCoin: "https://images.unsplash.com/photo-1621416894569-0f39ed31d247?auto=format&fit=crop&w=1000&q=80", MemeCoin: "https://images.unsplash.com/photo-1611605698335-8b1569810432?auto=format&fit=crop&w=1000&q=80", CryptoMaker: "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1000&q=80", GlobalMarket: "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&w=1000&q=80" };
+const CATEGORY_EMOJI = { Sound: "🎵", Hashtag: "#️⃣", Format: "🎬", Product: "🛍️", Aesthetic: "✨", Coin: "🪙", Narrative: "💬", CryptoCoin: "₿", MemeCoin: "🐸", CopyTrader: "👥", GlobalMarket: "🌐" };
+const TREND_ACTION = { Sound: "Use this audio in your next 1–2 posts.", Hashtag: "Add it only where it fits your content angle.", Format: "Adapt this format before it becomes saturated.", Product: "Validate demand before competitors catch up.", Aesthetic: "Build your next creative around this visual direction.", Coin: "Watch momentum and risk before taking action.", Narrative: "Create content around the conversation while it is early.", CryptoCoin: "Review liquidity and risk before taking action.", MemeCoin: "Check liquidity, holders and risk before taking action.", CopyTrader: "Review drawdown, leverage, history and fees before following anyone.", GlobalMarket: "Track the macro catalyst and confirm it across independent sources." };
+const TREND_MEDIA = { Sound: "https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=1000&q=80", Hashtag: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&w=1000&q=80", Format: "https://images.unsplash.com/photo-1492724441997-5dc865305da7?auto=format&fit=crop&w=1000&q=80", Product: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1000&q=80", Aesthetic: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1000&q=80", Coin: "https://images.unsplash.com/photo-1621416894569-0f39ed31d247?auto=format&fit=crop&w=1000&q=80", Narrative: "https://images.unsplash.com/photo-1531058020387-3be344556be6?auto=format&fit=crop&w=1000&q=80", CryptoCoin: "https://images.unsplash.com/photo-1621416894569-0f39ed31d247?auto=format&fit=crop&w=1000&q=80", MemeCoin: "https://images.unsplash.com/photo-1611605698335-8b1569810432?auto=format&fit=crop&w=1000&q=80", CopyTrader: "https://images.unsplash.com/photo-1559526324-593bc073d938?auto=format&fit=crop&w=1000&q=80", GlobalMarket: "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&w=1000&q=80" };
 const TREND_MEDIA_POOL = {
   Sound: [TREND_MEDIA.Sound, "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1000&q=80", "https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?auto=format&fit=crop&w=1000&q=80"],
   Hashtag: [TREND_MEDIA.Hashtag, "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1000&q=80", "https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&w=1000&q=80"],
@@ -378,7 +378,7 @@ const TREND_MEDIA_POOL = {
   Narrative: [TREND_MEDIA.Narrative, "https://images.unsplash.com/photo-1535378917042-10a22c95931a?auto=format&fit=crop&w=1000&q=80", "https://images.unsplash.com/photo-1559757175-0eb30cd8c063?auto=format&fit=crop&w=1000&q=80"],
   CryptoCoin: [TREND_MEDIA.CryptoCoin],
   MemeCoin: [TREND_MEDIA.MemeCoin],
-  CryptoMaker: [TREND_MEDIA.CryptoMaker],
+  CopyTrader: [TREND_MEDIA.CopyTrader],
   GlobalMarket: [TREND_MEDIA.GlobalMarket],
 };
 function fallbackMediaForTrend(trend) {
