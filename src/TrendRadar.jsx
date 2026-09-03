@@ -889,20 +889,20 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
           border: 1px solid rgba(124,92,255,0.14);
         }
         .theme-dark { background: radial-gradient(circle at 72% 12%, #101b4a 0%, #080b24 34%, #060512 78%); color: #f2f5ff; }
-        .theme-light { background: #dff3ff; color: #10213f; }
-        .theme-light .glass { background: rgba(239,250,255,.92); border-color: #b7dff2; box-shadow: 0 14px 36px rgba(42,104,160,.10); }
-        .theme-light .body-f, .theme-light .mono { color: #405875; }
-        .theme-light header { background: #c9eaff; border-color: #a9d5ed; }
-        .theme-light .theme-muted { color: #716b86 !important; }
-        .theme-light input { background: #fff; color: #171329; border-color: #d9d3ec; }
+        .theme-light { background: linear-gradient(145deg, #eef2f6 0%, #e5ebf1 55%, #dce5ee 100%); color: #17283b; }
+        .theme-light .glass { background: rgba(255,255,255,.88); border-color: #c7d3df; box-shadow: 0 14px 36px rgba(28,52,76,.12); }
+        .theme-light .body-f, .theme-light .mono { color: #496176; }
+        .theme-light header { background: rgba(248,250,252,.96); border-color: #c9d5e1; box-shadow: 0 4px 18px rgba(28,52,76,.08); }
+        .theme-light .theme-muted { color: #5f7387 !important; }
+        .theme-light input { background: #fff; color: #17283b; border-color: #b9c9d8; }
         .theme-light [class*="bg-[#130f26"] { background-color: #f1eff8; }
         .theme-light [class*="border-[#231b45"] { border-color: #ddd7ed; }
         .theme-light [class*="text-[#a99fd4"] { color: #625a7c; }
         .theme-light h1, .theme-light h2, .theme-light p.display { color: #10213f; }
         .theme-light .text-white { color: #fff !important; }
-        .theme-light [class*="bg-[#060512"] { background-color: #dff3ff; }
-        .theme-light [class*="bg-[#160f2e"] { background-color: #e5f3ff; }
-        .theme-light [class*="bg-[#0f0d1f"] { background-color: #f7fcff; }
+        .theme-light [class*="bg-[#060512"] { background-color: #e8eef4; }
+        .theme-light [class*="bg-[#160f2e"] { background-color: #edf2f6; }
+        .theme-light [class*="bg-[#0f0d1f"] { background-color: #f8fafc; }
         .theme-light [class*="text-[#7c729f"] { color: #647c96; }
         .theme-light [class*="text-[#f2eefa"] { color: #10213f; }
         .theme-light [class*="text-[#c9bfff"] { color: #315fc0; }
@@ -915,10 +915,15 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
         .theme-light [class*="bg-[#0f2a1c"] { background-color: #e6f8ee; }
         .theme-light [class*="bg-[#2a2010"] { background-color: #fff5d9; }
         .theme-light [class*="bg-[#060512]/92"] { background-color: rgba(255,255,255,.94); }
-        .theme-light .theme-ticker { background: #d9efff; border-color: #bcdcf2; }
-        .theme-light .theme-ticker > div { color: #28577f !important; font-weight: 600; }
-        .theme-light .theme-stats { background: #c5e9fc; border-color: #a9d8ef; }
-        .theme-light h1 span { color: #5570d8; background: none; -webkit-text-fill-color: #5570d8; }
+        .theme-light .theme-ticker { background: #e1e9f0; border-color: #c2d0dc; }
+        .theme-light .theme-ticker > div { color: #315776 !important; font-weight: 600; }
+        .theme-light .theme-stats { background: #d9e5ef; border-color: #bdcedd; }
+        .theme-light h1 span { color: #1f5f96; background: none; -webkit-text-fill-color: #1f5f96; }
+        .theme-light .screener-feed .glass.rounded-2xl.p-4 { background: #e7edf2 !important; border-color: #b8c9d8 !important; }
+        .theme-light .screener-feed .relative.rounded-2xl.border { background: #f8fafc !important; border-color: #c5d2de !important; }
+        .theme-light section[id="categories"] .glass, .theme-light section[id="categories"] button { background: #dce7f0 !important; border-color: #b4c8d9 !important; }
+        .theme-light section[id="categories"] button:hover { background: #cbdce9 !important; }
+        .theme-light .profile-panel { background: #f8fafc !important; border-color: #b8c9d8 !important; }
         .theme-light p, .theme-light span, .theme-light a, .theme-light button { font-weight: 500; }
         .theme-light p.display, .theme-light h1, .theme-light h2, .theme-light h3 { font-weight: 800; }
         .nav-link { display: inline-flex; align-items: center; padding: 8px 10px; border-radius: 9px; transition: color .2s ease, background .2s ease, transform .2s ease; }
