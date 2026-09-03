@@ -32,17 +32,21 @@ const CATEGORY_BY_PERSONA = {
   creator: ["Sound", "Hashtag", "Format"],
   store: ["Product", "Aesthetic", "Hashtag"],
   marketer: ["Hashtag", "Format", "Aesthetic"],
-  investor: ["Coin", "Narrative"],
+  investor: ["CryptoCoin", "MemeCoin", "Narrative", "GlobalMarket"],
 };
 
 const NAME_POOL = {
   Sound: ["\"Corridor\" slowed remix", "8-bit villain riff", "rainy lo-fi loop v2", "static-hum transition cue", "brainrot sound mashup #7"],
   Hashtag: ["#quietluxury2", "#deskbombing", "#feralgirlsummer3", "#cozycore.exe", "#glitchcore.tools", "#italianbrainrot"],
   Format: ["POV: silent vlog", "3-second hook stitch", "\"rate my setup\" duet", "split-screen reaction", "AI-narrated brainrot skit"],
-  Product: ["mini heatless curler v2", "glass-skin serum stick", "LED desk fog lamp", "wearable neck-fan clip"],
+  Product: ["mini heatless curler v2", "glass-skin serum stick", "LED desk fog lamp", "wearable neck-fan clip", "magnetic phone tripod", "portable espresso maker", "sunset projector lamp", "smart posture trainer"],
   Aesthetic: ["mob wife 2.0", "dopamine minimalism", "goblincore office", "liminal beige"],
   Coin: ["$FROGWIF", "$STATIC", "$NANOCAT", "$GHOSTPEPE", "$BRAINROT"],
   Narrative: ["AI-agent memes", "retro-internet nostalgia", "sleep-deprived dev humor", "anti-hustle culture", "Italian brainrot animal lore", "surreal AI-generated meme creatures"],
+  CryptoCoin: ["Bitcoin ETF flows", "Solana DeFi rotation", "Ethereum restaking", "Base ecosystem growth", "Chainlink oracle demand"],
+  MemeCoin: ["PEPE community revival", "BONK trading velocity", "FLOKI gaming narrative", "BRETT Base momentum", "WIF social dominance"],
+  CryptoMaker: ["Open-source wallet tooling", "Solana developer SDK", "Ethereum rollup analytics", "On-chain identity protocol", "Decentralized storage builder"],
+  GlobalMarket: ["AI infrastructure spending", "Copper demand cycle", "Freight rates rebound", "Energy storage buildout", "Emerging-market currency rotation", "Defence technology investment"],
 };
 const PLATFORMS = ["TikTok", "Instagram Reels", "X", "YouTube Shorts", "Telegram"];
 
@@ -320,8 +324,6 @@ const CATEGORY_VISUALS = [
   { key: "Format", icon: Layers, color: "#4fd1c5", desc: "Video formats creators are about to copy" },
   { key: "Product", icon: ShoppingBag, color: "#ff6b9d", desc: "Physical products about to spike in demand" },
   { key: "Aesthetic", icon: Palette, color: "#8b6bff", desc: "Visual styles taking over feeds" },
-  { key: "Coin", icon: Coins, color: "#ffd166", desc: "On-chain narratives gaining early velocity" },
-  { key: "Narrative", icon: MessageSquare, color: "#7cc8ff", desc: "Cultural moments forming in real time" },
 ];
 // Κάθε κατηγορία έχει τη δική της παλέτα, ώστε το παράθυρο ενός trend
 // να αναγνωρίζεται αμέσως από το χρώμα του φακέλου του.
@@ -333,13 +335,18 @@ const TREND_DETAIL_THEMES = {
   Aesthetic: { accent: "#a98bff", surface: "#2b204b", soft: "#513584" },
   Coin: { accent: "#ffd166", surface: "#3d3016", soft: "#705315" },
   Narrative: { accent: "#7cc8ff", surface: "#173653", soft: "#1d5b87" },
+  CryptoCoin: { accent: "#58b8ff", surface: "#173653", soft: "#1d5b87" },
+  MemeCoin: { accent: "#ff8b6a", surface: "#3b241d", soft: "#70402d" },
+  CryptoMaker: { accent: "#38bdf8", surface: "#12354a", soft: "#176080" },
+  GlobalMarket: { accent: "#35d07f", surface: "#123b2d", soft: "#176044" },
   default: { accent: "#58b8ff", surface: "#182534", soft: "#1d4f82" },
 };
 const SIGNAL_LOCKED_FOLDERS = [
-  { key: "Meme Coins", category: "Coin", icon: Coins, color: "#ffd166", desc: "Early meme-coin momentum and attention shifts" },
-  { key: "Crypto Markets", category: "Coin", icon: TrendingUp, color: "#58b8ff", desc: "Crypto narratives, sectors and market signals" },
-  { key: "Narratives", category: "Narrative", icon: MessageSquare, color: "#c084fc", desc: "Long-horizon stories shaping the next cycle" },
-  { key: "Global Markets", category: "News", icon: Gauge, color: "#35d07f", desc: "Macro themes and cross-market opportunities" },
+  { key: "Meme Coins", category: "MemeCoin", icon: Coins, color: "#ff8b6a", desc: "Meme-coin momentum and community attention" },
+  { key: "Crypto Markets", category: "CryptoCoin", icon: TrendingUp, color: "#58b8ff", desc: "Crypto assets, sectors and market signals" },
+  { key: "Crypto Makers", category: "CryptoMaker", icon: Users, color: "#38bdf8", desc: "Builders and protocols shaping the crypto stack" },
+  { key: "Narratives", category: "Narrative", icon: MessageSquare, color: "#7cc8ff", desc: "Long-horizon stories shaping the next cycle" },
+  { key: "Global Markets", category: "GlobalMarket", icon: Gauge, color: "#35d07f", desc: "Macro themes and cross-market opportunities" },
 ];
 const FREE_TRIAL_FOLDERS = new Set(["Sound", "Hashtag", "Format"]);
 
@@ -351,10 +358,14 @@ const TREND_COPY = {
   Aesthetic: "A visual direction spreading through feeds and creator content.",
   Coin: "An emerging on-chain narrative showing unusual momentum and attention.",
   Narrative: "A cultural conversation building across communities and media channels.",
+  CryptoCoin: "Large-cap crypto assets showing fresh attention and momentum.",
+  MemeCoin: "Meme-coin communities and tokens showing unusual early attention.",
+  GlobalMarket: "A macro theme showing measurable acceleration across markets and news.",
+  CryptoMaker: "A crypto builder, protocol or developer tool showing fresh adoption signals.",
 };
-const CATEGORY_EMOJI = { Sound: "🎵", Hashtag: "#️⃣", Format: "🎬", Product: "🛍️", Aesthetic: "✨", Coin: "🪙", Narrative: "💬" };
-const TREND_ACTION = { Sound: "Use this audio in your next 1–2 posts.", Hashtag: "Add it only where it fits your content angle.", Format: "Adapt this format before it becomes saturated.", Product: "Validate demand before competitors catch up.", Aesthetic: "Build your next creative around this visual direction.", Coin: "Watch momentum and risk before taking action.", Narrative: "Create content around the conversation while it is early." };
-const TREND_MEDIA = { Sound: "https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=1000&q=80", Hashtag: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&w=1000&q=80", Format: "https://images.unsplash.com/photo-1492724441997-5dc865305da7?auto=format&fit=crop&w=1000&q=80", Product: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1000&q=80", Aesthetic: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1000&q=80", Coin: "https://images.unsplash.com/photo-1621416894569-0f39ed31d247?auto=format&fit=crop&w=1000&q=80", Narrative: "https://images.unsplash.com/photo-1531058020387-3be344556be6?auto=format&fit=crop&w=1000&q=80" };
+const CATEGORY_EMOJI = { Sound: "🎵", Hashtag: "#️⃣", Format: "🎬", Product: "🛍️", Aesthetic: "✨", Coin: "🪙", Narrative: "💬", CryptoCoin: "₿", MemeCoin: "🐸", CryptoMaker: "🛠️", GlobalMarket: "🌐" };
+const TREND_ACTION = { Sound: "Use this audio in your next 1–2 posts.", Hashtag: "Add it only where it fits your content angle.", Format: "Adapt this format before it becomes saturated.", Product: "Validate demand before competitors catch up.", Aesthetic: "Build your next creative around this visual direction.", Coin: "Watch momentum and risk before taking action.", Narrative: "Create content around the conversation while it is early.", CryptoCoin: "Review liquidity and risk before taking action.", MemeCoin: "Check liquidity, holders and risk before taking action.", CryptoMaker: "Research the team, product and adoption before making a decision.", GlobalMarket: "Track the macro catalyst and confirm it across independent sources." };
+const TREND_MEDIA = { Sound: "https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=1000&q=80", Hashtag: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&w=1000&q=80", Format: "https://images.unsplash.com/photo-1492724441997-5dc865305da7?auto=format&fit=crop&w=1000&q=80", Product: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1000&q=80", Aesthetic: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1000&q=80", Coin: "https://images.unsplash.com/photo-1621416894569-0f39ed31d247?auto=format&fit=crop&w=1000&q=80", Narrative: "https://images.unsplash.com/photo-1531058020387-3be344556be6?auto=format&fit=crop&w=1000&q=80", CryptoCoin: "https://images.unsplash.com/photo-1621416894569-0f39ed31d247?auto=format&fit=crop&w=1000&q=80", MemeCoin: "https://images.unsplash.com/photo-1611605698335-8b1569810432?auto=format&fit=crop&w=1000&q=80", CryptoMaker: "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1000&q=80", GlobalMarket: "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&w=1000&q=80" };
 const TREND_MEDIA_POOL = {
   Sound: [TREND_MEDIA.Sound, "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1000&q=80", "https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?auto=format&fit=crop&w=1000&q=80"],
   Hashtag: [TREND_MEDIA.Hashtag, "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1000&q=80", "https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&w=1000&q=80"],
@@ -363,6 +374,10 @@ const TREND_MEDIA_POOL = {
   Aesthetic: [TREND_MEDIA.Aesthetic, "https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?auto=format&fit=crop&w=1000&q=80", "https://images.unsplash.com/photo-1497215842964-222b430dc094?auto=format&fit=crop&w=1000&q=80"],
   Coin: [TREND_MEDIA.Coin, "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?auto=format&fit=crop&w=1000&q=80", "https://images.unsplash.com/photo-1605792657660-596af9009e82?auto=format&fit=crop&w=1000&q=80"],
   Narrative: [TREND_MEDIA.Narrative, "https://images.unsplash.com/photo-1535378917042-10a22c95931a?auto=format&fit=crop&w=1000&q=80", "https://images.unsplash.com/photo-1559757175-0eb30cd8c063?auto=format&fit=crop&w=1000&q=80"],
+  CryptoCoin: [TREND_MEDIA.CryptoCoin],
+  MemeCoin: [TREND_MEDIA.MemeCoin],
+  CryptoMaker: [TREND_MEDIA.CryptoMaker],
+  GlobalMarket: [TREND_MEDIA.GlobalMarket],
 };
 function fallbackMediaForTrend(trend) {
   const name = String(trend.name || "").toLowerCase();
@@ -709,7 +724,9 @@ export default function TrendRadar() {
   const categories = hasSignalAccess
     ? CATEGORY_VISUALS.map((item) => item.key)
     : CATEGORY_BY_PERSONA[persona];
-  const allVisibleTrends = liveTrends ?? ALL_TRENDS.filter((t) => categories.includes(t.category));
+  const allVisibleTrends = liveTrends
+    ? [...liveTrends, ...ALL_TRENDS.filter((t) => categories.includes(t.category) && !liveTrends.some((live) => live.category === t.category)).map((t) => ({ ...t, id: `fallback-${t.id}` }))]
+    : ALL_TRENDS.filter((t) => categories.includes(t.category));
   const visibleTrends = allVisibleTrends.filter((t) => {
     if (showWatchlistOnly && !watchlist.has(t.id)) return false;
     const query = searchQuery.trim().toLowerCase();
@@ -1219,7 +1236,7 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
           {selectedCategory && <div className="mb-7 flex justify-center"><button onClick={() => { setSelectedCategory(null); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="rounded-xl border border-[#6f8dff]/40 px-4 py-3 text-xs font-semibold text-[#b9d5ff] hover:bg-[#1b3770]">← Back to signal folders</button></div>}
           {!selectedCategory ? <div className="rounded-3xl border border-[#6f8dff]/25 bg-gradient-to-br from-[#122452] to-[#101a38] p-10 text-center"><p className="mono text-[10px] uppercase tracking-[.2em] text-[#8ea7ff]">Choose your radar folder</p><h3 className="display mt-2 text-2xl font-extrabold">Pick a signal category to explore</h3><p className="body-f mt-2 text-sm text-[#b9ccef]">Open one folder to see the trends, examples and AI action plan inside.</p></div> : <div className="grid grid-cols-1 gap-4 items-start w-full">
             {categoriesToRender.map((category) => {
-              const categoryInfo = CATEGORY_VISUALS.find((item) => item.key === category);
+              const categoryInfo = CATEGORY_VISUALS.find((item) => item.key === category) || SIGNAL_LOCKED_FOLDERS.find((item) => item.category === category);
               const CategoryIcon = categoryInfo?.icon ?? Layers;
               const categoryTrends = visibleTrends.filter((t) => t.category === category);
               const isExpanded = expandedColumns[category];
