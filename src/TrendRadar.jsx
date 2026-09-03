@@ -884,11 +884,11 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
         .mono { font-family: 'DM Sans', sans-serif; letter-spacing: .06em; }
         * { scrollbar-color: #2a2150 #060512; }
         .glass {
-          background: linear-gradient(180deg, rgba(23,18,45,0.7), rgba(15,12,31,0.7));
+          background: linear-gradient(180deg, rgba(31,43,56,0.94), rgba(24,35,47,0.94));
           backdrop-filter: blur(14px);
-          border: 1px solid rgba(124,92,255,0.14);
+          border: 1px solid rgba(92,135,174,0.32);
         }
-        .theme-dark { background: radial-gradient(circle at 72% 12%, #101b4a 0%, #080b24 34%, #060512 78%); color: #f2f5ff; }
+        .theme-dark { background: linear-gradient(145deg, #0b1b2d 0%, #102d4b 48%, #0b1929 100%); color: #edf4fb; }
         .theme-light { background: linear-gradient(145deg, #eef2f6 0%, #e5ebf1 55%, #dce5ee 100%); color: #17283b; }
         .theme-light .glass { background: rgba(255,255,255,.88); border-color: #c7d3df; box-shadow: 0 14px 36px rgba(28,52,76,.12); }
         .theme-light .body-f, .theme-light .mono { color: #496176; }

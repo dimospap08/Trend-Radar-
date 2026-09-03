@@ -51,3 +51,13 @@ html, body { margin: 0; padding: 0; overflow-x: hidden; background: #151a21; fon
   background: var(--trend-detail-surface, #182534) !important;
   border-color: var(--trend-detail-accent, rgba(75,153,218,.55)) !important;
 }
+
+/* Deep navy dark mode with charcoal surfaces. */
+.theme-dark { background: linear-gradient(145deg, #0b1b2d 0%, #102d4b 48%, #0b1929 100%) !important; }
+.theme-dark header { background: rgba(12,24,38,.94) !important; border-color: #28445e !important; }
+.theme-dark .glass { background: linear-gradient(180deg, #1f2c39, #182532) !important; border-color: #3c607e !important; }
+.theme-dark .theme-ticker { background: #162b42 !important; border-color: #315779 !important; }
+.theme-dark .screener-feed .glass.rounded-2xl.p-4 { background: #1b344e !important; border-color: #3d78a8 !important; }
+.theme-dark .screener-feed .relative.rounded-2xl.border { background: #202c38 !important; border-color: #42617a !important; }
+.theme-dark section[id="categories"] .glass, .theme-dark section[id="categories"] button { background: #183b62 !important; border-color: #3c75a5 !important; }
+.theme-dark input, .theme-dark select { background: #1c3043 !important; border-color: #4c789d !important; }
