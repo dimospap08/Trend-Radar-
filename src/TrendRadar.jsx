@@ -323,6 +323,18 @@ const CATEGORY_VISUALS = [
   { key: "Coin", icon: Coins, color: "#ffd166", desc: "On-chain narratives gaining early velocity" },
   { key: "Narrative", icon: MessageSquare, color: "#7cc8ff", desc: "Cultural moments forming in real time" },
 ];
+// Κάθε κατηγορία έχει τη δική της παλέτα, ώστε το παράθυρο ενός trend
+// να αναγνωρίζεται αμέσως από το χρώμα του φακέλου του.
+const TREND_DETAIL_THEMES = {
+  Sound: { accent: "#8b6bff", surface: "#211b49", soft: "#30256f" },
+  Hashtag: { accent: "#f5b83d", surface: "#3a2c18", soft: "#604414" },
+  Format: { accent: "#4fd1c5", surface: "#123b3a", soft: "#17615b" },
+  Product: { accent: "#ff6b9d", surface: "#3b1d31", soft: "#6b2d4d" },
+  Aesthetic: { accent: "#a98bff", surface: "#2b204b", soft: "#513584" },
+  Coin: { accent: "#ffd166", surface: "#3d3016", soft: "#705315" },
+  Narrative: { accent: "#7cc8ff", surface: "#173653", soft: "#1d5b87" },
+  default: { accent: "#58b8ff", surface: "#182534", soft: "#1d4f82" },
+};
 const SIGNAL_LOCKED_FOLDERS = [
   { key: "Meme Coins", category: "Coin", icon: Coins, color: "#ffd166", desc: "Early meme-coin momentum and attention shifts" },
   { key: "Crypto Markets", category: "Coin", icon: TrendingUp, color: "#58b8ff", desc: "Crypto narratives, sectors and market signals" },
@@ -714,6 +726,13 @@ export default function TrendRadar() {
     return (Number(b.score ?? 0) * 2 + Number(b.velocity ?? 0)) - (Number(a.score ?? 0) * 2 + Number(a.velocity ?? 0));
   });
   const activePersona = PERSONAS.find((p) => p.id === persona);
+  const trendDetailTheme = TREND_DETAIL_THEMES[selectedTrend?.category] || TREND_DETAIL_THEMES.default;
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.setProperty("--trend-detail-accent", trendDetailTheme.accent);
+    root.style.setProperty("--trend-detail-surface", trendDetailTheme.surface);
+    root.style.setProperty("--trend-detail-soft", trendDetailTheme.soft);
+  }, [trendDetailTheme]);
   const categoriesToRender = selectedCategory ? [selectedCategory] : [];
   const topLeagueNames = ["Premier League", "La Liga", "Serie A", "Bundesliga", "Ligue 1", "UEFA Champions League", "UEFA Europa League", "World Cup", "Euro Championship"];
   const filteredFootballMatches = footballMatches.filter((match) => {

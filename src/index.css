@@ -38,3 +38,16 @@
 }
 
 html, body { margin: 0; padding: 0; overflow-x: hidden; background: #151a21; font-family: 'Plus Jakarta Sans', 'DM Sans', system-ui, sans-serif; }
+
+/* Category-aware trend details: the modal follows the folder's visual identity. */
+.fixed.inset-0.z-40 > .glass.rounded-3xl {
+  background: var(--trend-detail-surface, #182534) !important;
+  border-color: var(--trend-detail-accent, rgba(75,153,218,.55)) !important;
+}
+.fixed.inset-0.z-40 > .glass.rounded-3xl .bg-gradient-to-br {
+  background: linear-gradient(135deg, var(--trend-detail-soft, #1d4f82), var(--trend-detail-surface, #182534)) !important;
+}
+.fixed.inset-0.z-40 > .glass.rounded-3xl .bg-\[\#130f26\]\/70 {
+  background: var(--trend-detail-surface, #182534) !important;
+  border-color: var(--trend-detail-accent, rgba(75,153,218,.55)) !important;
+}
