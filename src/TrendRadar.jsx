@@ -557,6 +557,7 @@ export default function TrendRadar() {
   const [footballQuality, setFootballQuality] = useState("all");
   const [footballCollapsed, setFootballCollapsed] = useState(false);
   const [footballLoading, setFootballLoading] = useState(false);
+  const [footballFallbackWindow, setFootballFallbackWindow] = useState(false);
   const [selectedMatch, setSelectedMatch] = useState(null);
   const [matchDetails, setMatchDetails] = useState(null);
   const [matchLoading, setMatchLoading] = useState(false);
@@ -634,11 +635,19 @@ export default function TrendRadar() {
     if (!hasSignalAccess || !session?.access_token) { setFootballMatches([]); setFootballLoading(false); return; }
     let cancelled = false;
     setFootballLoading(true);
+    setFootballFallbackWindow(false);
     fetch(`${API_BASE}/api/sports/matches?days=${footballDays}`, { headers: { Authorization: `Bearer ${session.access_token}` } })
       .then((response) => response.json())
-      // Keep the complete fixture list returned by the football provider.
-      // The old 12-match cap made it look as if only the biggest clubs existed.
-      .then((data) => { if (!cancelled) setFootballMatches(Array.isArray(data?.matches) ? data.matches : []); })
+      // If today has no fixtures, show the next available week instead of an empty panel.
+      .then(async (data) => {
+        if (cancelled) return;
+        const matches = Array.isArray(data?.matches) ? data.matches : [];
+        if (matches.length || footballDays !== 1) { setFootballMatches(matches); return; }
+        try {
+          const fallback = await fetch(`${API_BASE}/api/sports/matches?days=7`, { headers: { Authorization: `Bearer ${session.access_token}` } }).then((response) => response.json());
+          if (!cancelled) { setFootballMatches(Array.isArray(fallback?.matches) ? fallback.matches : []); setFootballFallbackWindow(true); setFootballDays(7); }
+        } catch (_) { if (!cancelled) setFootballMatches([]); }
+      })
       .catch(() => { if (!cancelled) setFootballMatches([]); })
       .finally(() => { if (!cancelled) setFootballLoading(false); });
     return () => { cancelled = true; };
@@ -1171,7 +1180,7 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
           <div><p className="mono text-[10px] uppercase tracking-[.22em] text-[#8ea7ff]">Signal+ intelligence</p><h2 className="display text-2xl md:text-3xl font-extrabold mt-1">Football Signals <span className="text-[#35d07f]">· live</span></h2><p className="body-f text-sm theme-muted mt-2">Real fixtures first. AI analysis comes after the numbers. Informational only — not betting advice.</p></div>
           <span className="mono text-[10px] text-[#35d07f] border border-[#35d07f]/30 rounded-full px-3 py-1">LIVE DATA</span>
         </div>
-        <div className="relative mb-5 max-w-3xl mx-auto"><Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#58b8ff]" /><input value={footballQuery} onChange={(e) => setFootballQuery(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") searchFootball(); }} placeholder="Search any team or competition worldwide…" className="w-full rounded-2xl border-2 border-[#58b8ff]/50 bg-[#142650]/90 py-4 pl-12 pr-4 text-sm body-f text-white outline-none focus:border-[#35d07f] shadow-[0_0_30px_rgba(50,130,255,.16)]" /></div>{footballLoading ? <div className="glass rounded-2xl p-8 text-center body-f theme-muted">Loading today’s fixtures…</div> : filteredFootballMatches.length === 0 ? <div className="glass rounded-2xl p-8 text-center body-f theme-muted">No fixtures available right now.</div> : <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">{filteredFootballMatches.map((match) => { const home = match.teams?.home; const away = match.teams?.away; const date = match.fixture?.date ? new Date(match.fixture.date).toLocaleString([], { weekday: "short", hour: "2-digit", minute: "2-digit" }) : "Upcoming"; return <div key={match.fixture?.id} className="glass rounded-2xl p-4 hover:border-[#58b8ff]/60 transition cursor-pointer" onClick={() => openMatch(match)}><div className="flex items-center justify-between mb-4"><span className="mono text-[9px] uppercase tracking-widest text-[#8ea7ff]">{match.league?.name || "Football"}</span><span className="mono text-[9px] text-[#35d07f]">{date}</span></div><div className="flex items-center justify-between gap-3"><div className="flex-1 text-center"><img src={home?.logo} alt="" className="w-10 h-10 object-contain mx-auto mb-2" /><p className="display text-xs font-bold leading-tight">{home?.name || "Home"}</p></div><div className="mono text-xs text-[#a99fd4]">VS</div><div className="flex-1 text-center"><img src={away?.logo} alt="" className="w-10 h-10 object-contain mx-auto mb-2" /><p className="display text-xs font-bold leading-tight">{away?.name || "Away"}</p></div></div><div className="mt-4 rounded-xl bg-[#142650]/60 border border-[#6f8dff]/20 px-3 py-2 text-center"><span className="mono text-[9px] text-[#b9d5ff]">OPEN FULL AI MATCH ANALYSIS →</span></div></div>; })}</div>}
+        <div className="relative mb-5 max-w-3xl mx-auto"><Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#58b8ff]" /><input value={footballQuery} onChange={(e) => setFootballQuery(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") searchFootball(); }} placeholder="Search any team or competition worldwide…" className="w-full rounded-2xl border-2 border-[#58b8ff]/50 bg-[#142650]/90 py-4 pl-12 pr-4 text-sm body-f text-white outline-none focus:border-[#35d07f] shadow-[0_0_30px_rgba(50,130,255,.16)]" /></div>{footballLoading ? <div className="glass rounded-2xl p-8 text-center body-f theme-muted">Loading upcoming fixtures…</div> : filteredFootballMatches.length === 0 ? <div className="glass rounded-2xl p-8 text-center body-f theme-muted">No upcoming fixtures were returned by the live provider.</div> : <>{footballFallbackWindow && <p className="body-f mb-4 text-center text-xs text-[#9fcdf2]">No matches were scheduled today, so we are showing the next available 7 days.</p>}<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">{filteredFootballMatches.map((match) => { const home = match.teams?.home; const away = match.teams?.away; const date = match.fixture?.date ? new Date(match.fixture.date).toLocaleString([], { weekday: "short", hour: "2-digit", minute: "2-digit" }) : "Upcoming"; return <div key={match.fixture?.id} className="glass rounded-2xl p-4 hover:border-[#58b8ff]/60 transition cursor-pointer" onClick={() => openMatch(match)}><div className="flex items-center justify-between mb-4"><span className="mono text-[9px] uppercase tracking-widest text-[#8ea7ff]">{match.league?.name || "Football"}</span><span className="mono text-[9px] text-[#35d07f]">{date}</span></div><div className="flex items-center justify-between gap-3"><div className="flex-1 text-center"><img src={home?.logo} alt="" className="w-10 h-10 object-contain mx-auto mb-2" /><p className="display text-xs font-bold leading-tight">{home?.name || "Home"}</p></div><div className="mono text-xs text-[#a99fd4]">VS</div><div className="flex-1 text-center"><img src={away?.logo} alt="" className="w-10 h-10 object-contain mx-auto mb-2" /><p className="display text-xs font-bold leading-tight">{away?.name || "Away"}</p></div></div><div className="mt-4 rounded-xl bg-[#142650]/60 border border-[#6f8dff]/20 px-3 py-2 text-center"><span className="mono text-[9px] text-[#b9d5ff]">OPEN FULL AI MATCH ANALYSIS →</span></div></div>; })}</div></>}
       </section>
 
       {/* FEED */}
