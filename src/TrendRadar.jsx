@@ -69,9 +69,11 @@ function generateTrends() {
         const base = 10 + i * (velocity / 120);
         return Math.max(2, Math.round(base + rand() * 15));
       });
+      const platform = PLATFORMS[Math.floor(rand() * PLATFORMS.length)];
       out.push({
         id, name, category,
-        platform: PLATFORMS[Math.floor(rand() * PLATFORMS.length)],
+        platform,
+        sourceUrl: trendFallbackUrl({ name, category, platform }),
         velocity, spark,
         firstSeen: Math.round(1 + rand() * 60),
         score: Math.min(99, Math.round(velocity / 9 + rand() * 15)),
@@ -1299,6 +1301,7 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
                       <Bell className="h-3 w-3" /> Alert
                     </button>
                   </div>
+                  {(t.category === "CopyTrader" || t.category === "GlobalMarket") && t.sourceUrl && <a href={t.sourceUrl} target="_blank" rel="noreferrer" onClick={(event) => event.stopPropagation()} className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-[#38bdf8]/45 bg-[#123b63] px-3 py-2 text-[10px] font-bold text-[#d8ecff] transition hover:border-[#58b8ff] hover:bg-[#174d7f]">{t.category === "CopyTrader" ? "Trader profile & stats ↗" : "Open market data ↗"}</a>}
                 </div>
               );
                 })}
