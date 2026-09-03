@@ -355,6 +355,18 @@ const SIGNAL_LOCKED_FOLDERS = [
   { key: "Global Markets", category: "GlobalMarket", icon: Gauge, color: "#35d07f", desc: "Macro themes and cross-market opportunities" },
 ];
 const FREE_TRIAL_FOLDERS = new Set(["Sound", "Hashtag", "Format"]);
+const CATEGORY_LABELS = {
+  Sound: "TikTok Sounds",
+  Hashtag: "Hashtags",
+  Format: "Formats",
+  Product: "Products",
+  Aesthetic: "Aesthetics",
+  Narrative: "Narratives",
+  CryptoCoin: "Crypto Markets",
+  MemeCoin: "Meme Coins",
+  CopyTrader: "Copy Trading",
+  GlobalMarket: "Global Markets",
+};
 
 const TREND_COPY = {
   Sound: "Audio gaining momentum across short-form video. Use it early before saturation.",
@@ -782,7 +794,9 @@ export default function TrendRadar() {
   const handleRefresh = async () => {
     setRefreshing(true);
     try {
-      const r = await fetch(`${API_BASE}/api/trends?persona=${persona}`);
+      const headers = session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {};
+      const tierQuery = activeTier ? `&tier=${encodeURIComponent(activeTier)}` : "";
+      const r = await fetch(`${API_BASE}/api/trends?persona=${persona}${tierQuery}`, { headers });
       const data = await r.json();
       if (data?.trends?.length > 0) setLiveTrends(data.trends.map(normalizeTrend));
     } catch (e) { /* backend unreachable */ }
@@ -1256,8 +1270,8 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
               const shownTrends = isExpanded ? categoryTrends : categoryTrends.slice(0, 10);
               return <div key={category} className="glass rounded-2xl p-4">
                 <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2.5"><div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{background:`${categoryInfo?.color}22`}}><CategoryIcon className="w-4 h-4" style={{color:categoryInfo?.color}} /></div><div><p className="display text-xs font-bold">{category === "Sound" ? "TikTok Sounds" : category + "s"}</p><p className="mono text-[9px] theme-muted">{categoryTrends.length} signals</p></div></div>
-                  <span className="mono text-[9px] text-[#7c5cff]">TOP VIRAL</span>
+                  <div className="flex items-center gap-2.5"><div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{background:`${categoryInfo?.color}22`}}><CategoryIcon className="w-4 h-4" style={{color:categoryInfo?.color}} /></div><div><p className="display text-xs font-bold">{CATEGORY_LABELS[category] || category}</p><p className="mono text-[9px] theme-muted">{categoryTrends.length} signals</p></div></div>
+                  <span className="mono text-[9px] text-[#58b8ff]">LIVE SIGNALS</span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                 {shownTrends.map((t, idx) => {
