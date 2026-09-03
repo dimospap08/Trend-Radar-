@@ -51,22 +51,3 @@ html, body { margin: 0; padding: 0; overflow-x: hidden; background: #151a21; fon
   background: var(--trend-detail-surface, #182534) !important;
   border-color: var(--trend-detail-accent, rgba(75,153,218,.55)) !important;
 }
-
-/* Final professional theme: charcoal canvas with one consistent navy action colour. */
-:root { color-scheme: dark; }
-body, html { background: #11161d !important; color: #e7edf5; }
-.theme-dark { background: linear-gradient(180deg, #11161d 0%, #151c25 48%, #10151c 100%) !important; }
-header { background: rgba(17,22,29,.94) !important; border-color: #263342 !important; }
-.glass { background: rgba(27,38,51,.9) !important; border-color: rgba(76,112,145,.5) !important; box-shadow: 0 16px 40px rgba(0,0,0,.22); }
-.theme-ticker { background: #172231 !important; border-color: #2a3e54 !important; }
-button, a { transition: background-color .2s ease, border-color .2s ease, transform .2s ease, box-shadow .2s ease; }
-button.bg-gradient-to-r, a.bg-gradient-to-r { background: #173b68 !important; box-shadow: 0 8px 24px rgba(13,54,96,.35) !important; }
-button.bg-gradient-to-r:hover, a.bg-gradient-to-r:hover { background: #205287 !important; }
-.screener-feed .glass.rounded-2xl.p-4 { background: #1b2b3b !important; border-color: #3c6f9d !important; }
-.screener-feed .relative.rounded-2xl.border { background: #202c38 !important; border-color: #405d76 !important; }
-.screener-feed .relative.rounded-2xl.border:hover { border-color: #65a7dc !important; box-shadow: 0 14px 30px rgba(9,45,78,.45); }
-section[id="categories"] .glass, section[id="categories"] button { background: #183b62 !important; border-color: #356c9c !important; }
-section[id="categories"] button:hover { background: #214d7b !important; }
-input, select { background: #1b2b3b !important; border-color: #426b91 !important; color: #edf4fb !important; }
-.fixed.inset-0.z-40 > .glass.rounded-3xl { background: #1b2b3b !important; border-color: #4a86b8 !important; }
-.fixed.inset-0.z-40 { background: rgba(5,10,15,.88) !important; }
