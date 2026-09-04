@@ -95,13 +95,15 @@ html, body { margin: 0; padding: 0; overflow-x: hidden; background: #151a21; fon
 /* Mobile-first polish: keep the dashboard readable and usable at thumb width. */
 @media (max-width: 767px) {
   html, body { min-width: 320px; }
-  header > div { padding-left: 1rem; padding-right: 1rem; gap: .5rem; }
-  header > div > div:first-child span { font-size: .78rem; }
-  header > div > div:last-child { gap: .35rem; }
-  header > div > div:last-child > button { min-width: 2.75rem; min-height: 2.75rem; }
-  header > div > div:last-child .refresh-button { padding-left: .7rem; padding-right: .7rem; }
-  header > div > div:last-child .refresh-button { font-size: 0; }
-  header > div > div:last-child .refresh-button svg { width: 1rem; height: 1rem; }
+  .site-header-inner { padding-left: .75rem; padding-right: .75rem; gap: .35rem; min-width: 0; }
+  .header-brand { min-width: 0; flex: 1 1 auto; gap: .4rem; }
+  .header-brand > div { width: 2rem; height: 2rem; flex: 0 0 2rem; }
+  .header-brand > div img { width: 1.7rem; height: 1.7rem; }
+  .header-brand > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .68rem; }
+  .header-actions { flex: 0 0 auto; gap: .25rem; }
+  .header-actions > button { min-width: 2.4rem; min-height: 2.4rem; }
+  .header-actions .refresh-button { padding: .55rem; font-size: 0; min-width: 2.55rem; }
+  .header-actions .refresh-button svg { width: 1rem; height: 1rem; }
   header .profile-panel { right: 1rem; }
   section { scroll-margin-top: 5rem; }
   section.relative.max-w-6xl { padding: 2.5rem 1rem 3.5rem; gap: 2rem; }
@@ -125,12 +127,22 @@ html, body { margin: 0; padding: 0; overflow-x: hidden; background: #151a21; fon
   #feed input.command-input { min-height: 3rem; padding-top: .8rem; padding-bottom: .8rem; }
   #feed > div:first-child > div:nth-child(2) > div:not(:first-child), #feed > div:first-child > div:nth-child(2) > button { flex: 1; }
   #feed > div:first-child > div:nth-child(2) > div:not(:first-child) button, #feed > div:first-child > div:nth-child(2) > button { width: 100%; justify-content: center; min-height: 2.9rem; padding: .7rem .6rem; }
-  #feed .glass.rounded-2xl.p-4 { padding: .85rem; }
-  #feed .relative.rounded-2xl.border { padding: .8rem; border-radius: 1rem; }
-  #feed .relative.rounded-2xl.border .h-16 { height: 3.5rem; }
-  #feed .relative.rounded-2xl.border .h-16 .absolute { font-size: 3.5rem; }
-  #feed .relative.rounded-2xl.border .body-f { font-size: .7rem; line-height: 1.45; }
-  #feed .relative.rounded-2xl.border button, #feed .relative.rounded-2xl.border a { min-height: 2.55rem; }
+  #feed .signal-folder { padding: .65rem; border-radius: .9rem; }
+  #feed .signal-folder > div:first-child { margin-bottom: .5rem; }
+  #feed .signal-folder > div:first-child .w-8 { width: 1.85rem; height: 1.85rem; }
+  #feed .signal-folder > div:first-child .w-8 svg { width: .85rem; height: .85rem; }
+  #feed .trend-card { padding: .65rem; border-radius: .85rem; }
+  #feed .trend-card .trend-card-hero { height: 2.8rem; margin: -.65rem -.65rem .55rem; padding: 0 .65rem .45rem; }
+  #feed .trend-card .trend-card-hero .absolute { font-size: 3.3rem; top: -1.35rem; }
+  #feed .trend-card .trend-card-hero span { font-size: .52rem; letter-spacing: .06em; }
+  #feed .trend-card .text-lg { font-size: .95rem; }
+  #feed .trend-card .display.text-\[13px\] { font-size: .75rem; line-height: 1.2; }
+  #feed .trend-card .h-9 { height: 1.45rem; margin-top: .35rem; }
+  #feed .trend-card .trend-explanation, #feed .trend-card .trend-decision { display: none; }
+  #feed .trend-card .mt-3 { margin-top: .45rem; }
+  #feed .trend-card .mt-1 { margin-top: .2rem; }
+  #feed .trend-card .mono { font-size: .52rem; }
+  #feed .trend-card button, #feed .trend-card a { min-height: 2.1rem; }
   .fixed.inset-0.z-40 { align-items: flex-end; padding: 0; }
   .fixed.inset-0.z-40 > .glass.rounded-3xl { max-height: 92vh; border-radius: 1.35rem 1.35rem 0 0; padding: 1.1rem; }
   .fixed.inset-0.z-50 { align-items: flex-end; padding: 0; }
