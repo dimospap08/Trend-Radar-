@@ -978,8 +978,8 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
 
       {/* NAV */}
       <header className="relative border-b border-[#1c1633] sticky top-0 bg-[#060512]/85 backdrop-blur-md z-30">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
+        <div className="site-header-inner max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="header-brand flex items-center gap-2.5">
             <div className="relative w-7 h-7 flex items-center justify-center rounded-lg bg-gradient-to-br from-[#7c5cff] to-[#4a2fb8]">
               <img src="/favicon.svg" alt="TrendRadar" className="w-6 h-6" />
             </div>
@@ -991,7 +991,7 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
             <a href="#how" className="nav-link">HOW IT WORKS</a>
             <a href="#pricing" className="nav-link">PRICING</a>
           </nav>
-          <div className="flex items-center gap-3">
+          <div className="header-actions flex items-center gap-3">
             <button onClick={toggleTheme} aria-label="Toggle theme" className="w-9 h-9 rounded-full border border-[#2a2150] flex items-center justify-center hover:border-[#7c5cff] transition">
               {lightMode ? <Moon className="w-4 h-4 text-[#6044d8]" /> : <Sun className="w-4 h-4 text-[#f5b83d]" />}
             </button>
@@ -1303,7 +1303,7 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
               const categoryTrends = visibleTrends.filter((t) => t.category === category);
               const isExpanded = expandedColumns[category];
               const shownTrends = isExpanded ? categoryTrends : categoryTrends.slice(0, 10);
-              return <div key={category} className="glass rounded-2xl p-4">
+              return <div key={category} className="signal-folder glass rounded-2xl p-4">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2.5"><div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{background:`${categoryInfo?.color}22`}}><CategoryIcon className="w-4 h-4" style={{color:categoryInfo?.color}} /></div><div><p className="display text-xs font-bold">{CATEGORY_LABELS[category] || category}</p><p className="mono text-[9px] theme-muted">{categoryTrends.length} signals</p></div></div>
                   <span className="mono text-[9px] text-[#58b8ff]">LIVE SIGNALS</span>
@@ -1313,8 +1313,8 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
               const locked = idx >= freeLimit;
               const watched = watchlist.has(t.id);
               return (
-                <div key={t.id} onClick={() => setSelectedTrend(t)} role="button" tabIndex={0} onKeyDown={(event) => event.key === "Enter" && setSelectedTrend(t)} className="relative rounded-2xl border border-[#7c5cff]/15 bg-[#130f26]/60 p-4 overflow-hidden cursor-pointer hover:border-[#7c5cff]/60 hover:-translate-y-0.5 hover:shadow-[0_12px_28px_rgba(66,45,150,.22)] transition-all duration-200">
-                  <div className="h-16 -mx-4 -mt-4 mb-3 flex items-end justify-between px-4 pb-3 relative overflow-hidden" style={{background:`linear-gradient(120deg, ${categoryInfo?.color}35, transparent 68%)`}}><div className="absolute -right-3 -top-8 text-[86px] opacity-20 rotate-12">{t.emoji || CATEGORY_EMOJI[t.category] || "📡"}</div><span className={`relative z-10 mono text-[9px] font-bold tracking-widest ${t.score >= 60 ? "text-[#35d07f]" : t.score >= 30 ? "text-[#f5b83d]" : "text-[#ff6b6b]"}`}>{t.score >= 60 ? "● BREAKING" : t.score >= 30 ? "↗ RISING" : "○ COOLING"}</span><span className="relative z-10 mono text-[9px] text-[#a99fd4]">OPEN SIGNAL →</span></div>
+                <div key={t.id} onClick={() => setSelectedTrend(t)} role="button" tabIndex={0} onKeyDown={(event) => event.key === "Enter" && setSelectedTrend(t)} className="trend-card relative rounded-2xl border border-[#7c5cff]/15 bg-[#130f26]/60 p-4 overflow-hidden cursor-pointer hover:border-[#7c5cff]/60 hover:-translate-y-0.5 hover:shadow-[0_12px_28px_rgba(66,45,150,.22)] transition-all duration-200">
+                  <div className="trend-card-hero h-16 -mx-4 -mt-4 mb-3 flex items-end justify-between px-4 pb-3 relative overflow-hidden" style={{background:`linear-gradient(120deg, ${categoryInfo?.color}35, transparent 68%)`}}><div className="absolute -right-3 -top-8 text-[86px] opacity-20 rotate-12">{t.emoji || CATEGORY_EMOJI[t.category] || "📡"}</div><span className={`relative z-10 mono text-[9px] font-bold tracking-widest ${t.score >= 60 ? "text-[#35d07f]" : t.score >= 30 ? "text-[#f5b83d]" : "text-[#ff6b6b]"}`}>{t.score >= 60 ? "● BREAKING" : t.score >= 30 ? "↗ RISING" : "○ COOLING"}</span><span className="relative z-10 mono text-[9px] text-[#a99fd4]">OPEN SIGNAL →</span></div>
                   {locked && (
                     <div className="absolute inset-0 bg-[#060512]/92 backdrop-blur-sm flex flex-col items-center justify-center gap-2 z-10 px-3 text-center">
                       <Lock className="w-4 h-4 text-[#a98bff]" />
@@ -1334,10 +1334,10 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
                   </div>
                   {profileSettings.showMetrics && <Sparkline data={t.spark} />}
                   {profileSettings.showExplanations && <>
-                    <p className="body-f text-[10px] leading-relaxed text-[#7c729f] mt-1.5"><span className="font-semibold text-[#a99fd4]">Why it matters: </span>{t.description || TREND_COPY[t.category] || "A live signal detected by Trend Radar."}</p>
-                    <p className="body-f text-[10px] leading-relaxed text-[#a98bff] mt-1"><span className="font-semibold">Do this: </span>{TREND_ACTION[t.category] || "Move early while the signal is gaining momentum."}</p>
+                    <p className="trend-explanation body-f text-[10px] leading-relaxed text-[#7c729f] mt-1.5"><span className="font-semibold text-[#a99fd4]">Why it matters: </span>{t.description || TREND_COPY[t.category] || "A live signal detected by Trend Radar."}</p>
+                    <p className="trend-explanation body-f text-[10px] leading-relaxed text-[#a98bff] mt-1"><span className="font-semibold">Do this: </span>{TREND_ACTION[t.category] || "Move early while the signal is gaining momentum."}</p>
                   </>}
-                  <div className="mt-3 rounded-xl border border-[#7c5cff]/15 bg-[#0f0b20]/55 px-3 py-2"><div className="flex items-center justify-between"><span className="mono text-[9px] uppercase tracking-widest text-[#8ea7ff]">Decision</span><span className={`mono text-[9px] font-bold ${t.score >= 60 ? "text-[#35d07f]" : t.score >= 30 ? "text-[#f5b83d]" : "text-[#ff6b6b]"}`}>{trendVerdict(t.score).label}</span></div><p className="body-f text-[10px] leading-relaxed text-[#b3a9d9] mt-1">{trendVerdict(t.score).text}</p></div>
+                  <div className="trend-decision mt-3 rounded-xl border border-[#7c5cff]/15 bg-[#0f0b20]/55 px-3 py-2"><div className="flex items-center justify-between"><span className="mono text-[9px] uppercase tracking-widest text-[#8ea7ff]">Decision</span><span className={`mono text-[9px] font-bold ${t.score >= 60 ? "text-[#35d07f]" : t.score >= 30 ? "text-[#f5b83d]" : "text-[#ff6b6b]"}`}>{trendVerdict(t.score).label}</span></div><p className="body-f text-[10px] leading-relaxed text-[#b3a9d9] mt-1">{trendVerdict(t.score).text}</p></div>
                   {profileSettings.showMetrics && <div className="flex items-center justify-between mt-1">
                     <span className={`flex items-center gap-1 mono text-[10px] font-bold ${t.score >= 60 ? "text-[#35d07f]" : t.score >= 30 ? "text-[#f5b83d]" : "text-[#ff6b6b]"}`}>
                       <TrendingUp className="w-3 h-3" /> +{t.velocity}%
