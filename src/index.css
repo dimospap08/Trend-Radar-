@@ -104,6 +104,7 @@ html, body { margin: 0; padding: 0; overflow-x: hidden; background: #151a21; fon
   .header-actions > button { min-width: 2.4rem; min-height: 2.4rem; }
   .header-actions .refresh-button { padding: .55rem; font-size: 0; min-width: 2.55rem; }
   .header-actions .refresh-button svg { width: 1rem; height: 1rem; }
+  .header-actions .logout-button { display: none; }
   header .profile-panel { right: 1rem; }
   section { scroll-margin-top: 5rem; }
   section.relative.max-w-6xl { padding: 2.5rem 1rem 3.5rem; gap: 2rem; }
@@ -127,22 +128,25 @@ html, body { margin: 0; padding: 0; overflow-x: hidden; background: #151a21; fon
   #feed input.command-input { min-height: 3rem; padding-top: .8rem; padding-bottom: .8rem; }
   #feed > div:first-child > div:nth-child(2) > div:not(:first-child), #feed > div:first-child > div:nth-child(2) > button { flex: 1; }
   #feed > div:first-child > div:nth-child(2) > div:not(:first-child) button, #feed > div:first-child > div:nth-child(2) > button { width: 100%; justify-content: center; min-height: 2.9rem; padding: .7rem .6rem; }
-  #feed .signal-folder { padding: .65rem; border-radius: .9rem; }
+  /* Two compact columns prevent one signal from taking the whole phone screen. */
+  #feed .signal-folder { padding: .6rem; border-radius: .9rem; }
   #feed .signal-folder > div:first-child { margin-bottom: .5rem; }
   #feed .signal-folder > div:first-child .w-8 { width: 1.85rem; height: 1.85rem; }
   #feed .signal-folder > div:first-child .w-8 svg { width: .85rem; height: .85rem; }
-  #feed .trend-card { padding: .65rem; border-radius: .85rem; }
-  #feed .trend-card .trend-card-hero { height: 2.8rem; margin: -.65rem -.65rem .55rem; padding: 0 .65rem .45rem; }
+  #feed .signal-folder > div.grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: .45rem !important; }
+  #feed .trend-card { padding: .55rem; border-radius: .75rem; min-height: 0; }
+  #feed .trend-card .trend-card-hero { height: 2.35rem; margin: -.55rem -.55rem .45rem; padding: 0 .55rem .35rem; }
   #feed .trend-card .trend-card-hero .absolute { font-size: 3.3rem; top: -1.35rem; }
   #feed .trend-card .trend-card-hero span { font-size: .52rem; letter-spacing: .06em; }
-  #feed .trend-card .text-lg { font-size: .95rem; }
-  #feed .trend-card .display.text-\[13px\] { font-size: .75rem; line-height: 1.2; }
-  #feed .trend-card .h-9 { height: 1.45rem; margin-top: .35rem; }
+  #feed .trend-card .text-lg { font-size: .82rem; }
+  #feed .trend-card .display.text-\[13px\] { font-size: .68rem; line-height: 1.15; }
+  #feed .trend-card .h-9 { height: 1.1rem; margin-top: .25rem; }
   #feed .trend-card .trend-explanation, #feed .trend-card .trend-decision { display: none; }
-  #feed .trend-card .mt-3 { margin-top: .45rem; }
+  #feed .trend-card .mt-3 { margin-top: .35rem; }
   #feed .trend-card .mt-1 { margin-top: .2rem; }
   #feed .trend-card .mono { font-size: .52rem; }
-  #feed .trend-card button, #feed .trend-card a { min-height: 2.1rem; }
+  #feed .trend-card button, #feed .trend-card a { min-height: 1.85rem; }
+  .theme-dark .relative.w-full.aspect-square.max-w-md, .theme-light .relative.w-full.aspect-square.max-w-md { filter: none !important; }
   .fixed.inset-0.z-40 { align-items: flex-end; padding: 0; }
   .fixed.inset-0.z-40 > .glass.rounded-3xl { max-height: 92vh; border-radius: 1.35rem 1.35rem 0 0; padding: 1.1rem; }
   .fixed.inset-0.z-50 { align-items: flex-end; padding: 0; }
