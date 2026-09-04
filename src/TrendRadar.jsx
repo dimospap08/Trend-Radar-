@@ -1017,7 +1017,7 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
                 <button onClick={() => setShowProfilePanel((value) => !value)} aria-label="Open profile and settings" className="relative h-9 w-9 overflow-hidden rounded-full border-2 border-[#7c5cff]/60 bg-gradient-to-br from-[#8b6bff] to-[#284b91] text-white shadow-[0_0_18px_rgba(124,92,255,.3)] transition hover:scale-105 hover:border-[#58b8ff]">
                   {profileAvatar ? <img src={profileAvatar} alt="Profile" className="h-full w-full object-cover" /> : <UserIcon className="mx-auto h-4 w-4" />}
                 </button>
-                <button onClick={handleSignOut} className="w-8 h-8 rounded-full bg-[#130f26] border border-[#231b45] flex items-center justify-center hover:border-[#7c5cff] transition">
+                <button onClick={handleSignOut} className="logout-button w-8 h-8 rounded-full bg-[#130f26] border border-[#231b45] flex items-center justify-center hover:border-[#7c5cff] transition" aria-label="Sign out">
                   <LogOut className="w-3.5 h-3.5 text-[#a99fd4]" />
                 </button>
               </div>
@@ -1040,6 +1040,7 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
             {alerts.length === 0 ? <p className="body-f mt-2 text-[10px] text-[#9eb9e8]">No alerts yet. Use the Alert button on a trend.</p> : <div className="mt-2 max-h-36 space-y-2 overflow-y-auto">{alerts.map((item) => <div key={item.id} className="flex items-center justify-between gap-2 rounded-lg border border-[#6f8dff]/20 bg-[#15234a]/60 px-2.5 py-2"><div><p className="mono text-[9px] text-[#d5e4ff]">Score ≥ {item.threshold_score ?? "—"}</p><p className="mono text-[8px] text-[#8ea7ff]">{item.sent_at ? "Sent" : "Waiting"}</p></div><button onClick={() => deleteAlert(item.id)} className="text-[10px] text-[#ff9b9b] hover:text-white" aria-label="Delete alert">Delete</button></div>)}</div>}
           </div>
           <p className="body-f mt-4 text-[10px] leading-relaxed text-[#8ea7ff]">Settings are saved automatically on this device.</p>
+          <button onClick={handleSignOut} className="mt-4 w-full rounded-xl border border-[#6f8dff]/30 px-3 py-2.5 text-xs font-semibold text-[#b9d5ff] transition hover:border-[#ff9b9b] hover:text-[#ffb0b0]">Sign out</button>
         </div>}
       </header>
 
