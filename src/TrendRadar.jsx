@@ -536,7 +536,8 @@ export default function TrendRadar() {
   const [watchlist, setWatchlist] = useState(new Set());
   const [showWatchlistOnly, setShowWatchlistOnly] = useState(false);
   const [liveTrends, setLiveTrends] = useState(null);
-  const [sourceStatus, setSourceStatus] = useState({ google: "unknown", gdelt: "unknown" });
+  const [sourceStatus, setSourceStatus] = useState({ database: "unknown", google: "unknown", gdelt: "unknown" });
+  const [liveError, setLiveError] = useState("");
   const [checkingLive, setCheckingLive] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [lightMode, setLightMode] = useState(() => localStorage.getItem("trend-theme") === "light");
@@ -616,19 +617,30 @@ export default function TrendRadar() {
 
   useEffect(() => {
     let cancelled = false;
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 12000);
     const headers = session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {};
     const tierQuery = activeTier ? `&tier=${encodeURIComponent(activeTier)}` : "";
-    fetch(`${API_BASE}/api/trends?persona=${persona}${tierQuery}`, { headers })
-      .then((r) => r.json())
+    setCheckingLive(true);
+    setLiveError("");
+    fetch(`${API_BASE}/api/trends?persona=${persona}${tierQuery}`, { headers, signal: controller.signal })
+      .then((r) => {
+        if (!r.ok) throw new Error(`Live feed returned ${r.status}`);
+        return r.json();
+      })
       .then((data) => {
         if (cancelled) return;
-        setSourceStatus(data?.sourceStatus || { google: "unknown", gdelt: "unknown" });
-        if (data?.trends?.length > 0) setLiveTrends(data.trends.map(normalizeTrend));
-        else setLiveTrends(null);
+        setSourceStatus(data?.sourceStatus || { database: "unknown", google: "unknown", gdelt: "unknown" });
+        setLiveTrends(Array.isArray(data?.trends) ? data.trends.map(normalizeTrend) : []);
       })
-      .catch(() => { if (!cancelled) setLiveTrends(null); })
-      .finally(() => { if (!cancelled) setCheckingLive(false); });
-    return () => { cancelled = true; };
+      .catch((error) => {
+        if (!cancelled) {
+          setLiveTrends([]);
+          setLiveError(error.name === "AbortError" ? "The live feed took too long to respond." : "The live feed is temporarily unavailable.");
+        }
+      })
+      .finally(() => { window.clearTimeout(timeout); if (!cancelled) setCheckingLive(false); });
+    return () => { cancelled = true; window.clearTimeout(timeout); controller.abort(); };
   }, [persona, session?.access_token, activeTier]);
 
   useEffect(() => {
@@ -752,16 +764,9 @@ export default function TrendRadar() {
   const categories = hasSignalAccess
     ? [...CATEGORY_VISUALS.map((item) => item.key), ...SIGNAL_LOCKED_FOLDERS.map((item) => item.category)]
     : [...(CATEGORY_BY_PERSONA[persona] || []), ...Array.from(PUBLIC_SIGNAL_FOLDERS)];
-  const fallbackToMinimum = liveTrends
-    ? categories.flatMap((category) => {
-      const liveForCategory = liveTrends.filter((trend) => trend.category === category);
-      const existingNames = new Set(liveForCategory.map((trend) => String(trend.name).toLowerCase()));
-      const minimumForCategory = ["Product", "MemeCoin", "CopyTrader", "GlobalMarket"].includes(category) ? 20 : 10;
-      const needed = Math.max(0, minimumForCategory - liveForCategory.length);
-      return ALL_TRENDS.filter((trend) => trend.category === category && !existingNames.has(String(trend.name).toLowerCase())).slice(0, needed).map((trend) => ({ ...trend, id: `fallback-${trend.id}` }));
-    })
-    : [];
-  const allVisibleTrends = liveTrends ? [...liveTrends, ...fallbackToMinimum] : ALL_TRENDS.filter((t) => categories.includes(t.category));
+  const fallbackToMinimum = [];
+  // Demo points can animate the radar, but must never appear as live signals.
+  const allVisibleTrends = liveTrends ? [...liveTrends, ...fallbackToMinimum] : [];
   const visibleTrends = allVisibleTrends.filter((t) => {
     if (showWatchlistOnly && !watchlist.has(t.id)) return false;
     const query = searchQuery.trim().toLowerCase();
@@ -803,13 +808,19 @@ export default function TrendRadar() {
 
   const handleRefresh = async () => {
     setRefreshing(true);
+    setLiveError("");
     try {
       const headers = session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {};
       const tierQuery = activeTier ? `&tier=${encodeURIComponent(activeTier)}` : "";
-      const r = await fetch(`${API_BASE}/api/trends?persona=${persona}${tierQuery}`, { headers });
+      const controller = new AbortController();
+      const timeout = window.setTimeout(() => controller.abort(), 12000);
+      const r = await fetch(`${API_BASE}/api/trends?persona=${persona}${tierQuery}`, { headers, signal: controller.signal });
+      window.clearTimeout(timeout);
+      if (!r.ok) throw new Error(`Live feed returned ${r.status}`);
       const data = await r.json();
-      if (data?.trends?.length > 0) setLiveTrends(data.trends.map(normalizeTrend));
-    } catch (e) { /* backend unreachable */ }
+      setSourceStatus(data?.sourceStatus || { database: "unknown", google: "unknown", gdelt: "unknown" });
+      setLiveTrends(Array.isArray(data?.trends) ? data.trends.map(normalizeTrend) : []);
+    } catch (e) { setLiveError("Refresh failed. Please try again in a moment."); }
     finally { setRefreshing(false); }
   };
   const openMatch = async (match) => {
@@ -987,7 +998,7 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
             <button
               onClick={handleRefresh}
               disabled={refreshing}
-              className="flex items-center gap-2 mono text-xs font-bold text-white bg-gradient-to-r from-[#9b78ff] via-[#7c5cff] to-[#5c3ee8] shadow-[0_0_25px_rgba(124,92,255,.45)] hover:shadow-[0_0_38px_rgba(124,92,255,.7)] hover:-translate-y-0.5 px-5 py-3 rounded-xl transition disabled:opacity-50"
+              className="refresh-button flex items-center gap-2 mono text-xs font-bold text-white bg-gradient-to-r from-[#9b78ff] via-[#7c5cff] to-[#5c3ee8] shadow-[0_0_25px_rgba(124,92,255,.45)] hover:shadow-[0_0_38px_rgba(124,92,255,.7)] hover:-translate-y-0.5 px-5 py-3 rounded-xl transition disabled:opacity-50"
             >
               <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
               {refreshing ? "Scanning..." : "Refresh"}
@@ -1190,8 +1201,8 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
             <h2 className="display text-2xl md:text-3xl font-extrabold tracking-tight">Live feed <span className="text-[#8b6bff]">—</span> {activePersona.label}</h2>
             {!checkingLive && (
               liveTrends ? (
-                <span className="flex items-center gap-1.5 mono text-[10px] text-[#c9bfff] bg-[#160f2e] border border-[#7c5cff]/40 rounded-full px-2.5 py-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#7c5cff] animate-pulse" /> LIVE · {DATA_REGION} · Google {sourceStatus.google} · GDELT {sourceStatus.gdelt}
+                  <span className="flex items-center gap-1.5 mono text-[10px] text-[#c9bfff] bg-[#160f2e] border border-[#7c5cff]/40 rounded-full px-2.5 py-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#35d07f] animate-pulse" /> LIVE · {DATA_REGION} · DB {sourceStatus.database || "ok"} · Google {sourceStatus.google} · GDELT {sourceStatus.gdelt}
                 </span>
               ) : (
                 <span className="mono text-[10px] text-[#655a92] bg-[#0f0d1f] border border-[#1c1633] rounded-full px-2.5 py-1">
@@ -1269,6 +1280,14 @@ function MatchAnalytics({ match, loading, details, saved, close, toggleSaved }) 
                 <div className="h-2.5 w-24 bg-[#1c1633] rounded" />
               </div>
             ))}
+          </div>
+        ) : liveError ? (
+          <div className="live-error glass rounded-2xl p-8 text-center">
+            <p className="display text-base font-bold mb-2">Live feed unavailable</p>
+            <p className="body-f text-sm text-[#a99fd4] mb-5">{liveError}</p>
+            <button onClick={handleRefresh} className="inline-flex items-center gap-2 rounded-xl bg-[#63b0f5] px-4 py-2.5 text-sm font-bold text-[#10202f]">
+              <RefreshCw className="h-4 w-4" /> Try again
+            </button>
           </div>
         ) : visibleTrends.length === 0 ? (
           <div className="glass rounded-2xl p-10 text-center">
